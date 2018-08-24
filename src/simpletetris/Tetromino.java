@@ -9,12 +9,8 @@ package simpletetris;
  *
  * @author t0704007
  */
-public class Tetromino {
-    int numTetromino;
-    public Tetromino(int num){
-        numTetromino = num;
+public abstract class Tetromino {
+    public Tetromino(){
+        
     }
-    
-    
-    
 }
