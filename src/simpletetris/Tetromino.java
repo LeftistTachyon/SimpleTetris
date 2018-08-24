@@ -20,17 +20,17 @@ public abstract class Tetromino {
     /**
      * The "left" rotation state
      */
-    public static final int LEFT = 0;
+    public static final int LEFT = 1;
     
     /**
      * The "down" rotation state
      */
-    public static final int DOWN = 0;
+    public static final int DOWN = 2;
     
     /**
      * The "right" rotation state
      */
-    public static final int RIGHT = 0;
+    public static final int RIGHT = 3;
     
     /**
      * Creates a new Tetromino
@@ -62,4 +62,22 @@ public abstract class Tetromino {
      * @return the right state 
      */
     public abstract Color[][] getRight();
+    
+    /**
+     * Rotates this tetromino clockwise.
+     */
+    public void rotateClockwise() {
+        rotation--;
+        if(rotation == -1) 
+            rotation = 3;
+    }
+    
+    /**
+     * Rotates this tetromino counterclockwise.
+     */
+    public void rotateCounterclockwise() {
+        rotation++;
+        if(rotation == 4) 
+            rotation = 0;
+    }
 }
