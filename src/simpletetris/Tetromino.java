@@ -20,17 +20,17 @@ public abstract class Tetromino {
     /**
      * The "left" rotation state
      */
-    public static final int LEFT = 0;
+    public static final int LEFT = 1;
     
     /**
      * The "down" rotation state
      */
-    public static final int DOWN = 0;
+    public static final int DOWN = 2;
     
     /**
      * The "right" rotation state
      */
-    public static final int RIGHT = 0;
+    public static final int RIGHT = 3;
     
     /**
      * Creates a new Tetromino
@@ -62,4 +62,28 @@ public abstract class Tetromino {
      * @return the right state 
      */
     public abstract Color[][] getRight();
+    
+    /**
+     * Determines the width of the rotation box
+     * @return the width of the rotation box
+     */
+    public abstract int getRotationBoxWidth();
+    
+    /**
+     * Returns the minos to draw
+     * @return the minos to draw
+     */
+    public Color[][] getDrawBox() {
+        switch(rotation) {
+            case UP:
+                return getUp();
+            case RIGHT:
+                return getRight();
+            case LEFT:
+                return getLeft();
+            case DOWN:
+                return getDown();
+        }
+        throw new IllegalStateException("rotation has an illegal value");
+    }
 }

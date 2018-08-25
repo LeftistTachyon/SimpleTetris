@@ -1,19 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package simpletetris;
 
 import java.awt.Color;
 
 /**
- *
- * @author t0704007
+ * A class that represents the J tetromino
+ * @author Danny Tang
  */
 public class TetJ extends Tetromino{
-
-    Color b = Color.BLUE;
+    /**
+     * Shorthand
+     */
+    private static final Color b = Color.BLUE;
    
     @Override
     public Color[][] getUp() {
@@ -34,6 +31,9 @@ public class TetJ extends Tetromino{
     public Color[][] getRight() {
         return new Color[][]{{null, b, b}, {null, b,null},{null,b,null}};
     }
-    
-    
+
+    @Override
+    public int getRotationBoxWidth() {
+        return 3;
+    }
 }
