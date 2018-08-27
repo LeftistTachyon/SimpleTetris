@@ -1,32 +1,47 @@
 package simpletetris;
 
 import java.awt.Color;
-import static java.awt.Color.*;
 
 /**
- * A class that emulates a L
+ * A class that represents the L tetromino
  * @author Jed Wang
  */
 public class TetL extends Tetromino {
+    /**
+     * Shorthand
+     */
+    private static Color o = Color.ORANGE;
 
     @Override
     public Color[][] getUp() {
-        
+        return new Color[][]{{null, null, o}, 
+                             {o,    o,    o}, 
+                             {null, null, null}};
     }
 
     @Override
     public Color[][] getLeft() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new Color[][]{{o,    o,    null}, 
+                             {null, o,    null}, 
+                             {null, o,    null}};
     }
 
     @Override
     public Color[][] getDown() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new Color[][]{{null, null, null}, 
+                             {o,    o,    o}, 
+                             {o,    null, null}};
     }
 
     @Override
     public Color[][] getRight() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new Color[][]{{null, o,    null}, 
+                             {null, o,    null}, 
+                             {null, o,    o}};
     }
-    
+
+    @Override
+    public int getRotationBoxWidth() {
+        return 3;
+    }
 }

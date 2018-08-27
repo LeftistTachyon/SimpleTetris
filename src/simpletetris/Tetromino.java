@@ -13,6 +13,12 @@ public abstract class Tetromino {
     private int rotation;
     
     /**
+     * Keeps track of the number of rotations this tetromino has performed.
+     * A max of 15. After that, rotation lock.
+     */
+    private int rotations = 15;
+    
+    /**
      * The "up" rotation state
      */
     public static final int UP = 0;
@@ -64,20 +70,54 @@ public abstract class Tetromino {
     public abstract Color[][] getRight();
     
     /**
+     * Determines the width of the rotation box
+     * @return the width of the rotation box
+     */
+    public abstract int getRotationBoxWidth();
+    
+    /**
+     * Returns the minos to draw
+     * @return the minos to draw
+     */
+    public Color[][] getDrawBox() {
+        switch(rotation) {
+            case UP:
+                return getUp();
+            case RIGHT:
+                return getRight();
+            case LEFT:
+                return getLeft();
+            case DOWN:
+                return getDown();
+        }
+        throw new IllegalStateException("rotation has an illegal value");
+    }
+    
+    /**
      * Rotates this tetromino clockwise.
      */
-    public void rotateClockwise() {
+    public void rotateRight() {
+        if(rotations == 0) 
+            return;
+        
         rotation--;
         if(rotation == -1) 
             rotation = 3;
+        
+        rotations--;
     }
     
     /**
      * Rotates this tetromino counterclockwise.
      */
-    public void rotateCounterclockwise() {
+    public void rotateLeft() {
+        if(rotations == 0)
+            return;
+        
         rotation++;
-        if(rotation == 4) 
+        if(rotation == 4)
             rotation = 0;
+        
+        rotations--;
     }
 }
