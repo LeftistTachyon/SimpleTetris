@@ -10,34 +10,34 @@ public class TetS extends Tetromino {
     /**
      * Shorthand
      */
-    private static final Color GREE = Color.green;
+    private static final Color G = Color.green;
     
     @Override
     public Color[][] getUp() {
-        return new Color[][]{{null, GREE, GREE}, 
-                             {GREE, GREE, null}, 
+        return new Color[][]{{null, G,    G}, 
+                             {G,    G,    null}, 
                              {null, null, null}};
     }
 
     @Override
     public Color[][] getLeft() {
-        return new Color[][]{{GREE, null, null}, 
-                             {GREE, GREE, null}, 
-                             {null, GREE, null}};
+        return new Color[][]{{G,    null, null}, 
+                             {G,    G,    null}, 
+                             {null, G,    null}};
     }
 
     @Override
     public Color[][] getDown() {
         return new Color[][]{{null, null, null}, 
-                             {null, GREE, GREE}, 
-                             {GREE, GREE, null}};
+                             {null, G,    G}, 
+                             {G,    G,    null}};
     }
 
     @Override
     public Color[][] getRight() {
-        return new Color[][]{{null, GREE, null}, 
-                             {null, GREE, GREE}, 
-                             {null, null, GREE}};
+        return new Color[][]{{null, G,    null}, 
+                             {null, G,    G}, 
+                             {null, null, G}};
     }
 
     @Override
