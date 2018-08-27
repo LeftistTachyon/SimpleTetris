@@ -9,22 +9,30 @@ import java.awt.Color;
 public class TetT extends Tetromino {
     @Override
     public Color[][] getUp() {
-        return new Color[][]{};
+        return new Color[][]{{null, null, null}, 
+                             {null, null, null}, 
+                             {null, null, null}};
     }
 
     @Override
     public Color[][] getLeft() {
-        return new Color[][]{};
+        return new Color[][]{{null, null, null}, 
+                             {null, null, null}, 
+                             {null, null, null}};
     }
 
     @Override
     public Color[][] getDown() {
-        return new Color[][]{};
+        return new Color[][]{{null, null, null}, 
+                             {null, null, null}, 
+                             {null, null, null}};
     }
 
     @Override
     public Color[][] getRight() {
-        return new Color[][]{};
+        return new Color[][]{{null, null, null}, 
+                             {null, null, null}, 
+                             {null, null, null}};
     }
 
     @Override
