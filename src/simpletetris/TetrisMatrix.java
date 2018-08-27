@@ -34,6 +34,7 @@ public class TetrisMatrix {
      */
     public TetrisMatrix() {
         matrix = new Color[WIDTH][HEIGHT];
+        falling = new TetO();
     }
     
     /**
