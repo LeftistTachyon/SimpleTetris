@@ -1,6 +1,7 @@
 package simpletetris;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import simpletetris.TetrisKeyAdapter.GameAction;
 
 /**
@@ -8,6 +9,11 @@ import simpletetris.TetrisKeyAdapter.GameAction;
  * @author Jed Wang
  */
 public class TetrisMatrix {
+    /**
+     * The falling tetromino
+     */
+    private Tetromino falling;
+    
     /**
      * The matrix.
      */
@@ -31,6 +37,14 @@ public class TetrisMatrix {
     }
     
     /**
+     * Draws this TetrisMatrix
+     * @param g2D the Graphics2D to draw with
+     */
+    public void draw(Graphics2D g2D) {
+        
+    }
+    
+    /**
      * Executes the given action.
      * @param ga the action to execute.
      */
@@ -42,7 +56,7 @@ public class TetrisMatrix {
      * Locks all pieces and does some checks before sending in a new piece.
      */
     public void lockPieces() {
-        
+        falling = new TetO();
     }
     
     /**
