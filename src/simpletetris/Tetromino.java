@@ -78,11 +78,14 @@ public abstract class Tetromino {
     /**
      * Determines whether this tetromino overlaps any of the colors 
      * of the matrix.
-     * @param area the area given: 
-     * always (rotationBoxWidth+2) by (rotationBoxWidth+2)
+     * @param area the area given: always rotationBoxWidth by rotationBoxWidth
      * @return whether this tetromino overlaps any of the colors of the matrix
      */
-    public abstract boolean overlaps(Color[][] area);
+    public boolean overlaps(Color[][] area) {
+        for(int i = 0; i < area.length; i++) {
+            
+        }
+    }
     
     /**
      * Returns the minos to draw
