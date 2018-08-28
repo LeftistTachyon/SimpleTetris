@@ -3,6 +3,7 @@ package simpletetris;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import simpletetris.TetrisKeyAdapter.GameAction;
+import static simpletetris.TetrisKeyAdapter.GameAction.*;
 
 /**
  * A class that represents the Tetris matrix
@@ -50,7 +51,16 @@ public class TetrisMatrix {
      * @param ga the action to execute.
      */
     public void executeAction(GameAction ga) {
-        
+        switch(ga) {
+            case ROTATE_LEFT:
+                break;
+            case ROTATE_RIGHT:
+                break;
+            case MOVE_LEFT:
+                break;
+            case MOVE_RIGHT:
+                break;
+        }
     }
     
     /**

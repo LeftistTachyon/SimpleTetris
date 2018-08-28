@@ -82,9 +82,14 @@ public abstract class Tetromino {
      * @return whether this tetromino overlaps any of the colors of the matrix
      */
     public boolean overlaps(Color[][] area) {
+        Color[][] drawBox = getDrawBox();
         for(int i = 0; i < area.length; i++) {
-            
+            for(int j = 0; j < area[i].length; j++) {
+                if(area[i][j] != null && drawBox[i][j] != null)
+                    return true;
+            }
         }
+        return false;
     }
     
     /**
