@@ -16,6 +16,16 @@ public class TetrisMatrix {
     private Tetromino falling;
     
     /**
+     * The "x" coordinate of the top left corner of the Tetromino's box
+     */
+    private int x;
+    
+    /**
+     * The "y" coordinate of the top left corner of the Tetromino's box
+     */
+    private int y;
+    
+    /**
      * The matrix.
      */
     private Color[][] matrix;
@@ -35,7 +45,7 @@ public class TetrisMatrix {
      */
     public TetrisMatrix() {
         matrix = new Color[WIDTH][HEIGHT];
-        falling = new TetO();
+        newPiece();
     }
     
     /**
@@ -66,10 +76,19 @@ public class TetrisMatrix {
     }
     
     /**
+     * Chooses the next piece and places it at the top of the playfield.
+     */
+    public void newPiece() {
+        falling = new TetO();
+    }
+    
+    /**
      * Locks all pieces and does some checks before sending in a new piece.
      */
     public void lockPieces() {
-        falling = new TetO();
+        
+        // after locking, reset
+        newPiece();
     }
     
     /**
