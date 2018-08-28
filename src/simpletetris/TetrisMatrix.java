@@ -53,8 +53,10 @@ public class TetrisMatrix {
     public void executeAction(GameAction ga) {
         switch(ga) {
             case ROTATE_LEFT:
+                falling.rotateLeft();
                 break;
             case ROTATE_RIGHT:
+                falling.rotateRight();
                 break;
             case MOVE_LEFT:
                 break;
