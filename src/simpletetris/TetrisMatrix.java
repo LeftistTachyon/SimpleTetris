@@ -152,10 +152,10 @@ public class TetrisMatrix {
                 y -= kickR.y;
                 break;
             case MOVE_LEFT:
-                if(x != 0) x--;
+                if(!falling.overlaps(miniMatrix(-1, 0))) x--;
                 break;
             case MOVE_RIGHT:
-                if(x != WIDTH - falling.getRotationBoxWidth()) x++;
+                if(!falling.overlaps(miniMatrix(1, 0))) x++;
                 break;
         }
     }

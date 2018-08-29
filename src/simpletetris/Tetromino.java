@@ -17,7 +17,7 @@ public abstract class Tetromino {
      * Keeps track of the number of rotations this tetromino has performed.
      * A max of 15. After that, rotation lock.
      */
-    private int rotations = 15;
+    protected int rotations = 15;
     
     /**
      * The "up" rotation state
@@ -122,6 +122,8 @@ public abstract class Tetromino {
         // Sanity check
         if(!sameTetromino(tm.getFallingPiece()))
             throw new IllegalStateException("Unable to determine wallkick");
+        
+        if(rotations == 0) return new Point(0, 0);
         
         // Check for wallkicks
         Tetromino copy = copy();

@@ -53,6 +53,8 @@ public class TetI extends Tetromino {
         if(!sameTetromino(tm.getFallingPiece()))
             throw new IllegalStateException("Unable to determine wallkick");
         
+        if(rotations == 0) return new Point(0, 0);
+        
         // Check for wallkicks
         Tetromino copy = copy();
         copy.rotation = rotateTo;
