@@ -27,7 +27,7 @@ public abstract class Tetromino {
     /**
      * The "left" rotation state
      */
-    public static final int LEFT = 1;
+    public static final int LEFT = 3;
     
     /**
      * The "down" rotation state
@@ -37,7 +37,7 @@ public abstract class Tetromino {
     /**
      * The "right" rotation state
      */
-    public static final int RIGHT = 3;
+    public static final int RIGHT = 1;
     
     /**
      * An int which represents clockwise rotation
@@ -125,7 +125,16 @@ public abstract class Tetromino {
         
         // Check for wallkicks
         Tetromino copy = copy();
-        copy.rotation = direction;
+        switch(direction) {
+            case CLOCKWISE:
+                copy.rotateRight();
+                break;
+            case COUNTERCLOCKWISE:
+                copy.rotateLeft();
+                break;
+            default:
+                throw new IllegalStateException("Illegal rotation");
+        }
         
         if(!copy.overlaps(tm.miniMatrix())) 
             return new Point(0, 0);
@@ -268,7 +277,8 @@ public abstract class Tetromino {
             case DOWN:
                 return getDown();
         }
-        throw new IllegalStateException("rotation has an illegal value");
+        throw new IllegalStateException("rotation has an illegal value: " 
+                + rotation);
     }
     
     /**
