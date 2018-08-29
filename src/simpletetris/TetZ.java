@@ -28,16 +28,16 @@ public class TetZ extends Tetromino {
 
     @Override
     public Color[][] getDown() {
-        return new Color[][]{{null, null, null}, 
-                             {r, r, null}, 
-                             {null, r, r}};
+        return new Color[][]{{null, r,    null}, 
+                             {null, r,    r}, 
+                             {null, null, r}};
     }
 
     @Override
     public Color[][] getRight() {
-        return new Color[][]{{null, r, null}, 
-                             {r, r, null}, 
-                             {r, null, null}};
+        return new Color[][]{{null, r,    r}, 
+                             {r,    r,    null}, 
+                             {null, null, null}};
     }
 
     @Override
