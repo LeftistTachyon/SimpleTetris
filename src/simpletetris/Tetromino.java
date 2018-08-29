@@ -1,6 +1,7 @@
 package simpletetris;
 
 import java.awt.Color;
+import java.awt.Point;
 
 /**
  * Creates a new Tetromino
@@ -10,7 +11,7 @@ public abstract class Tetromino {
     /**
      * The rotation of the piece
      */
-    private int rotation;
+    protected int rotation;
     
     /**
      * Keeps track of the number of rotations this tetromino has performed.
@@ -39,10 +40,28 @@ public abstract class Tetromino {
     public static final int RIGHT = 3;
     
     /**
-     * Creates a new Tetromino
+     * An int which represents clockwise rotation
+     */
+    public static final int CLOCKWISE = 10;
+    
+    /**
+     * An int which represents counterclockwise rotation
+     */
+    public static final int COUNTERCLOCKWISE = 11;
+    
+    /**
+     * Creates a new Tetromino.
      */
     public Tetromino(){
         rotation = 0;
+    }
+    
+    /**
+     * Creates a new Tetromino with a given rotation state
+     * @param rotation the rotation state to create a new Tetromino with
+     */
+    public Tetromino(int rotation) {
+        this.rotation = rotation;
     }
     
     /**
@@ -93,6 +112,148 @@ public abstract class Tetromino {
     }
     
     /**
+     * Determines the wall kick for rotating this tetromino
+     * @param tm the matrix this piece is in
+     * @param direction the direction of rotation
+     * @return the wall kick (the x coordinate is the x component of the kick 
+     * and the y coordinate is the y component of the kick)
+     */
+    public Point getWallKick(TetrisMatrix tm, int direction) {
+        // Sanity check
+        if(!sameTetromino(tm.getFallingPiece()))
+            throw new IllegalStateException("Unable to determine wallkick");
+        
+        // Check for wallkicks
+        Tetromino copy = copy();
+        copy.rotation = direction;
+        
+        if(!copy.overlaps(tm.miniMatrix())) 
+            return new Point(0, 0);
+        
+        // Manual checks: starting from test 2
+        switch(rotation) {
+            case UP:
+                switch(direction) {
+                    case CLOCKWISE:
+                        // (-1, 0) (-1,+1) ( 0,-2) (-1,-2)
+                        if(!copy.overlaps(tm.miniMatrix(-1, 0)))
+                            return new Point(-1, 0);
+                        if(!copy.overlaps(tm.miniMatrix(-1, 1)))
+                            return new Point(-1, 1);
+                        if(!copy.overlaps(tm.miniMatrix(0, -2)))
+                            return new Point(0, -2);
+                        if(!copy.overlaps(tm.miniMatrix(-1, -2)))
+                            return new Point(-1, -2);
+                        break;
+                    case COUNTERCLOCKWISE:
+                        // (+1, 0) (+1,+1) ( 0,-2) (+1,-2)
+                        if(!copy.overlaps(tm.miniMatrix(1, 0)))
+                            return new Point(1, 0);
+                        if(!copy.overlaps(tm.miniMatrix(1, 1)))
+                            return new Point(1, 1);
+                        if(!copy.overlaps(tm.miniMatrix(0, -2)))
+                            return new Point(0, -2);
+                        if(!copy.overlaps(tm.miniMatrix(1, -2)))
+                            return new Point(1, -2);
+                        break;
+                    default:
+                        throw new IllegalStateException("Illegal rotation");
+                }
+                break;
+            case RIGHT:
+                switch(direction) {
+                    case COUNTERCLOCKWISE:
+                        // (+1, 0) (+1,-1) ( 0,+2) (+1,+2)
+                        if(!copy.overlaps(tm.miniMatrix(1, 0)))
+                            return new Point(1, 0);
+                        if(!copy.overlaps(tm.miniMatrix(1, -1)))
+                            return new Point(1, -1);
+                        if(!copy.overlaps(tm.miniMatrix(0, 2)))
+                            return new Point(0, 2);
+                        if(!copy.overlaps(tm.miniMatrix(1, 2)))
+                            return new Point(1, 2);
+                        break;
+                    case CLOCKWISE:
+                        // (+1, 0) (+1,-1) ( 0,+2) (+1,+2)
+                        if(!copy.overlaps(tm.miniMatrix(1, 0)))
+                            return new Point(1, 0);
+                        if(!copy.overlaps(tm.miniMatrix(1, -1)))
+                            return new Point(1, -1);
+                        if(!copy.overlaps(tm.miniMatrix(0, 2)))
+                            return new Point(0, 2);
+                        if(!copy.overlaps(tm.miniMatrix(1, 2)))
+                            return new Point(1, 2);
+                        break;
+                    default:
+                        throw new IllegalStateException("Illegal rotation");
+                }
+                break;
+            case DOWN:
+                switch(direction) {
+                    case COUNTERCLOCKWISE:
+                        // (-1, 0) (-1,+1) ( 0,-2) (-1,-2)
+                        if(!copy.overlaps(tm.miniMatrix(-1, 0)))
+                            return new Point(-1, 0);
+                        if(!copy.overlaps(tm.miniMatrix(-1, 1)))
+                            return new Point(-1, 1);
+                        if(!copy.overlaps(tm.miniMatrix(0, -2)))
+                            return new Point(0, -2);
+                        if(!copy.overlaps(tm.miniMatrix(-1, -2)))
+                            return new Point(-1, -2);
+                        break;
+                    case CLOCKWISE:
+                        // (+1, 0) (+1,+1) ( 0,-2) (+1,-2)
+                        if(!copy.overlaps(tm.miniMatrix(1, 0)))
+                            return new Point(1, 0);
+                        if(!copy.overlaps(tm.miniMatrix(1, 1)))
+                            return new Point(1, 1);
+                        if(!copy.overlaps(tm.miniMatrix(0, -2)))
+                            return new Point(0, -2);
+                        if(!copy.overlaps(tm.miniMatrix(1, -2)))
+                            return new Point(1, -2);
+                        break;
+                    default:
+                        throw new IllegalStateException("Illegal rotation");
+                }
+                break;
+            case LEFT:
+                switch(direction) {
+                    case CLOCKWISE:
+                        // (-1, 0) (-1,-1) ( 0,+2) (-1,+2)
+                        if(!copy.overlaps(tm.miniMatrix(-1, 0)))
+                            return new Point(-1, 0);
+                        if(!copy.overlaps(tm.miniMatrix(-1, -1)))
+                            return new Point(-1, -1);
+                        if(!copy.overlaps(tm.miniMatrix(0, 2)))
+                            return new Point(0, 2);
+                        if(!copy.overlaps(tm.miniMatrix(-1, 2)))
+                            return new Point(-1, 2);
+                        break;
+                    case COUNTERCLOCKWISE:
+                        // (-1, 0) (-1,-1) ( 0,+2) (-1,+2)
+                        if(!copy.overlaps(tm.miniMatrix(-1, 0)))
+                            return new Point(-1, 0);
+                        if(!copy.overlaps(tm.miniMatrix(-1, -1)))
+                            return new Point(-1, -1);
+                        if(!copy.overlaps(tm.miniMatrix(0, 2)))
+                            return new Point(0, 2);
+                        if(!copy.overlaps(tm.miniMatrix(-1, 2)))
+                            return new Point(-1, 2);
+                        break;
+                    default:
+                        throw new IllegalStateException("Illegal rotation");
+                }
+                break;
+            default:
+                throw new IllegalStateException("rotation should not be the "
+                        + "value" + rotation);
+        }
+        
+        throw new IllegalStateException("No transformations worked. "
+                + "What do I do now?");
+    }
+    
+    /**
      * Returns the minos to draw
      * @return the minos to draw
      */
@@ -137,4 +298,17 @@ public abstract class Tetromino {
         
         rotations--;
     }
+    
+    /**
+     * Returns a copy of this tetromino.
+     * @return a copy of this tetromino
+     */
+    public abstract Tetromino copy();
+    
+    /**
+     * Determines whether the given tetromino is the same as this one.
+     * @param t the tetromino to compare to
+     * @return whether the given tetromino is the same
+     */
+    public abstract boolean sameTetromino(Tetromino t);
 }

@@ -39,7 +39,7 @@ public class TetrisKeyAdapter extends KeyAdapter {
                 break;
             case VK_DOWN:
             case VK_NUMPAD2:
-                matrix.executeAction(GameAction.MOVE_LEFT);
+                matrix.executeAction(GameAction.SOFT_DROP);
                 break;
             case VK_UP:
             case VK_X:

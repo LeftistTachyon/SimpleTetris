@@ -44,4 +44,16 @@ public class TetS extends Tetromino {
     public int getRotationBoxWidth() {
         return 3;
     }
+
+    @Override
+    public Tetromino copy() {
+        TetS s = new TetS();
+        s.rotation = rotation;
+        return s;
+    }
+
+    @Override
+    public boolean sameTetromino(Tetromino t) {
+        return t instanceof TetS;
+    }
 }

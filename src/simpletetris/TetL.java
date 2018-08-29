@@ -44,4 +44,16 @@ public class TetL extends Tetromino {
     public int getRotationBoxWidth() {
         return 3;
     }
+
+    @Override
+    public Tetromino copy() {
+        TetL l = new TetL();
+        l.rotation = rotation;
+        return l;
+    }
+
+    @Override
+    public boolean sameTetromino(Tetromino t) {
+        return t instanceof TetL;
+    }
 }

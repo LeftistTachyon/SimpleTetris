@@ -4,7 +4,7 @@ import java.awt.Color;
 
 /**
  * A class that represents the J tetromino
- * @author Danny Tang
+ * @author Danny Tang, Jed Wang
  */
 public class TetJ extends Tetromino{
     /**
@@ -43,5 +43,17 @@ public class TetJ extends Tetromino{
     @Override
     public int getRotationBoxWidth() {
         return 3;
+    }
+
+    @Override
+    public Tetromino copy() {
+        TetJ j = new TetJ();
+        j.rotation = rotation;
+        return j;
+    }
+
+    @Override
+    public boolean sameTetromino(Tetromino t) {
+        return t instanceof TetJ;
     }
 }

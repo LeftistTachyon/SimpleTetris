@@ -4,7 +4,7 @@ import java.awt.Color;
 
 /**
  * A class that represents the Z tetromino
- * @author Jed Wang,danny tang
+ * @author Jed Wang, Danny Tang
  */
 public class TetZ extends Tetromino {
     Color r = Color.RED;
@@ -39,5 +39,17 @@ public class TetZ extends Tetromino {
     @Override
     public int getRotationBoxWidth() {
         return 3;
+    }
+
+    @Override
+    public Tetromino copy() {
+        TetZ z = new TetZ();
+        z.rotation = rotation;
+        return z;
+    }
+
+    @Override
+    public boolean sameTetromino(Tetromino t) {
+        return t instanceof TetZ;
     }
 }

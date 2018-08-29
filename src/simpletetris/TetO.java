@@ -2,6 +2,7 @@ package simpletetris;
 
 import java.awt.Color;
 import static java.awt.Color.*;
+import java.awt.Point;
 
 /**
  * A class that represents the O tetromino
@@ -37,5 +38,24 @@ public class TetO extends Tetromino {
     @Override
     public int getRotationBoxWidth() {
         return 2;
+    }
+
+    @Override
+    public Point getWallKick(TetrisMatrix tm, int rotateTo) {
+        // Sanity check
+        if(!sameTetromino(tm.getFallingPiece()))
+            throw new IllegalStateException("Unable to determine wallkick");
+        
+        return new Point(0, 0); // O tetrominos don't kick
+    }
+
+    @Override
+    public Tetromino copy() {
+        return new TetO();
+    }
+
+    @Override
+    public boolean sameTetromino(Tetromino t) {
+        return t instanceof TetO;
     }
 }
