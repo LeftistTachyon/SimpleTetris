@@ -7,19 +7,23 @@ import java.awt.Color;
  * @author Jed Wang, Danny Tang
  */
 public class TetZ extends Tetromino {
-    Color r = Color.RED;
+    /**
+     * Shorthand
+     */
+    private static final Color r = Color.RED;
+    
     @Override
     public Color[][] getUp() {
-        return new Color[][]{{r, r, null}, 
-                             {null, r, r}, 
-                             {null, null, null}};
+        return new Color[][]{{r,    null, null}, 
+                             {r,    r,    null}, 
+                             {null, r,    null}};
     }
 
     @Override
     public Color[][] getLeft() {
-        return new Color[][]{{null, r, null}, 
-                             {r, r, null}, 
-                             {r, null, null}};
+        return new Color[][]{{null, r,    r}, 
+                             {r,    r,    null}, 
+                             {null, null, null}};
     }
 
     @Override

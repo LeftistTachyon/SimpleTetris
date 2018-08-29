@@ -14,30 +14,30 @@ public class TetS extends Tetromino {
     
     @Override
     public Color[][] getUp() {
-        return new Color[][]{{null, G,    G}, 
+        return new Color[][]{{null, G,    null}, 
                              {G,    G,    null}, 
-                             {null, null, null}};
+                             {G,    null, null}};
     }
 
     @Override
     public Color[][] getLeft() {
-        return new Color[][]{{G,    null, null}, 
-                             {G,    G,    null}, 
-                             {null, G,    null}};
+        return new Color[][]{{G,    G,    null}, 
+                             {null, G,    G}, 
+                             {null, null, null}};
     }
 
     @Override
     public Color[][] getDown() {
-        return new Color[][]{{null, null, null}, 
+        return new Color[][]{{null, null, G}, 
                              {null, G,    G}, 
-                             {G,    G,    null}};
+                             {null, G,    null}};
     }
 
     @Override
     public Color[][] getRight() {
-        return new Color[][]{{null, G,    null}, 
-                             {null, G,    G}, 
-                             {null, null, G}};
+        return new Color[][]{{null, null, null}, 
+                             {G,    G,    null}, 
+                             {null, G,    G}};
     }
 
     @Override
