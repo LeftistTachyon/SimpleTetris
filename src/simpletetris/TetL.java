@@ -14,30 +14,30 @@ public class TetL extends Tetromino {
 
     @Override
     public Color[][] getUp() {
-        return new Color[][]{{null, null, O}, 
+        return new Color[][]{{null, O,    null}, 
+                             {null, O,    null}, 
+                             {O,    O,    null}};
+    }
+
+    @Override
+    public Color[][] getLeft() {
+        return new Color[][]{{O,    null, null}, 
                              {O,    O,    O}, 
                              {null, null, null}};
     }
 
     @Override
-    public Color[][] getLeft() {
-        return new Color[][]{{O,    O,    null}, 
+    public Color[][] getDown() {
+        return new Color[][]{{null, O,    O}, 
                              {null, O,    null}, 
                              {null, O,    null}};
     }
 
     @Override
-    public Color[][] getDown() {
+    public Color[][] getRight() {
         return new Color[][]{{null, null, null}, 
                              {O,    O,    O}, 
-                             {O,    null, null}};
-    }
-
-    @Override
-    public Color[][] getRight() {
-        return new Color[][]{{null, O,    null}, 
-                             {null, O,    null}, 
-                             {null, O,    O}};
+                             {null, null, O}};
     }
 
     @Override

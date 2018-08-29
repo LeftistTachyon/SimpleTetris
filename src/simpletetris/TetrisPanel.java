@@ -26,6 +26,7 @@ public class TetrisPanel extends JPanel implements Runnable {
      */
     public TetrisPanel() {
         matrix = new TetrisMatrix();
+        matrix.printMatrix();
     }
     
     @Override

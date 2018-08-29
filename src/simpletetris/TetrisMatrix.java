@@ -205,4 +205,20 @@ public class TetrisMatrix {
     public Tetromino getFallingPiece() {
         return falling;
     }
+    
+    /**
+     * Prints the matrix.
+     */
+    public void printMatrix() {
+        for(Color[] colors : matrix) {
+            for(Color color : colors) {
+                if(color == null) {
+                    System.out.print(" ");
+                } else {
+                    System.out.print("X");
+                }
+            }
+            System.out.println();
+        }
+    }
 }

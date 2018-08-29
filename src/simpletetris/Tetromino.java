@@ -27,7 +27,7 @@ public abstract class Tetromino {
     /**
      * The "left" rotation state
      */
-    public static final int LEFT = 3;
+    public static final int LEFT = 1;
     
     /**
      * The "down" rotation state
@@ -37,7 +37,7 @@ public abstract class Tetromino {
     /**
      * The "right" rotation state
      */
-    public static final int RIGHT = 1;
+    public static final int RIGHT = 3;
     
     /**
      * An int which represents clockwise rotation
