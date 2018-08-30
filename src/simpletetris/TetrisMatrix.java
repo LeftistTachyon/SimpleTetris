@@ -44,7 +44,7 @@ public class TetrisMatrix {
     /**
      * The visible height of the matrix; playing field
      */
-    public static final double VISIBLE_HEIGHT = 20.5;
+    public static final double VISIBLE_HEIGHT = 21;
     
     /**
      * Creates a new TetrisMatrix.
@@ -59,7 +59,7 @@ public class TetrisMatrix {
      * @param g2D the Graphics2D to draw with
      */
     public void draw(Graphics2D g2D) {
-        // g2D.translate(15, 15-Mino.MINO_WIDTH*VISIBLE_HEIGHT);
+        g2D.translate(15, 15-Mino.MINO_WIDTH*VISIBLE_HEIGHT);
         
         for(int i = 0; i < matrix.length; i++) {
             for(int j = 0; j < matrix[i].length; j++) {
@@ -164,6 +164,9 @@ public class TetrisMatrix {
      */
     public void newPiece() {
         falling = new TetZ();
+        
+        y = 21;
+        x = (WIDTH - falling.getRotationBoxWidth())/2;
     }
     
     /**
