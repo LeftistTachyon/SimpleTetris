@@ -163,7 +163,7 @@ public class TetrisMatrix {
      * Chooses the next piece and places it at the top of the playfield.
      */
     public void newPiece() {
-        falling = new TetI();
+        falling = new TetZ();
     }
     
     /**
