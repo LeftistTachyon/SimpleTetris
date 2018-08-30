@@ -156,6 +156,9 @@ public class TetrisMatrix {
             case MOVE_RIGHT:
                 if(!falling.overlaps(miniMatrix(1, 0))) x++;
                 break;
+            case SOFT_DROP:
+                if(!falling.overlaps(miniMatrix(0, 1))) y++;
+                break;
         }
     }
     
