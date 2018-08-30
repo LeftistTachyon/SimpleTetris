@@ -51,7 +51,6 @@ public class TetrisMatrix {
      */
     public TetrisMatrix() {
         matrix = new Color[WIDTH][HEIGHT];
-        matrix[0][HEIGHT-1] = Color.YELLOW;
         newPiece();
     }
     
@@ -164,7 +163,7 @@ public class TetrisMatrix {
      * Chooses the next piece and places it at the top of the playfield.
      */
     public void newPiece() {
-        falling = new TetZ();
+        falling = new TetI();
     }
     
     /**

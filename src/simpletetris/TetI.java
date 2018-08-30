@@ -48,7 +48,7 @@ public class TetI extends Tetromino {
     }
 
     @Override
-    public Point getWallKick(TetrisMatrix tm, int rotateTo) {
+    public Point getWallKick(TetrisMatrix tm, int direction) {
         // Sanity check
         if(!sameTetromino(tm.getFallingPiece()))
             throw new IllegalStateException("Unable to determine wallkick");
@@ -57,7 +57,16 @@ public class TetI extends Tetromino {
         
         // Check for wallkicks
         Tetromino copy = copy();
-        copy.rotation = rotateTo;
+        switch(direction) {
+            case CLOCKWISE:
+                copy.rotateRight();
+                break;
+            case COUNTERCLOCKWISE:
+                copy.rotateLeft();
+                break;
+            default:
+                throw new IllegalStateException("Illegal rotation");
+        }
         
         if(!copy.overlaps(tm.miniMatrix())) 
             return new Point(0, 0);
@@ -66,7 +75,7 @@ public class TetI extends Tetromino {
         // I tetromino has its own set of kicks
         switch(rotation) {
             case UP:
-                switch(rotateTo) {
+                switch(direction) {
                     case CLOCKWISE:
                         // (-2, 0) (+1, 0) (-2,-1) (+1,+2)
                         if(!copy.overlaps(tm.miniMatrix(-2, 0)))
@@ -94,7 +103,7 @@ public class TetI extends Tetromino {
                 }
                 break;
             case RIGHT:
-                switch(rotateTo) {
+                switch(direction) {
                     case COUNTERCLOCKWISE:
                         // (+2, 0) (-1, 0) (+2,+1) (-1,-2)
                         if(!copy.overlaps(tm.miniMatrix(2, 0)))
@@ -122,7 +131,7 @@ public class TetI extends Tetromino {
                 }
                 break;
             case DOWN:
-                switch(rotateTo) {
+                switch(direction) {
                     case COUNTERCLOCKWISE:
                         // (+1, 0) (-2, 0) (+1,-2) (-2,+1)
                         if(!copy.overlaps(tm.miniMatrix(1, 0)))
@@ -150,7 +159,7 @@ public class TetI extends Tetromino {
                 }
                 break;
             case LEFT:
-                switch(rotateTo) {
+                switch(direction) {
                     case CLOCKWISE:
                         // (+1, 0) (-2, 0) (+1,-2) (-2,+1)
                         if(!copy.overlaps(tm.miniMatrix(1, 0)))

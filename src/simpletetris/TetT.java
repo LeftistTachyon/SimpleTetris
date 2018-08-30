@@ -7,33 +7,36 @@ import java.awt.Color;
  * @author Jed Wang, Danny Tang
  */
 public class TetT extends Tetromino {
-    Color p = Color.MAGENTA;
+    /**
+     * Shorthand
+     */
+    private static final Color P = Color.MAGENTA;
     @Override
     public Color[][] getUp() {
-        return new Color[][]{{null, null, null}, 
-                             {p, p, p}, 
-                             {null, p, null}};
+        return new Color[][]{{null, P,    null}, 
+                             {P,    P,    null}, 
+                             {null, P,    null}};
     }
 
     @Override
     public Color[][] getLeft() {
-        return new Color[][]{{null, p, null}, 
-                             {null, p, p}, 
-                             {null, p, null}};
-    }
-
-    @Override
-    public Color[][] getDown() {
-        return new Color[][]{{null, p, null}, 
-                             {p, p, p}, 
+        return new Color[][]{{null, P,    null}, 
+                             {P,    P,    P}, 
                              {null, null, null}};
     }
 
     @Override
+    public Color[][] getDown() {
+        return new Color[][]{{null, P,    null}, 
+                             {null, P,    P}, 
+                             {null, P,    null}};
+    }
+
+    @Override
     public Color[][] getRight() {
-        return new Color[][]{{null, p, null}, 
-                             {p, p, null}, 
-                             {null, p, null}};
+        return new Color[][]{{null, null, null}, 
+                             {P,    P,    P}, 
+                             {null, P,    null}};
     }
 
     @Override
