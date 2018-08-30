@@ -160,11 +160,12 @@ public class TetrisMatrix {
                 if(!falling.overlaps(miniMatrix(0, -1))) y++;
                 break;
             case HARD_DROP:
-                int placeHolderY = 1;
-                while(!falling.overlaps(miniMatrix(0, -1 * placeHolderY))){
+                int placeHolderY = 0;
+                while(!falling.overlaps(miniMatrix(0, -placeHolderY))){
                     placeHolderY++;
                 }
-                y += placeHolderY;
+                y += placeHolderY - 1;
+                printDebugMatrix(0, 0);
                 break;
         }
     }

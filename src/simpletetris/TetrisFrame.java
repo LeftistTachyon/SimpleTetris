@@ -22,7 +22,7 @@ public class TetrisFrame extends JFrame {
         
         super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         super.setSize(new Dimension(TetrisMatrix.WIDTH*Mino.MINO_WIDTH + 45, 
-                (int) (TetrisMatrix.VISIBLE_HEIGHT*Mino.MINO_WIDTH) + 60));
+                (int) (TetrisMatrix.VISIBLE_HEIGHT*Mino.MINO_WIDTH) + 30));
         super.setResizable(true);
         super.getContentPane().add(panel);
         
