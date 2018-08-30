@@ -157,7 +157,7 @@ public class TetrisMatrix {
                 if(!falling.overlaps(miniMatrix(1, 0))) x++;
                 break;
             case SOFT_DROP:
-                if(!falling.overlaps(miniMatrix(0, 1))) y++;
+                if(!falling.overlaps(miniMatrix(0, -1))) y++;
                 break;
         }
     }
@@ -168,7 +168,8 @@ public class TetrisMatrix {
     public void newPiece() {
         falling = new TetZ();
         
-        y = 21;
+        // y = 21;
+        y = 40 - falling.getRotationBoxWidth();
         x = (WIDTH - falling.getRotationBoxWidth())/2;
     }
     
@@ -219,6 +220,27 @@ public class TetrisMatrix {
             for(Color color : colors) {
                 if(color == null) {
                     System.out.print(" ");
+                } else {
+                    System.out.print("X");
+                }
+            }
+            System.out.println();
+        }
+    }
+    
+    /**
+     * Prints the mini-matrix offsetted from the falling tetromino
+     * @param offsetX the offset for the x coordinate
+     * @param offsetY the offset for the y coordinate
+     */
+    public void printDebugMatrix(int offsetX, int offsetY) {
+        Color[][] mini = miniMatrix(offsetX, offsetY), tet = falling.getDrawBox();
+        for(int i = 0;i<mini.length;i++) {
+            for(int j = 0;j<mini[i].length;j++) {
+                if(mini[i][j] == null && tet[i][j] == null) {
+                    System.out.print(" ");
+                } else if(mini[i][j] == null ^ tet[i][j] == null) {
+                    System.out.print("@");
                 } else {
                     System.out.print("X");
                 }
