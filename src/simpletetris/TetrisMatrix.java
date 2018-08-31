@@ -17,6 +17,11 @@ public class TetrisMatrix {
     private Tetromino falling;
     
     /**
+     * The RNG for which piece is coming next
+     */
+    private TetrisBag bag;
+    
+    /**
      * The "x" coordinate of the top left corner of the Tetromino's box
      */
     private int x;
@@ -51,6 +56,7 @@ public class TetrisMatrix {
      */
     public TetrisMatrix() {
         matrix = new Color[WIDTH][HEIGHT];
+        bag = new TetrisBag();
         newPiece();
     }
     
@@ -174,6 +180,7 @@ public class TetrisMatrix {
      * Chooses the next piece and places it at the top of the playfield.
      */
     public void newPiece() {
+        falling = bag.remove();
         
         y = 21;
         // y = 40 - falling.getRotationBoxWidth();
