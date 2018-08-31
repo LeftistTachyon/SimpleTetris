@@ -15,11 +15,6 @@ public class TetrisPanel extends JPanel implements Runnable {
      * The matrix being shown.
      */
     public final TetrisMatrix matrix;
-    
-    /**
-     * The KeyAdapter which is listening in to key presses
-     */
-    private TetrisKeyAdapter tka;
 
     /**
      * Creates a new TetrisPanel.

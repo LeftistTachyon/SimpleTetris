@@ -205,6 +205,10 @@ public class TetrisMatrix {
                 }
             }
         }
+        
+        // remove lines
+        
+        
         // after locking, reset
         newPiece();
     }
@@ -229,6 +233,15 @@ public class TetrisMatrix {
                 matrix[i][j] = matrix[i-1][j];
             }
         }
+    }
+    
+    /**
+     * Determines whether a line is completely filled
+     * @param row which row to check
+     * @return 
+     */
+    public boolean lineFilled(int row) {
+        
     }
 
     /**
