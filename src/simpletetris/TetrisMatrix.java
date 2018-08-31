@@ -176,8 +176,8 @@ public class TetrisMatrix {
     public void newPiece() {
         falling = new TetZ();
         
-        // y = 21;
-        y = 40 - falling.getRotationBoxWidth();
+        y = 21;
+        // y = 40 - falling.getRotationBoxWidth();
         x = (WIDTH - falling.getRotationBoxWidth())/2;
     }
     
@@ -189,7 +189,7 @@ public class TetrisMatrix {
         Color[][] copy = falling.getDrawBox();
         for(int r= 0; r < copy.length; r++) {
             for(int c = 0; c < copy[r].length; c++) {
-                if(copy[r][c] != null) {
+                if(copy[r][c] != null && matrix[r + x][c + y] == null) {
                     matrix[r + x][c + y] = copy[r][c];
                 }
             }
