@@ -2,17 +2,16 @@ package simpletetris;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Queue;
 
 /**
  * This class randomly generates piece order
- * @author Jed Wang
+ * @author Grace Liu, Jed Wang
  */
 public class TetrisBag {
     /**
      * The queue of Tetrominos
      */
-    private Queue<Tetromino> queue;
+    private LinkedList<Tetromino> queue;
 
     /**
      * Creates a new TetrisBag.
@@ -34,6 +33,7 @@ public class TetrisBag {
         r.add(new TetS());
         r.add(new TetT());
         r.add(new TetZ());
+        
         while(!r.isEmpty()) {
             int i = (int) (Math.random() * r.size());
             queue.add(r.remove(i));
@@ -45,9 +45,19 @@ public class TetrisBag {
      * Also refreshes the queue
      * @return the next tetromino
      */
-    public Tetromino next() {
+    public Tetromino remove() {
         Tetromino output = queue.remove();
         if(queue.size() < 7)
             regenerateBag();
+        return output;
+    }
+    
+    /**
+     * Determines what Tetromino is at that position is in the queue
+     * @param which which piece to look for
+     * @return what Tetromino is at that position
+     */
+    public Tetromino next(int which) {
+        return queue.get(which);
     }
 }
