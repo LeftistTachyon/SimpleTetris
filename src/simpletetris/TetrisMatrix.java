@@ -187,7 +187,13 @@ public class TetrisMatrix {
     public void lockPiece() {
         // lock
         Color[][] copy = falling.getDrawBox();
-        
+        for(int r= 0; r < copy.length; r++) {
+            for(int c = 0; c < copy[r].length; c++) {
+                if(copy[r][c] != null) {
+                    matrix[r + x][c + y] = copy[r][c];
+                }
+            }
+        }
         // after locking, reset
         newPiece();
     }
