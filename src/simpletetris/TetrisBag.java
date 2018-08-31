@@ -28,6 +28,14 @@ public class TetrisBag {
         ArrayList<Tetromino> r = new ArrayList<>();
         r.add(new TetI());
         r.add(new TetJ());
-        r.add();
+        r.add(new TetL());
+        r.add(new TetO());
+        r.add(new TetS());
+        r.add(new TetT());
+        r.add(new TetZ());
+        while(!r.isEmpty()) {
+            int i = (int) (Math.random() * r.size());
+            queue.add(r.remove(i));
+        }
     }
 }
