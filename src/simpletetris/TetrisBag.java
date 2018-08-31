@@ -19,6 +19,7 @@ public class TetrisBag {
      */
     public TetrisBag() {
         queue = new LinkedList<>();
+        regenerateBag();
     }
     
     /**
@@ -38,6 +39,7 @@ public class TetrisBag {
      */
     public Tetromino next() {
         Tetromino output = queue.remove();
-        
+        if(queue.size() < 7)
+            regenerateBag();
     }
 }
