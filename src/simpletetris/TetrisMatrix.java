@@ -174,11 +174,15 @@ public class TetrisMatrix {
      * Chooses the next piece and places it at the top of the playfield.
      */
     public void newPiece() {
-        falling = new TetZ();
         
         y = 21;
         // y = 40 - falling.getRotationBoxWidth();
         x = (WIDTH - falling.getRotationBoxWidth())/2;
+        
+        if(falling.overlaps(miniMatrix())){
+            // Game over!
+            System.exit(1);
+        }
     }
     
     /**
