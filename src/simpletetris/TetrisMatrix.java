@@ -165,7 +165,7 @@ public class TetrisMatrix {
                     placeHolderY++;
                 }
                 y += placeHolderY - 1;
-                printDebugMatrix(0, 0);
+                lockPiece();
                 break;
         }
     }
@@ -184,7 +184,7 @@ public class TetrisMatrix {
     /**
      * Locks all pieces and does some checks before sending in a new piece.
      */
-    public void lockPieces() {
+    public void lockPiece() {
         // lock
         Color[][] copy = falling.getDrawBox();
         
