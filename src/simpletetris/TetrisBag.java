@@ -30,4 +30,14 @@ public class TetrisBag {
         r.add(new TetJ());
         r.add();
     }
+    
+    /**
+     * Returns the next tetromino in the queue.
+     * Also refreshes the queue
+     * @return the next tetromino
+     */
+    public Tetromino next() {
+        Tetromino output = queue.remove();
+        
+    }
 }
