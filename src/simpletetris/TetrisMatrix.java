@@ -185,6 +185,8 @@ public class TetrisMatrix {
      * Locks all pieces and does some checks before sending in a new piece.
      */
     public void lockPieces() {
+        // lock
+        Color[][] copy = falling.getDrawBox();
         
         // after locking, reset
         newPiece();
