@@ -191,8 +191,7 @@ public class TetI extends Tetromino {
                         + "value" + rotation);
         }
         
-        throw new IllegalStateException("No transformations worked. "
-                + "What do I do now?");
+        return null; // no rotation
     }
 
     @Override

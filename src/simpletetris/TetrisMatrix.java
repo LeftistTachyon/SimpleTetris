@@ -145,6 +145,7 @@ public class TetrisMatrix {
             case ROTATE_LEFT:
                 Point kickL = falling.getWallKick(this, 
                         Tetromino.COUNTERCLOCKWISE);
+                if(kickL == null) return;
                 falling.rotateLeft();
                 x += kickL.x;
                 y -= kickL.y;
@@ -152,6 +153,7 @@ public class TetrisMatrix {
             case ROTATE_RIGHT:
                 Point kickR = falling.getWallKick(this, 
                         Tetromino.CLOCKWISE);
+                if(kickR == null) return;
                 falling.rotateRight();
                 x += kickR.x;
                 y -= kickR.y;
@@ -188,7 +190,7 @@ public class TetrisMatrix {
         
         if(falling.overlaps(miniMatrix())){
             // Game over!
-            System.exit(1);
+            System.exit(0);
         }
     }
     
@@ -207,7 +209,14 @@ public class TetrisMatrix {
         }
         
         // remove lines
-        
+        for(int i = 0; i < HEIGHT; i++) {
+            if(lineFilled(i)) {
+                for(int j = i; j >= 1; j--) {
+                    clearLine(j);
+                }
+                emptyLine(0);
+            }
+        }
         
         // after locking, reset
         newPiece();
@@ -218,8 +227,8 @@ public class TetrisMatrix {
      * @param row which row to empty
      */
     public void emptyLine(int row) {
-        for(int i = 0; i < matrix[row].length; i++) {
-            matrix[row][i] = null;
+        for(int i = 0; i < WIDTH; i++) {
+            matrix[i][row] = null;
         }
     }
     
@@ -228,20 +237,33 @@ public class TetrisMatrix {
      * @param row which row to clear
      */
     public void clearLine(int row) {
-        for(int i = row; i>0; i++) {
-            for(int j = 0; j < WIDTH; j++) {
-                matrix[i][j] = matrix[i-1][j];
-            }
+        for(int i = 0; i < WIDTH; i++) {
+            matrix[i][row] = matrix[i][row - 1];
         }
     }
     
     /**
      * Determines whether a line is completely filled
      * @param row which row to check
-     * @return 
+     * @return whether a line is completely filled
      */
     public boolean lineFilled(int row) {
-        
+        for(int i = 0; i < WIDTH; i++) {
+            if(matrix[i][row] == null) 
+                return false;
+        }
+        return true;
+    }
+    
+    /**
+     * Outputs a line of the matrix
+     * @param row which row to print
+     */
+    public void printLine(int row) {
+        for(int i = 0; i < WIDTH; i++) {
+            System.out.print((matrix[i][row] == null)?" ":"X");
+        }
+        System.out.println();
     }
 
     /**

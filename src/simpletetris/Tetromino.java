@@ -260,10 +260,12 @@ public abstract class Tetromino {
                         + "value" + rotation);
         }
         
-        throw new IllegalStateException("No transformations worked. "
+        /*throw new IllegalStateException("No transformations worked. "
                 + "Rotation: " + rotation 
                 + " in direction " + direction + " with " + rotations 
-                + " remaining rotations");
+                + " remaining rotations");*/
+        
+        return null; // no rotation
     }
     
     /**
