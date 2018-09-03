@@ -58,4 +58,9 @@ public class TetO extends Tetromino {
     public boolean sameTetromino(Tetromino t) {
         return t instanceof TetO;
     }
+
+    @Override
+    public Color getColor() {
+        return new Color(243, 205, 35);
+    }
 }

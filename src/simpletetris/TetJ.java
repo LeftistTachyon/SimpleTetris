@@ -10,34 +10,34 @@ public class TetJ extends Tetromino{
     /**
      * Shorthand
      */
-    private static final Color b = Color.BLUE;
+    private static final Color B = Color.BLUE;
    
     @Override
     public Color[][] getUp() {
-        return new Color[][]{{b,    b,    null}, 
-                             {null, b,    null}, 
-                             {null, b,    null}};
+        return new Color[][]{{B,    B,    null}, 
+                             {null, B,    null}, 
+                             {null, B,    null}};
     }
 
     @Override
     public Color[][] getLeft() {
-        return new Color[][]{{null, null, b}, 
-                             {b,    b,    b}, 
+        return new Color[][]{{null, null, B}, 
+                             {B,    B,    B}, 
                              {null, null, null}};
     }
 
     @Override
     public Color[][] getDown() {
-        return new Color[][]{{null, b,    null}, 
-                             {null, b,    null}, 
-                             {null, b,    b}};
+        return new Color[][]{{null, B,    null}, 
+                             {null, B,    null}, 
+                             {null, B,    B}};
     }
 
     @Override
     public Color[][] getRight() {
         return new Color[][]{{null, null, null}, 
-                             {b,    b,    b}, 
-                             {b,    null, null}};
+                             {B,    B,    B}, 
+                             {B,    null, null}};
     }
 
     @Override
@@ -55,5 +55,10 @@ public class TetJ extends Tetromino{
     @Override
     public boolean sameTetromino(Tetromino t) {
         return t instanceof TetJ;
+    }
+
+    @Override
+    public Color getColor() {
+        return new Color(17, 85, 180);
     }
 }

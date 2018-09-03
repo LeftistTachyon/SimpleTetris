@@ -1,10 +1,12 @@
 package simpletetris;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import simpletetris.TetrisKeyAdapter.GameAction;
 import static simpletetris.TetrisKeyAdapter.GameAction.*;
+import static simpletetris.Mino.*;
 
 /**
  * A class that represents the Tetris matrix
@@ -49,7 +51,7 @@ public class TetrisMatrix {
     /**
      * The visible height of the matrix; playing field
      */
-    public static final double VISIBLE_HEIGHT = 21;
+    public static final double VISIBLE_HEIGHT = 20.5;
     
     /**
      * Creates a new TetrisMatrix.
@@ -65,24 +67,31 @@ public class TetrisMatrix {
      * @param g2D the Graphics2D to draw with
      */
     public void draw(Graphics2D g2D) {
-        g2D.translate(15, 15-Mino.MINO_WIDTH*VISIBLE_HEIGHT);
+        g2D.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, 
+                BasicStroke.JOIN_MITER));
+        
+        g2D.translate(15, -MINO_WIDTH*(HEIGHT - VISIBLE_HEIGHT));
         
         for(int i = 0; i < matrix.length; i++) {
             for(int j = 0; j < matrix[i].length; j++) {
                 if(matrix[i][j] == null) 
                     continue;
-                Mino.drawMino(i*Mino.MINO_WIDTH, j*Mino.MINO_WIDTH, 
+                drawMino(i*MINO_WIDTH, j*MINO_WIDTH, 
                         matrix[i][j], g2D);
             }
         }
         
-        int tlx = x*Mino.MINO_WIDTH, tly = y*Mino.MINO_WIDTH;
+        int tlx = x*MINO_WIDTH, tly = y*MINO_WIDTH, 
+                tlGy = getGhostY()*MINO_WIDTH;
+        g2D.setColor(falling.getColor());
         Color[][] tetro = falling.getDrawBox();
         for(int i = 0; i < tetro.length; i++) {
             for(int j = 0; j < tetro[i].length; j++) {
                 if(tetro[i][j] == null) 
                     continue;
-                Mino.drawMino(tlx + i*Mino.MINO_WIDTH, tly + j*Mino.MINO_WIDTH, 
+                g2D.drawRect(tlx + i*MINO_WIDTH + 5, tlGy + j*MINO_WIDTH + 5, 
+                        MINO_WIDTH - 10, MINO_WIDTH - 10);
+                drawMino(tlx + i*MINO_WIDTH, tly + j*MINO_WIDTH, 
                         tetro[i][j], g2D);
             }
         }
@@ -168,11 +177,7 @@ public class TetrisMatrix {
                 if(!falling.overlaps(miniMatrix(0, -1))) y++;
                 break;
             case HARD_DROP:
-                int placeHolderY = 0;
-                while(!falling.overlaps(miniMatrix(0, -placeHolderY))){
-                    placeHolderY++;
-                }
-                y += placeHolderY - 1;
+                y = getGhostY();
                 lockPiece();
                 break;
         }
@@ -184,7 +189,7 @@ public class TetrisMatrix {
     public void newPiece() {
         falling = bag.remove();
         
-        y = 21;
+        y = 20;
         // y = 40 - falling.getRotationBoxWidth();
         x = (WIDTH - falling.getRotationBoxWidth())/2;
         
@@ -220,6 +225,18 @@ public class TetrisMatrix {
         
         // after locking, reset
         newPiece();
+    }
+    
+    /**
+     * Determines the y-ccordinate of the ghost-piece
+     * @return the y-ccordinate of the ghost-piece
+     */
+    public int getGhostY() {
+        int placeHolderY = 0;
+        while(!falling.overlaps(miniMatrix(0, -placeHolderY))){
+            placeHolderY++;
+        }
+        return y + placeHolderY - 1;
     }
     
     /**

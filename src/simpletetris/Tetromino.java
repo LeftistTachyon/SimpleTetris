@@ -327,4 +327,10 @@ public abstract class Tetromino {
      * @return whether the given tetromino is the same
      */
     public abstract boolean sameTetromino(Tetromino t);
+    
+    /**
+     * Returns the color of this tetromino
+     * @return the color of this tetromino
+     */
+    public abstract Color getColor();
 }
