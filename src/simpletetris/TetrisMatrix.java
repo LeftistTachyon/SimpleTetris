@@ -4,6 +4,12 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import simpletetris.TetrisKeyAdapter.GameAction;
 import static simpletetris.TetrisKeyAdapter.GameAction.*;
 import static simpletetris.Mino.*;
@@ -54,6 +60,19 @@ public class TetrisMatrix {
     public static final double VISIBLE_HEIGHT = 20.5;
     
     /**
+     * A block of the background
+     */
+    private static final BufferedImage BACKGROUND_BLOCK;
+    
+    static {
+        try {
+            BACKGROUND_BLOCK = ImageIO.read(new File("images/background_block.png"));
+        } catch (IOException ex) {
+            System.err.println("Background block image file not found");
+        }
+    }
+    
+    /**
      * Creates a new TetrisMatrix.
      */
     public TetrisMatrix() {
@@ -74,6 +93,7 @@ public class TetrisMatrix {
         
         for(int i = 0; i < matrix.length; i++) {
             for(int j = 0; j < matrix[i].length; j++) {
+                
                 if(matrix[i][j] == null) 
                     continue;
                 drawMino(i*MINO_WIDTH, j*MINO_WIDTH, 
