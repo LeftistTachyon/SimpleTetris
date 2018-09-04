@@ -65,11 +65,13 @@ public class TetrisMatrix {
     private static final BufferedImage BACKGROUND_BLOCK;
     
     static {
+        BufferedImage temp = null;
         try {
-            BACKGROUND_BLOCK = ImageIO.read(new File("images/background_block.png"));
+            temp = ImageIO.read(new File("images/background_block.png"));
         } catch (IOException ex) {
             System.err.println("Background block image file not found");
         }
+        BACKGROUND_BLOCK = temp;
     }
     
     /**
