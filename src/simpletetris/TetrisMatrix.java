@@ -2,13 +2,12 @@ package simpletetris;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import simpletetris.TetrisKeyAdapter.GameAction;
 import static simpletetris.TetrisKeyAdapter.GameAction.*;
@@ -45,6 +44,15 @@ public class TetrisMatrix {
     private Color[][] matrix;
     
     /**
+     * Stores whether a piece can swap to hold.
+     */
+    private boolean holdSwappable;
+    /**
+     * The tetromino that is currently being held.
+     */
+    private Tetromino hold;
+    
+    /**
      * The width of the matrix
      */
     public static final int WIDTH = 10;
@@ -78,6 +86,7 @@ public class TetrisMatrix {
      * Creates a new TetrisMatrix.
      */
     public TetrisMatrix() {
+        hold = null;
         matrix = new Color[WIDTH][HEIGHT];
         bag = new TetrisBag();
         newPiece();
@@ -91,7 +100,29 @@ public class TetrisMatrix {
         g2D.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, 
                 BasicStroke.JOIN_MITER));
         
-        g2D.translate(15, -MINO_WIDTH*(HEIGHT - VISIBLE_HEIGHT));
+        g2D.translate(15, 0);
+        g2D.setColor(Color.BLACK);
+        g2D.setFont(new Font("Consolas", 0, 36));
+        g2D.drawString("NEXT", 0, 45);
+        
+        if (hold != null) {
+            int miniLength = 100 / hold.getRotationBoxWidth();
+            Color[][] tetra = hold.getDrawBox();
+            for (int i = 0, x = 5; i < tetra.length; i++, x += miniLength) {
+                for (int j = 0, y = 55; j < tetra[i].length; j++, y += miniLength) {
+                    if (tetra[i][j] == null) {
+                        continue;
+                    }
+                    Mino.drawMiniMino(x, y, miniLength, tetra[i][j], g2D);
+                }
+            }
+        }
+        
+        g2D.drawRect(0, 50, 110, 110);
+        
+        
+        
+        g2D.translate(110, -MINO_WIDTH*(HEIGHT - VISIBLE_HEIGHT));
         
         for(int i = 0; i < matrix.length; i++) {
             for(int j = 0; j < matrix[i].length; j++) {
@@ -117,6 +148,10 @@ public class TetrisMatrix {
                         tetro[i][j], g2D);
             }
         }
+        
+        g2D.setColor(Color.BLACK);
+        g2D.drawRect(0, (int) (MINO_WIDTH*(HEIGHT - VISIBLE_HEIGHT)), 
+                WIDTH*MINO_WIDTH, (int) (VISIBLE_HEIGHT*MINO_WIDTH));
     }
     
     /**
@@ -202,6 +237,26 @@ public class TetrisMatrix {
                 y = getGhostY();
                 lockPiece();
                 break;
+            case HOLD:
+                if(holdSwappable) {
+                    if(hold == null) {
+                        hold = falling;
+                        newPiece();
+                    } else {
+                        Tetromino temp = hold;
+                        hold = falling;
+                        falling = temp;
+                        
+                        falling.resetRotationCount();
+                        hold.rotateTo(Tetromino.UP);
+                        
+                        y = 20;
+                        x = (WIDTH - falling.getRotationBoxWidth())/2;
+                    }
+                    
+                    holdSwappable = false;
+                }
+                break;
         }
     }
     
@@ -212,13 +267,14 @@ public class TetrisMatrix {
         falling = bag.remove();
         
         y = 20;
-        // y = 40 - falling.getRotationBoxWidth();
         x = (WIDTH - falling.getRotationBoxWidth())/2;
         
         if(falling.overlaps(miniMatrix())){
             // Game over!
             System.exit(0);
         }
+        
+        holdSwappable = true;
     }
     
     /**
@@ -250,8 +306,8 @@ public class TetrisMatrix {
     }
     
     /**
-     * Determines the y-ccordinate of the ghost-piece
-     * @return the y-ccordinate of the ghost-piece
+     * Determines the y-coordinate of the ghost-piece
+     * @return the y-coordinate of the ghost-piece
      */
     public int getGhostY() {
         int placeHolderY = 0;

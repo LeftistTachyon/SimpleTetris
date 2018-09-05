@@ -3,6 +3,7 @@ package simpletetris;
 import java.awt.Color;
 import static java.awt.Color.*;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -137,33 +138,64 @@ public class Mino {
     private Mino() {}
     
     /**
-     * Draws a mino of a given color.
-     * If the color is null or not a stored color, nothing is drawn.
+     * Draws a mino of a given color.<br>
+     * If the color is null or not a stored color, nothing is drawn.<br>
      * @param x the x-coordinate of the top left corner
      * @param y the y-coordinate of the top left corner
      * @param c the color of the mino to draw
      * @param g2D the Graphics2D to draw with
      */
     public static void drawMino(int x, int y, Color c, Graphics2D g2D) {
+        g2D.drawImage(determineMino(c), null, x, y);
+    }
+    
+    /**
+     * Draws a mino of a given color at the given size.<br>
+     * If the color is null or not a stored color, nothing is drawn.<br>
+     * <br>
+     * NOTE: Be sure to do the following before executing this method for best 
+     * results:<br>
+     * <code>g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+     * RenderingHints.VALUE_ANTIALIAS_ON);</code>
+     * @param x the x-coordinate of the top left corner
+     * @param y the y-coordinate of the top left corner
+     * @param width the width of the mino to be drawn
+     * @param c the color of the mino to draw
+     * @param g2D the Graphics2D to draw with
+     */
+    public static void drawMiniMino(int x, int y, int width, 
+            Color c, Graphics2D g2D) {
+        g2D.drawImage(determineMino(c), x, y, width, width, null);
+    }
+    
+    /**
+     * Determines which mino the given Color is referring to.<br>
+     * If the color is null or not a stored color, {@code null} is returned.
+     * @param c the given Color
+     * @return the image of the given mino
+     */
+    private static BufferedImage determineMino(Color c) {
         if(c == null) 
-            return;
+            return null;
         int rgb = c.getRGB();
         if(rgb == blue.getRGB()) {
-            g2D.drawImage(BLUE, null, x, y);
+            return BLUE;
         } else if(rgb == cyan.getRGB()) {
-            g2D.drawImage(CYAN, null, x, y);
+            return CYAN;
         } else if(rgb == green.getRGB()) {
-            g2D.drawImage(GREEN, null, x, y);
+            return GREEN;
         } else if(rgb == gray.getRGB()) {
-            g2D.drawImage(GREY, null, x, y);
+            return GREY;
         } else if(rgb == orange.getRGB()) {
-            g2D.drawImage(ORANGE, null, x, y);
+            return ORANGE;
         } else if(rgb == magenta.getRGB()) {
-            g2D.drawImage(PURPLE, null, x, y);
+            return PURPLE;
         } else if(rgb == red.getRGB()) {
-            g2D.drawImage(RED, null, x, y);
+            return RED;
         } else if(rgb == yellow.getRGB()) {
-            g2D.drawImage(YELLOW, null, x, y);
+            return YELLOW;
         }
+        
+        return null;
     }
 }

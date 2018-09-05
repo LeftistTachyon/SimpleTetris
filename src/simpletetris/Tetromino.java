@@ -316,6 +316,24 @@ public abstract class Tetromino {
     }
     
     /**
+     * Rotates this tetromino to the given rotation state<br>
+     * NOTE: this does NOT decrement the rotations counter
+     * @param rotationState the state to rotate to
+     */
+    public void rotateTo(int rotationState) {
+        if(rotationState < 0 || rotationState > 3) 
+            throw new IllegalArgumentException("Invalid rotation state");
+        rotation = rotationState;
+    }
+    
+    /**
+     * Resets the rotation counter to rotate 15 more times.
+     */
+    public void resetRotationCount() {
+        rotations = 15;
+    }
+    
+    /**
      * Returns a copy of this tetromino.
      * @return a copy of this tetromino
      */
