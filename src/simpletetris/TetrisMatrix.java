@@ -103,9 +103,9 @@ public class TetrisMatrix {
         g2D.translate(15, 0);
         g2D.setColor(Color.BLACK);
         g2D.setFont(new Font("Consolas", 0, 36));
-        g2D.drawString("NEXT", 0, 45);
+        g2D.drawString("HOLD", 15, 45);
         
-        if (hold != null) {
+        if(hold != null) {
             int miniLength = 100 / hold.getRotationBoxWidth();
             Color[][] tetra = hold.getDrawBox();
             for (int i = 0, x = 5; i < tetra.length; i++, x += miniLength) {
@@ -152,6 +152,23 @@ public class TetrisMatrix {
         g2D.setColor(Color.BLACK);
         g2D.drawRect(0, (int) (MINO_WIDTH*(HEIGHT - VISIBLE_HEIGHT)), 
                 WIDTH*MINO_WIDTH, (int) (VISIBLE_HEIGHT*MINO_WIDTH));
+        
+        g2D.translate(MINO_WIDTH*WIDTH, MINO_WIDTH*(HEIGHT - VISIBLE_HEIGHT));
+        g2D.drawString("NEXT", 15, 45);
+        
+        if(bag.next(0) != null) {
+            int miniLength = 100 / bag.next(0).getRotationBoxWidth();
+            Color[][] tetra = bag.next(0).getDrawBox();
+            for (int i = 0, x = 5; i < tetra.length; i++, x += miniLength) {
+                for (int j = 0, y = 55; j < tetra[i].length; j++, y += miniLength) {
+                    if (tetra[i][j] == null) {
+                        continue;
+                    }
+                    Mino.drawMiniMino(x, y, miniLength, tetra[i][j], g2D);
+                }
+            }
+        }
+        g2D.drawRect(0, 50, 110, 110);
     }
     
     /**

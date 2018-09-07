@@ -155,6 +155,11 @@ public class TetrisKeyAdapter extends KeyAdapter {
     }
     
     /**
+     * counter
+    */
+    private static int cnt = 0;
+    
+    /**
      * A class that handles DAS-ing: the delay as well as the repetition.
      * @see http://tetris.wikia.com/wiki/DAS
      */
@@ -174,6 +179,7 @@ public class TetrisKeyAdapter extends KeyAdapter {
         
         @Override
         public void run() {
+            cnt++;
             matrix.executeAction(toExecute);
             try {
                 Thread.sleep(300);
@@ -182,6 +188,11 @@ public class TetrisKeyAdapter extends KeyAdapter {
             }
             
             while(pressed.get(toExecute)) {
+                if(cnt > 1) {
+                    System.out.println("More than two DASers are DASing");
+                    cnt--;
+                    return;
+                }
                 matrix.executeAction(toExecute);
                 try {
                     Thread.sleep(50);
@@ -189,6 +200,7 @@ public class TetrisKeyAdapter extends KeyAdapter {
                     System.err.println("DAS thread interrupted.");
                 }
             }
+            cnt--;
         }
     }
     
