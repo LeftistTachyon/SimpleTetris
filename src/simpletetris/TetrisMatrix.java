@@ -120,8 +120,6 @@ public class TetrisMatrix {
         
         g2D.drawRect(0, 50, 110, 110);
         
-        
-        
         g2D.translate(110, -MINO_WIDTH*(HEIGHT - VISIBLE_HEIGHT));
         
         for(int i = 0; i < matrix.length; i++) {
@@ -159,16 +157,32 @@ public class TetrisMatrix {
         if(bag.next(0) != null) {
             int miniLength = 100 / bag.next(0).getRotationBoxWidth();
             Color[][] tetra = bag.next(0).getDrawBox();
-            for (int i = 0, x = 5; i < tetra.length; i++, x += miniLength) {
-                for (int j = 0, y = 55; j < tetra[i].length; j++, y += miniLength) {
+            for (int i = 0, xx = 5; i < tetra.length; i++, xx += miniLength) {
+                for (int j = 0, yy = 55; j < tetra[i].length; j++, yy += miniLength) {
                     if (tetra[i][j] == null) {
                         continue;
                     }
-                    Mino.drawMiniMino(x, y, miniLength, tetra[i][j], g2D);
+                    Mino.drawMiniMino(xx, yy, miniLength, tetra[i][j], g2D);
                 }
             }
         }
         g2D.drawRect(0, 50, 110, 110);
+        
+        for(int i = 1; i < 5; i++) {
+            if(bag.next(i) != null) {
+                int miniLength = 75 / bag.next(i).getRotationBoxWidth();
+                Color[][] tetra = bag.next(i).getDrawBox();
+                for (int j = 0, xx = 5; j < tetra.length; j++, xx += miniLength) {
+                    for (int k = 0, yy = 80 + 85*i; k < tetra[j].length; k++, yy += miniLength) {
+                        if (tetra[j][k] == null) {
+                            continue;
+                        }
+                        Mino.drawMiniMino(xx, yy, miniLength, tetra[j][k], g2D);
+                    }
+                }
+            }
+            g2D.drawRect(0, 75 + 85*i, 85, 85);
+        }
     }
     
     /**
