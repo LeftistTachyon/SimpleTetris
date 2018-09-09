@@ -189,7 +189,6 @@ public class TetrisKeyAdapter extends KeyAdapter {
             
             while(pressed.get(toExecute)) {
                 if(cnt > 1) {
-                    System.out.println("More than two DASers are DASing");
                     cnt--;
                     return;
                 }

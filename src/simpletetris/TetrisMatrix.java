@@ -125,10 +125,13 @@ public class TetrisMatrix {
         for(int i = 0; i < matrix.length; i++) {
             for(int j = 0; j < matrix[i].length; j++) {
                 
-                if(matrix[i][j] == null) 
-                    continue;
-                drawMino(i*MINO_WIDTH, j*MINO_WIDTH, 
-                        matrix[i][j], g2D);
+                if(matrix[i][j] == null) {
+                    g2D.drawImage(BACKGROUND_BLOCK, null, 
+                            i*MINO_WIDTH, j*MINO_WIDTH);
+                } else {
+                    drawMino(i*MINO_WIDTH, j*MINO_WIDTH, 
+                            matrix[i][j], g2D);
+                }
             }
         }
         
@@ -140,8 +143,8 @@ public class TetrisMatrix {
             for(int j = 0; j < tetro[i].length; j++) {
                 if(tetro[i][j] == null) 
                     continue;
-                g2D.drawRect(tlx + i*MINO_WIDTH + 5, tlGy + j*MINO_WIDTH + 5, 
-                        MINO_WIDTH - 10, MINO_WIDTH - 10);
+                g2D.drawRect(tlx + i*MINO_WIDTH + 7, tlGy + j*MINO_WIDTH + 7, 
+                        MINO_WIDTH - 14, MINO_WIDTH - 14);
                 drawMino(tlx + i*MINO_WIDTH, tly + j*MINO_WIDTH, 
                         tetro[i][j], g2D);
             }
