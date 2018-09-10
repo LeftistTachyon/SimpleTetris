@@ -8,6 +8,8 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import simpletetris.TetrisKeyAdapter.GameAction;
 import static simpletetris.TetrisKeyAdapter.GameAction.*;
@@ -72,6 +74,11 @@ public class TetrisMatrix {
      */
     private static final BufferedImage BACKGROUND_BLOCK;
     
+    /**
+     * The background image
+     */
+    private static final BufferedImage BACKGROUND_IMAGE;
+    
     static {
         BufferedImage temp = null;
         try {
@@ -80,6 +87,14 @@ public class TetrisMatrix {
             System.err.println("Background block image file not found");
         }
         BACKGROUND_BLOCK = temp;
+        
+        temp = null;
+        try {
+            temp = ImageIO.read(new File("images/background.png"));
+        } catch (IOException ex) {
+            System.err.println("Background image file not found");
+        }
+        BACKGROUND_IMAGE = temp;
     }
     
     /**
@@ -120,7 +135,10 @@ public class TetrisMatrix {
         
         g2D.drawRect(0, 50, 110, 110);
         
-        g2D.translate(110, -MINO_WIDTH*(HEIGHT - VISIBLE_HEIGHT));
+        g2D.translate(110, 0);
+        g2D.drawImage(BACKGROUND_IMAGE, null, 0, 0);
+        
+        g2D.translate(0, -MINO_WIDTH*(HEIGHT - VISIBLE_HEIGHT));
         
         for(int i = 0; i < matrix.length; i++) {
             for(int j = 0; j < matrix[i].length; j++) {
