@@ -136,7 +136,8 @@ public class TetrisMatrix {
         g2D.drawRect(0, 50, 110, 110);
         
         g2D.translate(110, 0);
-        g2D.drawImage(BACKGROUND_IMAGE, null, 0, 0);
+        g2D.drawImage(BACKGROUND_IMAGE, 0, 0, 
+                MINO_WIDTH*WIDTH, (int) (MINO_WIDTH*VISIBLE_HEIGHT), null);
         
         g2D.translate(0, -MINO_WIDTH*(HEIGHT - VISIBLE_HEIGHT));
         
