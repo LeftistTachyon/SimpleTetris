@@ -123,12 +123,12 @@ public class TetrisMatrix {
         if(hold != null) {
             int miniLength = 100 / hold.getRotationBoxWidth();
             Color[][] tetra = hold.getDrawBox();
-            for (int i = 0, x = 5; i < tetra.length; i++, x += miniLength) {
-                for (int j = 0, y = 55; j < tetra[i].length; j++, y += miniLength) {
+            for (int i = 0, xx = 5; i < tetra.length; i++, xx += miniLength) {
+                for (int j = 0, yy = 55; j < tetra[i].length; j++, yy += miniLength) {
                     if (tetra[i][j] == null) {
                         continue;
                     }
-                    Mino.drawMiniMino(x, y, miniLength, tetra[i][j], g2D);
+                    Mino.drawMiniMino(xx, yy, miniLength, tetra[i][j], g2D);
                 }
             }
         }

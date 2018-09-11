@@ -3,12 +3,29 @@ package simpletetris;
 import java.awt.Color;
 import static java.awt.Color.*;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 /**
  * A class that represents the O tetromino
  * @author Grace Liu, Jed Wang
  */
 public class TetO extends Tetromino {
+    /**
+     * A mini TetO
+     */
+    private static BufferedImage mini;
+    
+    static {
+        try {
+            mini = ImageIO.read(new File("images/miniO.png"));
+        } catch (IOException ex) {
+            System.err.println("miniO.png cannot be found");
+        }
+    }
+    
     /**
      * The piece; doesn't change
      */
@@ -62,5 +79,10 @@ public class TetO extends Tetromino {
     @Override
     public Color getColor() {
         return new Color(243, 205, 35);
+    }
+
+    @Override
+    public BufferedImage getMiniImage() {
+        return mini;
     }
 }

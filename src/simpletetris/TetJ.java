@@ -1,12 +1,29 @@
 package simpletetris;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 /**
  * A class that represents the J tetromino
  * @author Danny Tang, Jed Wang
  */
-public class TetJ extends Tetromino{
+public class TetJ extends Tetromino {
+    /**
+     * A mini TetJ
+     */
+    private static BufferedImage mini;
+    
+    static {
+        try {
+            mini = ImageIO.read(new File("image/miniJ.png"));
+        } catch (IOException ex) {
+            System.err.println("miniJ.png cannot be found");
+        }
+    }
+    
     /**
      * Shorthand
      */
@@ -60,5 +77,10 @@ public class TetJ extends Tetromino{
     @Override
     public Color getColor() {
         return new Color(17, 85, 180);
+    }
+
+    @Override
+    public BufferedImage getMiniImage() {
+        return mini;
     }
 }
