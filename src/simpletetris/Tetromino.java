@@ -2,6 +2,7 @@ package simpletetris;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 
 /**
  * Creates a new Tetromino
@@ -351,4 +352,10 @@ public abstract class Tetromino {
      * @return the color of this tetromino
      */
     public abstract Color getColor();
+    
+    /**
+     * Returns a mini-image or preview of the piece
+     * @return an image preview of this piece
+     */
+    public abstract BufferedImage getMiniImage();
 }
