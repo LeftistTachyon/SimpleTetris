@@ -90,7 +90,7 @@ public class TetrisMatrix {
         
         temp = null;
         try {
-            temp = ImageIO.read(new File("images/background.png"));
+            temp = ImageIO.read(new File("images/background.jpg"));
         } catch (IOException ex) {
             System.err.println("Background image file not found");
         }
