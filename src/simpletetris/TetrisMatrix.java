@@ -8,8 +8,6 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import simpletetris.TetrisKeyAdapter.GameAction;
 import static simpletetris.TetrisKeyAdapter.GameAction.*;
@@ -174,7 +172,7 @@ public class TetrisMatrix {
         }
         g2D.drawRect(0, 50, 110, 70);
         
-        for(int i = 1; i < 5; i++) {
+        for(int i = 1; i < 3; i++) {
             if(bag.next(i) != null) {
                 BufferedImage miniImage = bag.next(i).getMiniImage();
                 g2D.drawImage(miniImage, 30, 75 + 85*i, 75, 45, null);
