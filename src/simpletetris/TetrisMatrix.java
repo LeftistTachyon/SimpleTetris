@@ -21,6 +21,10 @@ public class TetrisMatrix {
     /**
      * The currently falling tetromino
      */
+    private static int score;
+    
+    
+   
     private Tetromino falling;
     
     /**
@@ -99,6 +103,7 @@ public class TetrisMatrix {
      * Creates a new TetrisMatrix.
      */
     public TetrisMatrix() {
+        score = 0;
         hold = null;
         matrix = new Color[WIDTH][HEIGHT];
         bag = new TetrisBag();
@@ -179,6 +184,9 @@ public class TetrisMatrix {
             }
             g2D.drawRect(25, 70 + 85*i, 85, 55);
         }
+        
+        
+        g2D.drawString(String.valueOf(score), -450, 200);
     }
     
     /**
@@ -324,7 +332,9 @@ public class TetrisMatrix {
             if(lineFilled(i)) {
                 for(int j = i; j >= 1; j--) {
                     clearLine(j);
+                    
                 }
+                score++;
                 emptyLine(0);
             }
         }
