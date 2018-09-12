@@ -14,14 +14,16 @@ public class TetZ extends Tetromino {
     /**
      * A mini TetZ
      */
-    private static BufferedImage mini;
+    private static final BufferedImage MINI;
     
     static {
+        BufferedImage temp = null;
         try {
-            mini = ImageIO.read(new File("images/miniZ.png"));
+            temp = ImageIO.read(new File("images/miniZ.png"));
         } catch (IOException ex) {
             System.err.println("miniZ.png cannot be found");
         }
+        MINI = temp;
     }
     
     /**
@@ -81,6 +83,6 @@ public class TetZ extends Tetromino {
 
     @Override
     public BufferedImage getMiniImage() {
-        return mini;
+        return MINI;
     }
 }

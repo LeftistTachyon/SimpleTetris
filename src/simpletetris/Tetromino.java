@@ -354,7 +354,8 @@ public abstract class Tetromino {
     public abstract Color getColor();
     
     /**
-     * Returns a mini-image or preview of the piece
+     * Returns a mini-image or preview of the piece<br>
+     * The aspect ratio of the piece is 5 x 3.
      * @return an image preview of this piece
      */
     public abstract BufferedImage getMiniImage();
