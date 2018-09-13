@@ -127,7 +127,7 @@ public class ScoreKeeper {
                 break;
             case T_SPIN_MINI:
                 // T-spin mini
-                // 0 extra
+                linesToSend += 1;
                 b2b = true;
                 break;
         }
@@ -185,6 +185,7 @@ public class ScoreKeeper {
      * @param message the message to convey
      */
     private void notifyListeners(String message) {
+        if(listeners == null) return;
         ActionEvent event = new ActionEvent(this, 0, message);
         for(ActionListener listener : listeners) {
             listener.actionPerformed(event);

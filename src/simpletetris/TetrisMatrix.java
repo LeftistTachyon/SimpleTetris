@@ -64,6 +64,16 @@ public class TetrisMatrix {
     private ScoreKeeper sk;
     
     /**
+     * Determines whether the piece was just kicked
+     */
+    private boolean kicked;
+    
+    /**
+     * The last action performed by the player
+     */
+    private GameAction lastAction;
+    
+    /**
      * The width of the matrix
      */
     public static final int WIDTH = 10;
@@ -111,6 +121,7 @@ public class TetrisMatrix {
      */
     public TetrisMatrix() {
         sk = new ScoreKeeper();
+        kicked = false;
         score = 0;
         hold = null;
         matrix = new Color[WIDTH][HEIGHT];
@@ -194,7 +205,7 @@ public class TetrisMatrix {
         }
         
         
-        g2D.drawString(String.valueOf(score), -450, 200);
+        g2D.drawString("" + sk.getLinesSent(), -450, 200);
     }
     
     /**
@@ -258,6 +269,8 @@ public class TetrisMatrix {
                 falling.rotateLeft();
                 x += kickL.x;
                 y -= kickL.y;
+                kicked = kickL.x != 0 || kickL.y != 0;
+                lastAction = ga;
                 break;
             case ROTATE_RIGHT:
                 Point kickR = falling.getWallKick(this, 
@@ -266,15 +279,20 @@ public class TetrisMatrix {
                 falling.rotateRight();
                 x += kickR.x;
                 y -= kickR.y;
+                kicked = kickR.x != 0 || kickR.y != 0;
+                lastAction = ga;
                 break;
             case MOVE_LEFT:
                 if(!falling.overlaps(miniMatrix(-1, 0))) x--;
+                lastAction = ga;
                 break;
             case MOVE_RIGHT:
                 if(!falling.overlaps(miniMatrix(1, 0))) x++;
+                lastAction = ga;
                 break;
             case SOFT_DROP:
                 if(!falling.overlaps(miniMatrix(0, -1))) y++;
+                lastAction = ga;
                 break;
             case HARD_DROP:
                 y = getGhostY();
@@ -336,18 +354,45 @@ public class TetrisMatrix {
         }
         
         // remove lines
+        int linesCleared = 0;
         for(int i = 0; i < HEIGHT; i++) {
             if(lineFilled(i)) {
                 for(int j = i; j >= 1; j--) {
                     clearLine(j);
                 }
                 score++;
+                linesCleared++;
                 emptyLine(0);
             }
         }
         
+        // check for t-spins
+        if(falling instanceof TetT && (lastAction == GameAction.ROTATE_LEFT || 
+                lastAction == GameAction.ROTATE_RIGHT)) {
+            if(kicked && (linesCleared == 0 || linesCleared == 1)) {
+                sk.newLinesCleared(linesCleared, ScoreKeeper.T_SPIN_MINI, allClear());
+            } else {
+                sk.newLinesCleared(linesCleared, ScoreKeeper.T_SPIN, allClear());
+            }
+        } else {
+            sk.newLinesCleared(linesCleared, ScoreKeeper.NORMAL, allClear());
+        }
+        
         // after locking, reset
         newPiece();
+    }
+    
+    /**
+     * Determines if the board is all clear
+     * @return if the board is all clear
+     */
+    private boolean allClear() {
+        for(Color[] colors : matrix) {
+            for(Color color : colors) {
+                if(color != null) return false;
+            }
+        }
+        return true;
     }
     
     /**

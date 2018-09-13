@@ -208,6 +208,6 @@ public class TetrisKeyAdapter extends KeyAdapter {
      */
     public static enum GameAction {
         MOVE_LEFT, MOVE_RIGHT, HARD_DROP, SOFT_DROP, 
-                ROTATE_RIGHT, ROTATE_LEFT, HOLD, PAUSE;
+                ROTATE_RIGHT, ROTATE_LEFT, HOLD, PAUSE, GRAVITY;
     }
 }
