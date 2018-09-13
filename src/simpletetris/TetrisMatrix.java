@@ -19,12 +19,13 @@ import static simpletetris.Mino.*;
  */
 public class TetrisMatrix {
     /**
+     * Lines cleared
+     */
+    private int score;
+    
+    /**
      * The currently falling tetromino
      */
-    private static int score;
-    
-    
-   
     private Tetromino falling;
     
     /**
@@ -332,7 +333,6 @@ public class TetrisMatrix {
             if(lineFilled(i)) {
                 for(int j = i; j >= 1; j--) {
                     clearLine(j);
-                    
                 }
                 score++;
                 emptyLine(0);
