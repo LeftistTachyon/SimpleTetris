@@ -1,5 +1,9 @@
 package simpletetris;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
 /**
  * Keeps track of the score
  * @author Jed Wang
@@ -8,7 +12,12 @@ public class ScoreKeeper {
     /**
      * The lines sent
      */
-    private int lines;
+    private int linesSent;
+    
+    /**
+     * The number of lines to send
+     */
+    private int linesToSend;
     
     /**
      * Keeps track of combos
@@ -19,6 +28,11 @@ public class ScoreKeeper {
      * Whether the player is doing powerful moves back to back
      */
     private boolean b2b;
+    
+    /**
+     * A collection of listeners which are listening to this ScoreKeeper.
+     */
+    private ArrayList<ActionListener> listeners = null;
     
     /**
      * A normal lines clear
@@ -39,7 +53,8 @@ public class ScoreKeeper {
      * Creates a brand new ScoreKeeper.
      */
     public ScoreKeeper() {
-        lines = 0;
+        linesSent = 0;
+        linesToSend = 0;
         
         combo = -1;
         b2b = false;
@@ -50,11 +65,16 @@ public class ScoreKeeper {
      * @param linesCleared how many new lines have been cleared
      * @param clearType what type of line clear (e.g. standard, t-spin, 
      * t-spin mini)
+     * @param perfectClear whether the move resulted in a perfect clear
      */
-    public void newLinesCleared(int linesCleared, int clearType) {
+    public void newLinesCleared(int linesCleared, int clearType, 
+            boolean perfectClear) {
         if(linesCleared == 0) {
             b2b = false;
             combo = -1;
+            
+            notifyListeners("SEND" + linesToSend);
+            linesSent += linesToSend;
         }
         
         if(linesCleared > 4 || linesCleared < 0) 
@@ -70,17 +90,17 @@ public class ScoreKeeper {
                         break;
                     case 2:
                         // double
-                        lines += 1;
+                        linesToSend += 1;
                         b2b = false;
                         break;
                     case 3:
                         // triple
-                        lines += 2;
+                        linesToSend += 2;
                         b2b = false;
                         break;
                     case 4:
                         // tetris
-                        lines += 4;
+                        linesToSend += 4;
                         b2b = true;
                         break;
                 }
@@ -89,15 +109,15 @@ public class ScoreKeeper {
                 switch(linesCleared) {
                     case 1:
                         // T-spin single
-                        lines += 2;
+                        linesToSend += 2;
                         break;
                     case 2:
                         // T-spin double
-                        lines += 4;
+                        linesToSend += 4;
                         break;
                     case 3:
                         // T-spin triple
-                        lines += 6;
+                        linesToSend += 6;
                         break;
                     default:
                         throw new IllegalArgumentException(
@@ -113,8 +133,9 @@ public class ScoreKeeper {
         }
         
         combo++;
-        lines += comboBonus();
-        if(b2b) lines++;
+        linesToSend += comboBonus();
+        if(perfectClear) linesToSend += 10;
+        if(b2b) linesToSend++;
     }
     
     /**
@@ -140,6 +161,33 @@ public class ScoreKeeper {
      * @return the number of lines sent
      */
     public int getLinesSent() {
-        return lines;
+        return linesSent;
+    }
+    
+    /**
+     * Adds an <code>ActionListener</code> to this ScoreKeeper
+     * @param listener an ActionListener to add
+     */
+    public void addListener(ActionListener listener) {
+        if(listeners == null) listeners = new ArrayList<>();
+        listeners.add(listener);
+    }
+    
+    /**
+     * Removes all listeners.
+     */
+    public void removeAllListeners() {
+        listeners = new ArrayList<>();
+    }
+    
+    /**
+     * Notifies all listeners about an event.
+     * @param message the message to convey
+     */
+    private void notifyListeners(String message) {
+        ActionEvent event = new ActionEvent(this, 0, message);
+        for(ActionListener listener : listeners) {
+            listener.actionPerformed(event);
+        }
     }
 }

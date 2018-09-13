@@ -52,10 +52,16 @@ public class TetrisMatrix {
      * Stores whether a piece can swap to hold.
      */
     private boolean holdSwappable;
+    
     /**
      * The tetromino that is currently being held.
      */
     private Tetromino hold;
+    
+    /**
+     * The ScoreKeeper for this TetrisMatrix.
+     */
+    private ScoreKeeper sk;
     
     /**
      * The width of the matrix
@@ -104,6 +110,7 @@ public class TetrisMatrix {
      * Creates a new TetrisMatrix.
      */
     public TetrisMatrix() {
+        sk = new ScoreKeeper();
         score = 0;
         hold = null;
         matrix = new Color[WIDTH][HEIGHT];
