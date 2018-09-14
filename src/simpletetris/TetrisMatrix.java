@@ -379,10 +379,11 @@ public class TetrisMatrix {
         }
         
         // check for t-spins
-        System.out.println(falling.overlaps(miniMatrix(1, 0)));
+        /*System.out.println(falling.overlaps(miniMatrix(1, 0)));
         System.out.println(falling.overlaps(miniMatrix(-1, 0)));
         System.out.println(falling.overlaps(miniMatrix(0, 1)));
-        System.out.println(falling.overlaps(miniMatrix(0, -1)));
+        System.out.println(falling.overlaps(miniMatrix(0, -1)));*/
+        printDebugMatrix(0, 1);
         if(falling instanceof TetT && (lastAction == GameAction.ROTATE_LEFT || 
                 lastAction == GameAction.ROTATE_RIGHT) && immobile()) {
             System.out.println("T-spin " + linesCleared);
