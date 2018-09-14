@@ -3,6 +3,7 @@ package simpletetris;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
@@ -46,6 +47,11 @@ public class TetrisPanel extends JPanel implements Runnable {
         g2D.fillRect(0, 0, getWidth(), getHeight());
     }
     
+    /**
+     * Draws the background with an image
+     * @param g2D the Graphics2D to draw with
+     * @param bi the image to fill in the background with
+     */
     public void drawBackground(Graphics2D g2D, BufferedImage bi) {
         g2D.drawImage(bi, 0, 0, getWidth(), getHeight(), null);
     }

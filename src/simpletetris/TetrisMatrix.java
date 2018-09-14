@@ -8,6 +8,8 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import simpletetris.TetrisKeyAdapter.GameAction;
 import static simpletetris.TetrisKeyAdapter.GameAction.*;
@@ -18,11 +20,6 @@ import static simpletetris.Mino.*;
  * @author Jed Wang
  */
 public class TetrisMatrix {
-    /**
-     * Lines cleared
-     */
-    private int score;
-    
     /**
      * The currently falling tetromino
      */
@@ -74,6 +71,11 @@ public class TetrisMatrix {
     private GameAction lastAction;
     
     /**
+     * Adding gravity
+     */
+    private Gravity gravity;
+    
+    /**
      * The width of the matrix
      */
     public static final int WIDTH = 10;
@@ -122,7 +124,6 @@ public class TetrisMatrix {
     public TetrisMatrix() {
         sk = new ScoreKeeper();
         kicked = false;
-        score = 0;
         hold = null;
         matrix = new Color[WIDTH][HEIGHT];
         bag = new TetrisBag();
@@ -150,6 +151,8 @@ public class TetrisMatrix {
         g2D.drawRect(0, 50, 110, 70);
         
         g2D.translate(110, 0);
+        g2D.setClip(0, 0, MINO_WIDTH*WIDTH, 
+                (int) (MINO_WIDTH*VISIBLE_HEIGHT));
         g2D.drawImage(BACKGROUND_IMAGE, 0, 0, 
                 MINO_WIDTH*WIDTH, (int) (MINO_WIDTH*VISIBLE_HEIGHT), null);
         
@@ -183,6 +186,7 @@ public class TetrisMatrix {
             }
         }
         
+        g2D.setClip(null);
         g2D.setColor(Color.BLACK);
         g2D.drawRect(0, (int) (MINO_WIDTH*(HEIGHT - VISIBLE_HEIGHT)), 
                 WIDTH*MINO_WIDTH, (int) (VISIBLE_HEIGHT*MINO_WIDTH));
@@ -199,11 +203,10 @@ public class TetrisMatrix {
         for(int i = 1; i < 3; i++) {
             if(bag.next(i) != null) {
                 BufferedImage miniImage = bag.next(i).getMiniImage();
-                g2D.drawImage(miniImage, 30, 75 + 85*i, 75, 45, null);
+                g2D.drawImage(miniImage, 25, 75 + 85*i, 80, 48, null);
             }
-            g2D.drawRect(25, 70 + 85*i, 85, 55);
+            g2D.drawRect(20, 70 + 85*i, 90, 58);
         }
-        
         
         g2D.drawString("" + sk.getLinesSent(), -450, 200);
     }
@@ -320,6 +323,10 @@ public class TetrisMatrix {
                 }
                 break;
         }
+        if(gravity.stop && !falling.overlaps(miniMatrix(0, -1))) {
+            gravity = new Gravity();
+            new Thread(gravity).start();
+        }
     }
     
     /**
@@ -336,6 +343,9 @@ public class TetrisMatrix {
             System.exit(0);
         }
         
+        gravity = new Gravity();
+        new Thread(gravity).start();
+        
         holdSwappable = true;
     }
     
@@ -343,6 +353,9 @@ public class TetrisMatrix {
      * Locks all pieces and does some checks before sending in a new piece.
      */
     public void lockPiece() {
+        // stop gravity
+        gravity.stop();
+        
         // lock
         Color[][] copy = falling.getDrawBox();
         for(int r= 0; r < copy.length; r++) {
@@ -360,16 +373,20 @@ public class TetrisMatrix {
                 for(int j = i; j >= 1; j--) {
                     clearLine(j);
                 }
-                score++;
                 linesCleared++;
                 emptyLine(0);
             }
         }
         
         // check for t-spins
+        System.out.println(falling.overlaps(miniMatrix(1, 0)));
+        System.out.println(falling.overlaps(miniMatrix(-1, 0)));
+        System.out.println(falling.overlaps(miniMatrix(0, 1)));
+        System.out.println(falling.overlaps(miniMatrix(0, -1)));
         if(falling instanceof TetT && (lastAction == GameAction.ROTATE_LEFT || 
-                lastAction == GameAction.ROTATE_RIGHT)) {
-            if(kicked && (linesCleared == 0 || linesCleared == 1)) {
+                lastAction == GameAction.ROTATE_RIGHT) && immobile()) {
+            System.out.println("T-spin " + linesCleared);
+            if(kicked && linesCleared < 2) {
                 sk.newLinesCleared(linesCleared, ScoreKeeper.T_SPIN_MINI, allClear());
             } else {
                 sk.newLinesCleared(linesCleared, ScoreKeeper.T_SPIN, allClear());
@@ -393,6 +410,17 @@ public class TetrisMatrix {
             }
         }
         return true;
+    }
+    
+    /**
+     * Determines whether the piece is immobile
+     * @return whether the piece is immobile
+     */
+    private boolean immobile() {
+        return falling.overlaps(miniMatrix(1, 0)) 
+                && falling.overlaps(miniMatrix(-1, 0)) 
+                && falling.overlaps(miniMatrix(0, 1)) 
+                && falling.overlaps(miniMatrix(0, -1));
     }
     
     /**
@@ -493,6 +521,43 @@ public class TetrisMatrix {
                 }
             }
             System.out.println();
+        }
+    }
+    
+    private static int cnt = 0;
+    
+    /**
+     * Adds gravity to the pieces
+     */
+    private class Gravity implements Runnable {
+        /**
+         * Set to {@code true} to stop gravity
+         */
+        private boolean stop = false;
+        
+        @Override
+        public void run() {
+            cnt++;
+            for(int i = 0; !stop && 
+                    !falling.overlaps(miniMatrix(0, -1)); i++, i %= 100) {
+                if(cnt > 1) {
+                    System.out.println(cnt + "/60 G");
+                }
+                if(i == 99) y++;
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ex) {
+                    System.err.println("Gravity thread interrupted");
+                }
+            }
+            cnt--;
+        }
+        
+        /**
+         * Stops gravity.
+         */
+        public void stop() {
+            stop = true;
         }
     }
 }

@@ -75,33 +75,35 @@ public class ScoreKeeper {
             
             notifyListeners("SEND" + linesToSend);
             linesSent += linesToSend;
+            linesToSend = 0;
         }
         
         if(linesCleared > 4 || linesCleared < 0) 
             throw new IllegalArgumentException("You cleared more than "
                     + "4 lines at once or less than 0 lines.");
+        boolean bb = false;
         switch(clearType) {
             case NORMAL:
                 switch(linesCleared) {
                     case 1:
                         // single
                         // 0 extra
-                        b2b = false;
+                        bb = false;
                         break;
                     case 2:
                         // double
                         linesToSend += 1;
-                        b2b = false;
+                        bb = false;
                         break;
                     case 3:
                         // triple
                         linesToSend += 2;
-                        b2b = false;
+                        bb = false;
                         break;
                     case 4:
                         // tetris
                         linesToSend += 4;
-                        b2b = true;
+                        bb = true;
                         break;
                 }
                 break;
@@ -121,14 +123,14 @@ public class ScoreKeeper {
                         break;
                     default:
                         throw new IllegalArgumentException(
-                                "You cleared 4 lines with a tetris?");
+                                "You cleared 4 lines with a t-piece?");
                 }
-                b2b = true;
+                bb = true;
                 break;
             case T_SPIN_MINI:
                 // T-spin mini
                 linesToSend += 1;
-                b2b = true;
+                bb = true;
                 break;
         }
         
@@ -136,6 +138,7 @@ public class ScoreKeeper {
         linesToSend += comboBonus();
         if(perfectClear) linesToSend += 10;
         if(b2b) linesToSend++;
+        b2b = bb;
     }
     
     /**
