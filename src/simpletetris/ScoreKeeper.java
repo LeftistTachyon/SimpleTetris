@@ -76,6 +76,8 @@ public class ScoreKeeper {
             notifyListeners("SEND" + linesToSend);
             linesSent += linesToSend;
             linesToSend = 0;
+            
+            return;
         }
         
         if(linesCleared > 4 || linesCleared < 0) 
