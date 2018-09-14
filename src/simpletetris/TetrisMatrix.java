@@ -356,25 +356,6 @@ public class TetrisMatrix {
         // stop gravity
         gravity.stop();
         
-        if(falling instanceof TetT) {
-            if(falling.overlaps(miniMatrix(1, 0))) {
-                System.out.println("RIGHT");
-                printDebugMatrix(1, 0);
-            }
-            if(falling.overlaps(miniMatrix(-1, 0))) {
-                System.out.println("LEFT");
-                printDebugMatrix(-1, 0);
-            }
-            if(falling.overlaps(miniMatrix(0, 1))) {
-                System.out.println("UP");
-                printDebugMatrix(0, 1);
-            }
-            if(falling.overlaps(miniMatrix(0, -1))) {
-                System.out.println("DOWN");
-                printDebugMatrix(0, -1);
-            }
-        }
-        
         // lock
         Color[][] copy = falling.getDrawBox();
         for(int r= 0; r < copy.length; r++) {
@@ -385,15 +366,10 @@ public class TetrisMatrix {
             }
         }
         
-        // remove lines
         int linesCleared = 0;
         for(int i = 0; i < HEIGHT; i++) {
             if(lineFilled(i)) {
-                for(int j = i; j >= 1; j--) {
-                    clearLine(j);
-                }
                 linesCleared++;
-                emptyLine(0);
             }
         }
         
@@ -408,6 +384,16 @@ public class TetrisMatrix {
             }
         } else {
             sk.newLinesCleared(linesCleared, ScoreKeeper.NORMAL, allClear());
+        }
+        
+        // remove lines
+        for(int i = 0; i < HEIGHT; i++) {
+            if(lineFilled(i)) {
+                for(int j = i; j >= 1; j--) {
+                    clearLine(j);
+                }
+                emptyLine(0);
+            }
         }
         
         // after locking, reset
