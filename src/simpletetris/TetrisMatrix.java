@@ -513,9 +513,9 @@ public class TetrisMatrix {
         Color[][] mini = miniMatrix(offsetX, offsetY), tet = falling.getDrawBox();
         for(int i = 0;i<mini.length;i++) {
             for(int j = 0;j<mini[i].length;j++) {
-                if(mini[i][j] == null && tet[i][j] == null) {
+                if(mini[j][i] == null && tet[j][i] == null) {
                     System.out.print(" ");
-                } else if(mini[i][j] == null ^ tet[i][j] == null) {
+                } else if(mini[j][i] == null ^ tet[j][i] == null) {
                     System.out.print("@");
                 } else {
                     System.out.print("X");
@@ -541,9 +541,9 @@ public class TetrisMatrix {
             cnt++;
             for(int i = 0; !stop && 
                     !falling.overlaps(miniMatrix(0, -1)); i++, i %= 100) {
-                if(cnt > 1) {
+                /*if(cnt > 1) {
                     System.out.println(cnt + "/60 G");
-                }
+                }*/
                 if(i == 99) y++;
                 try {
                     Thread.sleep(10);
