@@ -73,7 +73,7 @@ public class TetrisMatrix {
     /**
      * Adding gravity
      */
-    private Gravity gravity;
+    private final Gravity gravity;
     
     /**
      * The width of the matrix
@@ -123,6 +123,7 @@ public class TetrisMatrix {
      */
     public TetrisMatrix() {
         sk = new ScoreKeeper();
+        gravity = new Gravity();
         kicked = false;
         hold = null;
         matrix = new Color[WIDTH][HEIGHT];
@@ -323,9 +324,8 @@ public class TetrisMatrix {
                 }
                 break;
         }
-        if(gravity.stop && !falling.overlaps(miniMatrix(0, -1))) {
-            gravity = new Gravity();
-            new Thread(gravity).start();
+        if(gravity.enabled && !falling.overlaps(miniMatrix(0, -1))) {
+            gravity.restart();
         }
     }
     
@@ -343,8 +343,7 @@ public class TetrisMatrix {
             System.exit(0);
         }
         
-        gravity = new Gravity();
-        new Thread(gravity).start();
+        gravity.restart();
         
         holdSwappable = true;
     }
@@ -354,7 +353,7 @@ public class TetrisMatrix {
      */
     public void lockPiece() {
         // stop gravity
-        gravity.stop();
+        gravity.pause();
         
         // lock
         Color[][] copy = falling.getDrawBox();
@@ -525,8 +524,6 @@ public class TetrisMatrix {
         }
     }
     
-    private static int cnt = 0;
-    
     /**
      * Adds gravity to the pieces
      */
@@ -534,31 +531,45 @@ public class TetrisMatrix {
         /**
          * Set to {@code true} to stop gravity
          */
-        private boolean stop = false;
+        private boolean enabled = true;
         
         @Override
         public void run() {
-            cnt++;
-            for(int i = 0; !stop && 
-                    !falling.overlaps(miniMatrix(0, -1)); i++, i %= 100) {
+            for(int i = 0; true; i++, i %= 100) {
                 /*if(cnt > 1) {
                     System.out.println(cnt + "/60 G");
                 }*/
-                if(i == 99) y++;
+                if(!enabled) {
+                    i = 0;
+                } else if(i == 99) {
+                    y++;
+                }
+                if(falling.overlaps(miniMatrix(0, -1)) && enabled) {
+                    enabled = false;
+                }
+                if(!falling.overlaps(miniMatrix(0, -1)) && !enabled) {
+                    enabled = true;
+                }
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException ex) {
                     System.err.println("Gravity thread interrupted");
                 }
             }
-            cnt--;
         }
         
         /**
-         * Stops gravity.
+         * Pauses gravity.
          */
-        public void stop() {
-            stop = true;
+        public void pause() {
+            enabled = false;
+        }
+        
+        /**
+         * Restarts gravity
+         */
+        public void restart() {
+            enabled = true;
         }
     }
 }
