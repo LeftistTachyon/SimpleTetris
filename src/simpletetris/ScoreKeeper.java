@@ -20,6 +20,11 @@ public class ScoreKeeper {
     private int linesToSend;
     
     /**
+     * The command to send lines
+     */
+    private String linesToSendCommand;
+    
+    /**
      * Keeps track of combos
      */
     private int combo;
@@ -55,6 +60,7 @@ public class ScoreKeeper {
     public ScoreKeeper() {
         linesSent = 0;
         linesToSend = 0;
+        linesToSendCommand = "SEND";
         
         combo = -1;
         b2b = false;
@@ -73,9 +79,10 @@ public class ScoreKeeper {
             b2b = false;
             combo = -1;
             
-            notifyListeners("SEND" + linesToSend);
+            notifyListeners(linesToSendCommand.trim());
             linesSent += linesToSend;
             linesToSend = 0;
+            linesToSendCommand = "SEND";
             
             return;
         }
@@ -141,6 +148,8 @@ public class ScoreKeeper {
         if(perfectClear) linesToSend += 10;
         if(b2b) linesToSend++;
         b2b = bb;
+        
+        linesToSendCommand += linesToSend + " ";
     }
     
     /**

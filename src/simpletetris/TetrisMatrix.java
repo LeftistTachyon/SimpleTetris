@@ -8,6 +8,9 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 import simpletetris.TetrisKeyAdapter.GameAction;
 import static simpletetris.TetrisKeyAdapter.GameAction.*;
@@ -74,6 +77,11 @@ public class TetrisMatrix {
     private final Gravity gravity;
     
     /**
+     * Adding lock delay for tetrominos
+     */
+    private final LockDelay lockDelay;
+    
+    /**
      * The width of the matrix
      */
     public static final int WIDTH = 10;
@@ -122,6 +130,7 @@ public class TetrisMatrix {
     public TetrisMatrix() {
         sk = new ScoreKeeper();
         gravity = new Gravity();
+        lockDelay = new LockDelay();
         
         kicked = false;
         hold = null;
@@ -129,7 +138,9 @@ public class TetrisMatrix {
         bag = new TetrisBag();
         newPiece();
         
-        new Thread(gravity).start();
+        ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
+        service.scheduleAtFixedRate(gravity, 0, 10, TimeUnit.MILLISECONDS);
+        service.scheduleAtFixedRate(lockDelay, 0, 10, TimeUnit.MILLISECONDS);
     }
     
     /**
@@ -238,7 +249,7 @@ public class TetrisMatrix {
      * @param offsetX the offset of the X coordinate
      * @param offsetY the offset of the Y coordinate
      * @return the section of the matrix that the falling piece occupies 
-     * (not really)
+     * (not really) 
      */
     public Color[][] miniMatrix(int offsetX, int offsetY) {
         Color[][] output = new Color[falling.getRotationBoxWidth()]
@@ -275,6 +286,9 @@ public class TetrisMatrix {
                 x += kickL.x;
                 y -= kickL.y;
                 kicked = kickL.x != 0 || kickL.y != 0;
+                if(kicked) {
+                    lockDelay.addTouch();
+                }
                 lastAction = ga;
                 break;
             case ROTATE_RIGHT:
@@ -285,6 +299,9 @@ public class TetrisMatrix {
                 x += kickR.x;
                 y -= kickR.y;
                 kicked = kickR.x != 0 || kickR.y != 0;
+                if(kicked) {
+                    lockDelay.addTouch();
+                }
                 lastAction = ga;
                 break;
             case MOVE_LEFT:
@@ -338,6 +355,7 @@ public class TetrisMatrix {
         
         if(falling.overlaps(miniMatrix())){
             // Game over!
+            System.out.println("\nGame over via block out");
             System.exit(0);
         }
         
@@ -352,6 +370,9 @@ public class TetrisMatrix {
     public void lockPiece() {
         // stop gravity
         gravity.pause();
+        
+        // reset lock piece checker
+        lockDelay.reset();
         
         // lock
         Color[][] copy = falling.getDrawBox();
@@ -372,9 +393,9 @@ public class TetrisMatrix {
         
         // check for t-spins
         if(falling instanceof TetT && (lastAction == ROTATE_LEFT || 
-                lastAction == ROTATE_RIGHT) && immobile()) {
+                lastAction == ROTATE_RIGHT) && threeCorner()) {
             System.out.println("T-spin " + linesCleared);
-            if(kicked && linesCleared < 2) {
+            if(!immobile() && kicked && linesCleared < 2) {
                 sk.newLinesCleared(linesCleared, ScoreKeeper.T_SPIN_MINI, allClear());
             } else {
                 sk.newLinesCleared(linesCleared, ScoreKeeper.T_SPIN, allClear());
@@ -402,10 +423,9 @@ public class TetrisMatrix {
      * @return if the board is all clear
      */
     private boolean allClear() {
-        for(Color[] colors : matrix) {
-            for(Color color : colors) {
-                if(color != null) return false;
-            }
+        for(int i = 0; i < HEIGHT; i++) {
+            if(!lineHomogenous(i))
+                return false;
         }
         return true;
     }
@@ -419,6 +439,26 @@ public class TetrisMatrix {
                 && falling.overlaps(miniMatrix(-1, 0)) 
                 && falling.overlaps(miniMatrix(0, 1)) 
                 && falling.overlaps(miniMatrix(0, -1));
+    }
+    
+    /**
+     * Determines whether the t-piece has 3 of the 4 corners of the 
+     * bounding box are filled in.
+     * @return whether 3-corners are filled
+     */
+    private boolean threeCorner() {
+        if(!(falling instanceof TetT)) 
+            throw new IllegalStateException("Cannot perform a 3-corner check on a non-T tetromino");
+        
+        // box is 3x3
+        Color[][] box = miniMatrix();
+        int cnt = 0;
+        if(box[0][0] != null) cnt++;
+        if(box[0][2] != null) cnt++;
+        if(box[2][0] != null) cnt++;
+        if(box[2][2] != null) cnt++;
+        
+        return cnt >= 3;
     }
     
     /**
@@ -464,6 +504,24 @@ public class TetrisMatrix {
                 return false;
         }
         return true;
+    }
+    
+    /**
+     * Determines whether a line is completely empty
+     * @param row which row to check
+     * @return whether a line is completely empty
+     */
+    public boolean lineEmpty(int row) {
+        for(int i = 0; i < WIDTH; i++) {
+            if(matrix[i][row] != null)
+                return false;
+        }
+        return true;
+    }
+    
+    public boolean lineHomogenous(int row) {
+        boolean empty = matrix[0][row] == null;
+        return (empty)?lineEmpty(row):lineFilled(row);
     }
     
     /**
@@ -538,28 +596,23 @@ public class TetrisMatrix {
         
         @Override
         public void run() {
-            for(; true; i++, i %= 100) {
-                /*if(cnt > 1) {
-                    System.out.println(cnt + "/60 G");
-                }*/
-                if(!enabled) {
-                    i = 0;
-                } else if(i == 99) {
-                    y++;
-                    lastAction = GRAVITY;
-                }
-                if(falling.overlaps(miniMatrix(0, -1)) && enabled) {
-                    enabled = false;
-                }
-                if(!falling.overlaps(miniMatrix(0, -1)) && !enabled) {
-                    enabled = true;
-                }
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException ex) {
-                    System.err.println("Gravity thread interrupted");
-                }
+            /*if(cnt > 1) {
+                System.out.println(cnt + "/60 G");
+            }*/
+            if(!enabled) {
+                i = 0;
+            } else if(i == 99) {
+                y++;
+                lastAction = GRAVITY;
             }
+            if(falling.overlaps(miniMatrix(0, -1)) && enabled) {
+                enabled = false;
+            }
+            if(!falling.overlaps(miniMatrix(0, -1)) && !enabled) {
+                enabled = true;
+            }
+            i++;
+            i %= 100;
         }
         
         /**
@@ -577,10 +630,104 @@ public class TetrisMatrix {
         }
         
         /**
-         * Resets gravity so the next piece is affected accordingly
+         * Resets gravity so the next piece is affected correctly
          */
         public void resetGravity() {
             i = 0;
+        }
+    }
+    
+    /**
+     * A class that deals with lock delay.
+     */
+    private class LockDelay implements Runnable {
+        /**
+         * The number of times this tetromino touched a 
+         * thing with its bottom surface.
+         */
+        private int touches;
+        
+        /**
+         * Whether this tetromino is floating
+         */
+        private boolean floating;
+        
+        /**
+         * The piece number dropped
+         */
+        private long pieceNo;
+
+        /**
+         * Creates a new LockDelay.
+         */
+        public LockDelay() {
+            pieceNo = 0;
+            touches = 0;
+            floating = false;
+        }
+
+        @Override
+        public void run() {
+            if(falling.overlaps(miniMatrix(0, -1)) && floating) {
+                floating = false;
+                touches++;
+                Executors.newScheduledThreadPool(1).schedule(
+                        new LockDelayChecker(touches, pieceNo), 
+                        500, TimeUnit.MILLISECONDS);
+            }
+            if(!falling.overlaps(miniMatrix(0, -1)) && !floating) {
+                floating = true;
+            }
+        }
+        
+        /**
+         * Resets this LockDelay so that checks are not run for this piece anymore.
+         */
+        public void reset() {
+            touches = 0;
+            floating = false;
+            pieceNo++;
+        }
+        
+        /**
+         * Adds a touch.
+         */
+        public void addTouch() {
+            touches++;
+            Executors.newScheduledThreadPool(1).schedule(
+                    new LockDelayChecker(touches, pieceNo), 
+                    500, TimeUnit.MILLISECONDS);
+        }
+        
+        /**
+         * Checks if the falling tetromino should be locked
+         */
+        private class LockDelayChecker implements Runnable {
+            /**
+             * The number of touches the tetromino had at that moment
+             */
+            private final int touches_;
+            
+            /**
+             * The piece id of the piece that this is detecting
+             */
+            private final long pieceNo_;
+
+            /**
+             * Creates a new LockDelayChecker
+             * @param touches 
+             */
+            public LockDelayChecker(int touches, long pieceNo) {
+                touches_ = touches;
+                pieceNo_ = pieceNo;
+            }
+            
+            @Override
+            public void run() {
+                if(!floating && touches_ == touches && pieceNo_ == pieceNo) {
+                    lockPiece();
+                }
+            }
         }
     }
 }
