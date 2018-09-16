@@ -8,8 +8,6 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import simpletetris.TetrisKeyAdapter.GameAction;
 import static simpletetris.TetrisKeyAdapter.GameAction.*;
@@ -124,11 +122,14 @@ public class TetrisMatrix {
     public TetrisMatrix() {
         sk = new ScoreKeeper();
         gravity = new Gravity();
+        
         kicked = false;
         hold = null;
         matrix = new Color[WIDTH][HEIGHT];
         bag = new TetrisBag();
         newPiece();
+        
+        new Thread(gravity).start();
     }
     
     /**
@@ -324,9 +325,6 @@ public class TetrisMatrix {
                 }
                 break;
         }
-        if(gravity.enabled && !falling.overlaps(miniMatrix(0, -1))) {
-            gravity.restart();
-        }
     }
     
     /**
@@ -343,7 +341,7 @@ public class TetrisMatrix {
             System.exit(0);
         }
         
-        gravity.restart();
+        gravity.resetGravity();
         
         holdSwappable = true;
     }
@@ -373,8 +371,8 @@ public class TetrisMatrix {
         }
         
         // check for t-spins
-        if(falling instanceof TetT && (lastAction == GameAction.ROTATE_LEFT || 
-                lastAction == GameAction.ROTATE_RIGHT) && immobile()) {
+        if(falling instanceof TetT && (lastAction == ROTATE_LEFT || 
+                lastAction == ROTATE_RIGHT) && immobile()) {
             System.out.println("T-spin " + linesCleared);
             if(kicked && linesCleared < 2) {
                 sk.newLinesCleared(linesCleared, ScoreKeeper.T_SPIN_MINI, allClear());
@@ -529,13 +527,18 @@ public class TetrisMatrix {
      */
     private class Gravity implements Runnable {
         /**
-         * Set to {@code true} to stop gravity
+         * Set to {@code false} to stop gravity
          */
         private boolean enabled = true;
         
+        /**
+         * The counter
+         */
+        private int i = 0;
+        
         @Override
         public void run() {
-            for(int i = 0; true; i++, i %= 100) {
+            for(; true; i++, i %= 100) {
                 /*if(cnt > 1) {
                     System.out.println(cnt + "/60 G");
                 }*/
@@ -543,6 +546,7 @@ public class TetrisMatrix {
                     i = 0;
                 } else if(i == 99) {
                     y++;
+                    lastAction = GRAVITY;
                 }
                 if(falling.overlaps(miniMatrix(0, -1)) && enabled) {
                     enabled = false;
@@ -570,6 +574,13 @@ public class TetrisMatrix {
          */
         public void restart() {
             enabled = true;
+        }
+        
+        /**
+         * Resets gravity so the next piece is affected accordingly
+         */
+        public void resetGravity() {
+            i = 0;
         }
     }
 }
