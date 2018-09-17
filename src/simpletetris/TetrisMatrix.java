@@ -494,6 +494,17 @@ public class TetrisMatrix {
     }
     
     /**
+     * Pushes a line upwards.
+     * @param row which row to push upwards
+     * @param rows how many lines to push up the given line
+     */
+    public void pushUpLine(int row, int rows) {
+        for(int i = 0; i < WIDTH; i++) {
+            matrix[i][row - rows] = matrix[i][row];
+        }
+    }
+    
+    /**
      * Determines whether a line is completely filled
      * @param row which row to check
      * @return whether a line is completely filled
@@ -519,9 +530,28 @@ public class TetrisMatrix {
         return true;
     }
     
+    /**
+     * Determines whether a row is either all filled or all empty<br>
+     * Used to determine whether an all-clear has occured
+     * @param row which row to check
+     * @return whether a row is either all filled or all empty
+     */
     public boolean lineHomogenous(int row) {
         boolean empty = matrix[0][row] == null;
         return (empty)?lineEmpty(row):lineFilled(row);
+    }
+    
+    /**
+     * Adds a given amount of garbage lines to the bottom of the matrix.
+     * @param lines how many garbage lines to add
+     */
+    public void addGarbageLines(int lines) {
+       for(int i = HEIGHT-1; i >= lines; i--) {
+           pushUpLine(i, lines);
+       }
+       
+       for(int i = 0; i < lines; i++) {
+           
     }
     
     /**
