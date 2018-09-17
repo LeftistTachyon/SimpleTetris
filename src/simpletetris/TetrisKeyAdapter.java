@@ -91,14 +91,14 @@ public class TetrisKeyAdapter extends KeyAdapter {
                 pressed.put(GameAction.HOLD, true);
                 matrix.executeAction(GameAction.HOLD);
                 break;
-            case VK_ESCAPE:
+            /*case VK_ESCAPE:
             case VK_F1:
             case VK_P:
                 if(pressed.get(GameAction.PAUSE))
                     break;
                 pressed.put(GameAction.PAUSE, true);
                 matrix.executeAction(GameAction.PAUSE);
-                break;
+                break;*/
         }
     }
 
@@ -138,11 +138,11 @@ public class TetrisKeyAdapter extends KeyAdapter {
             case VK_NUMPAD0:
                 pressed.put(GameAction.HOLD, false);
                 break;
-            case VK_ESCAPE:
+            /*case VK_ESCAPE:
             case VK_F1:
             case VK_P:
                 pressed.put(GameAction.PAUSE, false);
-                break;
+                break;*/
         }
     }
     
@@ -208,6 +208,6 @@ public class TetrisKeyAdapter extends KeyAdapter {
      */
     public static enum GameAction {
         MOVE_LEFT, MOVE_RIGHT, HARD_DROP, SOFT_DROP, 
-                ROTATE_RIGHT, ROTATE_LEFT, HOLD, PAUSE, GRAVITY;
+                ROTATE_RIGHT, ROTATE_LEFT, HOLD, /*PAUSE,*/ GRAVITY;
     }
 }
