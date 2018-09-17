@@ -546,12 +546,25 @@ public class TetrisMatrix {
      * @param lines how many garbage lines to add
      */
     public void addGarbageLines(int lines) {
-       for(int i = HEIGHT-1; i >= lines; i--) {
+       for(int i = lines; i < HEIGHT; i++) {
            pushUpLine(i, lines);
        }
        
+       int hole = (int) (Math.random() * WIDTH);
        for(int i = 0; i < lines; i++) {
-           
+           setGarbageLine(HEIGHT - i - 1, hole);
+       }
+    }
+    
+    /**
+     * Sets a row as a garbage line
+     * @param row which row to set
+     * @param hole the column the hole should be at
+     */
+    private void setGarbageLine(int row, int hole) {
+        for(int i = 0; i < WIDTH; i++) {
+            if(i != hole) matrix[i][row] = Color.GRAY;
+        }
     }
     
     /**
