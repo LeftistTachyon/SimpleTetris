@@ -369,7 +369,7 @@ public class TetrisMatrix {
      */
     public void lockPiece() {
         // stop gravity
-        gravity.pause();
+        gravity.stop();
         
         // reset lock piece checker
         lockDelay.reset();
@@ -395,6 +395,7 @@ public class TetrisMatrix {
         if(falling instanceof TetT && (lastAction == ROTATE_LEFT || 
                 lastAction == ROTATE_RIGHT) && threeCorner()) {
             System.out.println("T-spin " + linesCleared);
+            printDebugMatrix(0, 1);
             if(!immobile() && kicked && linesCleared < 2) {
                 sk.newLinesCleared(linesCleared, ScoreKeeper.T_SPIN_MINI, allClear());
             } else {
@@ -624,6 +625,34 @@ public class TetrisMatrix {
     }
     
     /**
+     * Pauses gravity.
+     */
+    public void stopGravity() {
+        gravity.stop();
+    }
+    
+    /**
+     * Restarts gravity.
+     */
+    public void restartGravity() {
+        gravity.restart();
+    }
+    
+    /**
+     * Pauses gravity.
+     */
+    public void pauseGravity() {
+        gravity.pause();
+    }
+    
+    /**
+     * Resumes gravity.
+     */
+    public void resumeGravity() {
+        gravity.resume();
+    }
+    
+    /**
      * Adds gravity to the pieces
      */
     private class Gravity implements Runnable {
@@ -631,6 +660,11 @@ public class TetrisMatrix {
          * Set to {@code false} to stop gravity
          */
         private boolean enabled = true;
+        
+        /**
+         * Whether this Gravity is paused
+         */
+        private boolean paused = false;
         
         /**
          * The counter
@@ -642,6 +676,15 @@ public class TetrisMatrix {
             /*if(cnt > 1) {
                 System.out.println(cnt + "/60 G");
             }*/
+            if(paused) {
+                if(falling.overlaps(miniMatrix(0, -1)) && enabled) {
+                    enabled = false;
+                }
+                if(!falling.overlaps(miniMatrix(0, -1)) && !enabled) {
+                    enabled = true;
+                }
+                return;
+            }
             if(!enabled) {
                 i = 0;
             } else if(i == 99) {
@@ -659,17 +702,31 @@ public class TetrisMatrix {
         }
         
         /**
-         * Pauses gravity.
+         * Stops gravity.
          */
-        public void pause() {
+        public void stop() {
             enabled = false;
         }
         
         /**
-         * Restarts gravity
+         * Restarts gravity.
          */
         public void restart() {
             enabled = true;
+        }
+        
+        /**
+         * Pauses gravity.
+         */
+        public void pause() {
+            paused = true;
+        }
+        
+        /**
+         * Resumes gravity.
+         */
+        public void resume() {
+            paused = false;
         }
         
         /**

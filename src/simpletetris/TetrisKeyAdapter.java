@@ -187,6 +187,7 @@ public class TetrisKeyAdapter extends KeyAdapter {
                 System.err.println("DAS thread interrupted.");
             }
             
+            matrix.pauseGravity();
             while(pressed.get(toExecute)) {
                 if(cnt > 1) {
                     cnt--;
@@ -199,6 +200,7 @@ public class TetrisKeyAdapter extends KeyAdapter {
                     System.err.println("DAS thread interrupted.");
                 }
             }
+            matrix.resumeGravity();
             cnt--;
         }
     }
@@ -208,6 +210,6 @@ public class TetrisKeyAdapter extends KeyAdapter {
      */
     public static enum GameAction {
         MOVE_LEFT, MOVE_RIGHT, HARD_DROP, SOFT_DROP, 
-                ROTATE_RIGHT, ROTATE_LEFT, HOLD, /*PAUSE,*/ GRAVITY;
+                ROTATE_RIGHT, ROTATE_LEFT, HOLD, GRAVITY;
     }
 }
