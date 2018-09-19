@@ -374,6 +374,9 @@ public class TetrisMatrix {
         // reset lock piece checker
         lockDelay.reset();
         
+        // determine immobility
+        boolean immobile = immobile();
+        
         // lock
         Color[][] copy = falling.getDrawBox();
         for(int r= 0; r < copy.length; r++) {
@@ -396,7 +399,7 @@ public class TetrisMatrix {
                 lastAction == ROTATE_RIGHT) && threeCorner()) {
             System.out.println("T-spin " + linesCleared);
             printDebugMatrix(0, 1);
-            if(!immobile() && kicked && linesCleared < 2) {
+            if(!immobile && kicked && linesCleared < 2) {
                 sk.newLinesCleared(linesCleared, ScoreKeeper.T_SPIN_MINI, allClear());
             } else {
                 sk.newLinesCleared(linesCleared, ScoreKeeper.T_SPIN, allClear());
