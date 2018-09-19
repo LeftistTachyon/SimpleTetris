@@ -276,7 +276,6 @@ public class TetrisMatrix {
      * @param ga the action to execute.
      */
     public void executeAction(GameAction ga) {
-        System.out.println(ga.name());
         switch(ga) {
             case ROTATE_LEFT:
                 Point kickL = falling.getWallKick(this, 
@@ -286,7 +285,7 @@ public class TetrisMatrix {
                 x += kickL.x;
                 y -= kickL.y;
                 kicked = kickL.x != 0 || kickL.y != 0;
-                if(kicked) {
+                if(kicked || (falling instanceof TetT && immobile())) {
                     lockDelay.addTouch();
                 }
                 lastAction = ga;
@@ -299,7 +298,7 @@ public class TetrisMatrix {
                 x += kickR.x;
                 y -= kickR.y;
                 kicked = kickR.x != 0 || kickR.y != 0;
-                if(kicked) {
+                if(kicked || (falling instanceof TetT && immobile())) {
                     lockDelay.addTouch();
                 }
                 lastAction = ga;
@@ -398,7 +397,6 @@ public class TetrisMatrix {
         if(falling instanceof TetT && (lastAction == ROTATE_LEFT || 
                 lastAction == ROTATE_RIGHT) && threeCorner()) {
             System.out.println("T-spin " + linesCleared);
-            printDebugMatrix(0, 1);
             if(!immobile && kicked && linesCleared < 2) {
                 sk.newLinesCleared(linesCleared, ScoreKeeper.T_SPIN_MINI, allClear());
             } else {
