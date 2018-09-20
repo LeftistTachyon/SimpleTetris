@@ -236,7 +236,6 @@ public class TetrisMatrix {
         }
         
         if(rowsCleared != null) {
-            System.out.println(clearAnimation);
             if(clearAnimation <= -255) {
                 for(int i:rowsCleared) {
                     for (int j = i; j >= 1; j--) {
@@ -247,7 +246,7 @@ public class TetrisMatrix {
                 
                 rowsCleared = null;
                 
-                gravity.stop();
+                gravity.enable();
                 
                 newPiece();
                 System.out.println(gravity.enabled + "\t" + gravity.paused + "\t" + gravity.i);
@@ -259,7 +258,7 @@ public class TetrisMatrix {
                     g2D.fillRect(0, yPos, MINO_WIDTH * WIDTH, MINO_WIDTH);
                 }
 
-                clearAnimation -= 51;
+                clearAnimation -= 25.5;
             }
         }
         
@@ -456,7 +455,7 @@ public class TetrisMatrix {
      */
     public void lockPiece() {
         // stop gravity
-        gravity.stop();
+        gravity.disable();
         
         // reset lock piece checker
         lockDelay.reset();
@@ -511,7 +510,7 @@ public class TetrisMatrix {
             newPiece();
         } else {
             falling = null;
-            clearAnimation = 255;
+            clearAnimation = 510;
         }
     }
     
@@ -749,17 +748,17 @@ public class TetrisMatrix {
     }
     
     /**
-     * Pauses gravity.
+     * Disables gravity.
      */
-    public void stopGravity() {
-        gravity.stop();
+    public void disableGravity() {
+        gravity.disable();
     }
     
     /**
-     * Restarts gravity.
+     * Enables gravity.
      */
-    public void restartGravity() {
-        gravity.restart();
+    public void enableGravity() {
+        gravity.enable();
     }
     
     /**
@@ -800,6 +799,7 @@ public class TetrisMatrix {
             /*if(cnt > 1) {
                 System.out.println(cnt + "/60 G");
             }*/
+            System.out.println("R_G");
             if(paused) {
                 if(falling.overlaps(miniMatrix(0, -1)) && enabled) {
                     enabled = false;
@@ -828,14 +828,14 @@ public class TetrisMatrix {
         /**
          * Stops gravity.
          */
-        public void stop() {
+        public void disable() {
             enabled = false;
         }
         
         /**
          * Restarts gravity.
          */
-        public void restart() {
+        public void enable() {
             enabled = true;
         }
         
@@ -893,6 +893,7 @@ public class TetrisMatrix {
 
         @Override
         public void run() {
+            System.out.println("R_LD");
             if(falling.overlaps(miniMatrix(0, -1)) && floating) {
                 floating = false;
                 touches++;
