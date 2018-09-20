@@ -96,6 +96,16 @@ public class TetrisMatrix {
     private ArrayList<ActionListener> listeners = null;
     
     /**
+     * Controls the line clear animation
+     */
+    private LinkedList<Integer> rowsCleared;
+    
+    /*
+     * Controls the line clear animation
+     */
+    private double clearAnimation;
+    
+    /**
      * The width of the matrix
      */
     public static final int WIDTH = 10;
@@ -149,6 +159,8 @@ public class TetrisMatrix {
             if(garbageToSend != null) 
                 System.out.println("SEND" + garbageToSend);
         });
+        
+        rowsCleared = null;
         
         gravity = new Gravity();
         lockDelay = new LockDelay();
@@ -221,6 +233,17 @@ public class TetrisMatrix {
                             tetro[i][j], g2D);
                 }
             }
+        }
+        
+        if(rowsCleared != null) {
+            Color whitish = new Color(255, 255, 255, (clearAnimation >= 0)?((clearAnimation <= 255)?(int) clearAnimation):255):0;
+            g2D.setColor(whitish);
+            for(int row:rowsCleared) {
+                int yPos = MINO_WIDTH * row;
+                g2D.fill(0, yPos, MINO_WIDTH * WIDTH, MINO_WIDTH);
+            }
+            
+            clearAnimation += 25.5;
         }
         
         g2D.setClip(null);
@@ -453,21 +476,40 @@ public class TetrisMatrix {
             sk.newLinesCleared(linesCleared, ScoreKeeper.NORMAL, allClear());
         }
         
-        // remove lines
+        // empty lines
         for(int i = 0; i < HEIGHT; i++) {
             if(lineFilled(i)) {
+                if(rowsCleared == null) rowsCleared = new LinkedList<>();
+                for(int j = i; j >= 0; j--) {
+                    emptyLine(j);
+                    rowsCleared.add(j);
+                }
+            }
+        }
+        /*
+        To clear all lines
+        for(int i = 0; i < HEIGHT; i++) {
+            if(rowsCleared.contains(i)) {
                 for(int j = i; j >= 1; j--) {
                     clearLine(j);
                 }
                 emptyLine(0);
             }
         }
+        rowsCleared = null;
+        animation = -1;
+        */
         
         // add garbage
         addGarbageLines(gd.getNextGarbage());
         
         // after locking, reset
-        newPiece();
+        if(linesCleared == 0) {
+            newPiece();
+        } else {
+            falling = null;
+            animation = 0;
+        }
     }
     
     /**
