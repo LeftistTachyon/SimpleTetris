@@ -5,13 +5,17 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 import simpletetris.TetrisKeyAdapter.GameAction;
 import static simpletetris.TetrisKeyAdapter.GameAction.*;
 import static simpletetris.Mino.*;
@@ -59,7 +63,12 @@ public class TetrisMatrix {
     /**
      * The ScoreKeeper for this TetrisMatrix.
      */
-    private ScoreKeeper sk;
+    private final ScoreKeeper sk;
+    
+    /**
+     * The GarbageDealer for this TetrisMatrix.
+     */
+    private final GarbageDealer gd;
     
     /**
      * Determines whether the piece was just kicked
@@ -80,6 +89,11 @@ public class TetrisMatrix {
      * Adding lock delay for tetrominos
      */
     private final LockDelay lockDelay;
+    
+    /**
+     * All of the listeners
+     */
+    private ArrayList<ActionListener> listeners = null;
     
     /**
      * The width of the matrix
@@ -129,6 +143,13 @@ public class TetrisMatrix {
      */
     public TetrisMatrix() {
         sk = new ScoreKeeper();
+        gd = new GarbageDealer();
+        sk.addListener((ActionEvent e) -> {
+            String garbageToSend = gd.counterGarbage(e.getActionCommand());
+            if(garbageToSend != null) 
+                System.out.println("SEND" + garbageToSend);
+        });
+        
         gravity = new Gravity();
         lockDelay = new LockDelay();
         
@@ -184,18 +205,21 @@ public class TetrisMatrix {
             }
         }
         
-        int tlx = x*MINO_WIDTH, tly = y*MINO_WIDTH, 
-                tlGy = getGhostY()*MINO_WIDTH;
-        g2D.setColor(falling.getColor());
-        Color[][] tetro = falling.getDrawBox();
-        for(int i = 0; i < tetro.length; i++) {
-            for(int j = 0; j < tetro[i].length; j++) {
-                if(tetro[i][j] == null) 
-                    continue;
-                g2D.drawRect(tlx + i*MINO_WIDTH + 7, tlGy + j*MINO_WIDTH + 7, 
-                        MINO_WIDTH - 14, MINO_WIDTH - 14);
-                drawMino(tlx + i*MINO_WIDTH, tly + j*MINO_WIDTH, 
-                        tetro[i][j], g2D);
+        if(falling != null) {
+            int tlx = x * MINO_WIDTH, tly = y * MINO_WIDTH,
+                    tlGy = getGhostY() * MINO_WIDTH;
+            g2D.setColor(falling.getColor());
+            Color[][] tetro = falling.getDrawBox();
+            for (int i = 0; i < tetro.length; i++) {
+                for (int j = 0; j < tetro[i].length; j++) {
+                    if (tetro[i][j] == null) {
+                        continue;
+                    }
+                    g2D.drawRect(tlx + i * MINO_WIDTH + 7, tlGy + j * MINO_WIDTH + 7,
+                            MINO_WIDTH - 14, MINO_WIDTH - 14);
+                    drawMino(tlx + i * MINO_WIDTH, tly + j * MINO_WIDTH,
+                            tetro[i][j], g2D);
+                }
             }
         }
         
@@ -276,7 +300,6 @@ public class TetrisMatrix {
      * @param ga the action to execute.
      */
     public void executeAction(GameAction ga) {
-        System.out.println(ga.name());
         switch(ga) {
             case ROTATE_LEFT:
                 Point kickL = falling.getWallKick(this, 
@@ -286,7 +309,7 @@ public class TetrisMatrix {
                 x += kickL.x;
                 y -= kickL.y;
                 kicked = kickL.x != 0 || kickL.y != 0;
-                if(kicked) {
+                if(kicked || (falling instanceof TetT && immobile())) {
                     lockDelay.addTouch();
                 }
                 lastAction = ga;
@@ -299,7 +322,7 @@ public class TetrisMatrix {
                 x += kickR.x;
                 y -= kickR.y;
                 kicked = kickR.x != 0 || kickR.y != 0;
-                if(kicked) {
+                if(kicked || (falling instanceof TetT && immobile())) {
                     lockDelay.addTouch();
                 }
                 lastAction = ga;
@@ -353,10 +376,33 @@ public class TetrisMatrix {
         y = 20;
         x = (WIDTH - falling.getRotationBoxWidth())/2;
         
+        for(int i = 0; i < 2 /* The leeway is by 2 */; i++) {
+            if(falling.overlaps(miniMatrix(0, -2)))
+                y--;
+        }
         if(falling.overlaps(miniMatrix())){
+            // no falling piece
+            falling = null;
+            
             // Game over!
-            System.out.println("\nGame over via block out");
-            System.exit(0);
+            notifyListeners("GAMEOVER");
+        }
+        if(falling.overlaps(miniMatrix(0, -1))) {
+            // ditch the piece first
+            Color[][] copy = falling.getDrawBox();
+            for(int r= 0; r < copy.length; r++) {
+                for(int c = 0; c < copy[r].length; c++) {
+                    if(copy[r][c] != null && matrix[r + x][c + y] == null) {
+                        matrix[r + x][c + y] = copy[r][c];
+                    }
+                }
+            }
+            
+            // no falling piece
+            falling = null;
+            
+            // Game over!
+            notifyListeners("GAMEOVER");
         }
         
         gravity.resetGravity();
@@ -398,7 +444,6 @@ public class TetrisMatrix {
         if(falling instanceof TetT && (lastAction == ROTATE_LEFT || 
                 lastAction == ROTATE_RIGHT) && threeCorner()) {
             System.out.println("T-spin " + linesCleared);
-            printDebugMatrix(0, 1);
             if(!immobile && kicked && linesCleared < 2) {
                 sk.newLinesCleared(linesCleared, ScoreKeeper.T_SPIN_MINI, allClear());
             } else {
@@ -417,6 +462,9 @@ public class TetrisMatrix {
                 emptyLine(0);
             }
         }
+        
+        // add garbage
+        addGarbageLines(gd.getNextGarbage());
         
         // after locking, reset
         newPiece();
@@ -628,6 +676,34 @@ public class TetrisMatrix {
     }
     
     /**
+     * Adds an ActionListener to listen to this TetrisMatrix
+     * @param al the ActionListener to add
+     */
+    public void addActionListener(ActionListener al) {
+        if(listeners == null) listeners = new ArrayList<>();
+        listeners.add(al);
+    }
+    
+    /**
+     * Clears all listeners.
+     */
+    public void clearListeners() {
+        listeners = null;
+    }
+    
+    /**
+     * Notifies listeners of a message / occurance
+     * @param message the message to send
+     */
+    private void notifyListeners(String message) {
+        if(listeners == null) return;
+        ActionEvent ae = new ActionEvent(this, 0, message);
+        for(ActionListener listener : listeners) {
+            listener.actionPerformed(ae);
+        }
+    }
+    
+    /**
      * Pauses gravity.
      */
     public void stopGravity() {
@@ -766,7 +842,8 @@ public class TetrisMatrix {
         public LockDelay() {
             pieceNo = 0;
             touches = 0;
-            floating = false;
+            floating = (falling == null) ? false 
+                    : !falling.overlaps(miniMatrix(0, -1));
         }
 
         @Override
@@ -788,7 +865,7 @@ public class TetrisMatrix {
          */
         public void reset() {
             touches = 0;
-            floating = false;
+            floating = !falling.overlaps(miniMatrix(0, -1));
             pieceNo++;
         }
         

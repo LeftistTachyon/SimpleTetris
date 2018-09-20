@@ -1,7 +1,10 @@
 package simpletetris;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  * The Frame for this application
@@ -28,6 +31,25 @@ public class TetrisFrame extends JFrame {
         
         TetrisKeyAdapter tka = new TetrisKeyAdapter(panel.matrix);
         super.addKeyListener(tka);
+        
+        TetrisFrame _this = this;
+        
+        panel.matrix.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String message = e.getActionCommand();
+                // one-string commands
+                switch(message) {
+                    case "GAMEOVER":
+                        JOptionPane.showMessageDialog(_this, "Game Over!", 
+                                "Game Over", JOptionPane.INFORMATION_MESSAGE);
+                        System.exit(0);
+                        break;
+                }
+                
+                // info commands
+            }
+        });
         
         super.setVisible(true);
         new Thread(panel).start();

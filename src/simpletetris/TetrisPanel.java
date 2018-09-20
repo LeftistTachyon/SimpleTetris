@@ -3,7 +3,6 @@ package simpletetris;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
@@ -16,6 +15,11 @@ public class TetrisPanel extends JPanel implements Runnable {
      * The matrix being shown.
      */
     public final TetrisMatrix matrix;
+    
+    /**
+     * Whether to stop
+     */
+    private boolean stop = false;
 
     /**
      * Creates a new TetrisPanel.
@@ -58,7 +62,7 @@ public class TetrisPanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        while(true) {
+        while(!stop) {
             repaint();
             try {
                 Thread.sleep(20);
@@ -66,5 +70,12 @@ public class TetrisPanel extends JPanel implements Runnable {
                 System.err.println("Interrupted.");
             }
         }
+    }
+    
+    /**
+     * Stops drawing.
+     */
+    public void stop() {
+        stop = true;
     }
 }
