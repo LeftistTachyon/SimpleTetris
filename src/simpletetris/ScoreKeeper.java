@@ -101,21 +101,25 @@ public class ScoreKeeper {
                     case 1:
                         // single
                         // 0 extra
+                        System.out.println("lmao1");
                         bb = false;
                         break;
                     case 2:
                         // double
                         newLinesToSend = 1;
+                        System.out.println("lmao2");
                         bb = false;
                         break;
                     case 3:
                         // triple
                         newLinesToSend = 2;
+                        System.out.println("lmao3");
                         bb = false;
                         break;
                     case 4:
                         // tetris
                         newLinesToSend = 4;
+                        System.out.println("lmao4");
                         bb = true;
                         break;
                 }
@@ -125,24 +129,29 @@ public class ScoreKeeper {
                     case 1:
                         // T-spin single
                         newLinesToSend = 2;
+                        System.out.println("lmaoT1");
                         break;
                     case 2:
                         // T-spin double
                         newLinesToSend = 4;
+                        System.out.println("lmaoT2");
                         break;
                     case 3:
                         // T-spin triple
                         newLinesToSend = 6;
+                        System.out.println("lmaoT3");
                         break;
                     default:
                         throw new IllegalArgumentException(
                                 "You cleared 4 lines with a t-piece?");
                 }
+                System.out.println("lmaoT");
                 bb = true;
                 break;
             case T_SPIN_MINI:
                 // T-spin mini
                 newLinesToSend = 1;
+                System.out.println("lmaot");
                 bb = true;
                 break;
         }
@@ -152,6 +161,8 @@ public class ScoreKeeper {
         newLinesToSend += comboBonus();
         if(perfectClear) newLinesToSend += 10;
         if(b2b) newLinesToSend++;
+        
+        System.out.println("B2B: " + bb);
         
         b2b = bb;
         linesToSend += newLinesToSend;

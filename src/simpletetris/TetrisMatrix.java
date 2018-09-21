@@ -377,16 +377,22 @@ public class TetrisMatrix {
                 lastAction = ga;
                 break;
             case MOVE_LEFT:
-                if(!falling.overlaps(miniMatrix(-1, 0))) x--;
-                lastAction = ga;
+                if(!falling.overlaps(miniMatrix(-1, 0))) {
+                    x--;
+                    lastAction = ga;
+                }
                 break;
             case MOVE_RIGHT:
-                if(!falling.overlaps(miniMatrix(1, 0))) x++;
-                lastAction = ga;
+                if(!falling.overlaps(miniMatrix(1, 0))) {
+                    x++;
+                    lastAction = ga;
+                }
                 break;
             case SOFT_DROP:
-                if(!falling.overlaps(miniMatrix(0, -1))) y++;
-                lastAction = ga;
+                if(!falling.overlaps(miniMatrix(0, -1))) {
+                    y++;
+                    lastAction = ga;
+                }
                 break;
             case HARD_DROP:
                 y = getGhostY();
@@ -496,6 +502,7 @@ public class TetrisMatrix {
         }
         
         // check for t-spins
+        if(falling instanceof TetT) System.out.println("3-corner: " + threeCorner() + "\tLast action: " + lastAction.name());
         if(falling instanceof TetT && (lastAction == ROTATE_LEFT || 
                 lastAction == ROTATE_RIGHT) && threeCorner()) {
             System.out.println("T-spin " + linesCleared);
