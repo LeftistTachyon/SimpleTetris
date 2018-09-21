@@ -45,10 +45,11 @@ public class GarbageDealer {
         Scanner adder = new Scanner(counterLines);
         while(adder.hasNextInt()) {
             int counter = -adder.nextInt();
+            System.out.println(counter);
             while(counter < 0 && !garbageQueue.isEmpty()) {
                 counter += garbageQueue.removeFirst();
             }
-            garbageQueue.addFirst(counter);
+            if(counter > 0) garbageQueue.addFirst(counter);
         }
         
         if(adder.hasNextInt()) {
@@ -62,12 +63,22 @@ public class GarbageDealer {
     }
     
     /**
-     * Returns the next chunk of garbage to add to the bottom
+     * Returns the next chunk of garbage to add to the bottom and removes it
      * @return the next chunk of garbage to add to the bottom<br>
      * Returns 0 if the queue is empty
      */
     public int getNextGarbage() {
         Integer next = garbageQueue.pollFirst();
+        return (next == null)?0:next;
+    }
+    
+    /**
+     * Returns the next chunk of garbage to add to the bottom
+     * @return the next chunk of garbage to add to the bottom<br>
+     * Returns 0 if the queue is empty
+     */
+    public int peekNextGarbage() {
+        Integer next = garbageQueue.peekFirst();
         return (next == null)?0:next;
     }
 }

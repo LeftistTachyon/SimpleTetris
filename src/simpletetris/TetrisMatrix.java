@@ -155,10 +155,12 @@ public class TetrisMatrix {
         sk = new ScoreKeeper();
         gd = new GarbageDealer();
         sk.addListener((ActionEvent e) -> {
+            System.out.println(e.getActionCommand());
             String garbageToSend = gd.counterGarbage(e.getActionCommand());
             if(garbageToSend != null) 
                 System.out.println("SEND" + garbageToSend);
         });
+        gd.addGarbage("4 2 3");
         
         rowsCleared = null;
         
@@ -246,12 +248,16 @@ public class TetrisMatrix {
                 
                 rowsCleared = null;
                 
-                gravity.enable();
+                // gravity.enable();
+                
+                addGarbage();
                 
                 newPiece();
-                System.out.println(gravity.enabled + "\t" + gravity.paused + "\t" + gravity.i);
             } else {
-                Color whitish = new Color(255, 255, 255, (clearAnimation >= 0)?((clearAnimation <= 255)?(int) clearAnimation:255):0);
+                Color whitish = new Color(255, 255, 255, (clearAnimation >= 0) 
+                        ? ((clearAnimation <= 255) ? (int) clearAnimation : 255) 
+                        : 0);
+                g2D.setStroke(new BasicStroke());
                 g2D.setColor(whitish);
                 for(int row:rowsCleared) {
                     int yPos = MINO_WIDTH * row;
@@ -259,6 +265,9 @@ public class TetrisMatrix {
                 }
 
                 clearAnimation -= 25.5;
+                
+                g2D.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, 
+                        BasicStroke.JOIN_MITER));
             }
         }
         
@@ -397,8 +406,7 @@ public class TetrisMatrix {
                         falling.resetRotationCount();
                         hold.rotateTo(Tetromino.UP);
                         
-                        y = 20;
-                        x = (WIDTH - falling.getRotationBoxWidth())/2;
+                        moveTetToStart();
                     }
                     
                     holdSwappable = false;
@@ -413,6 +421,17 @@ public class TetrisMatrix {
     public void newPiece() {
         falling = bag.remove();
         
+        moveTetToStart();
+        
+        gravity.resetGravity();
+        
+        holdSwappable = true;
+    }
+    
+    /**
+     * Moves the tetromino to the start
+     */
+    private void moveTetToStart() {
         y = 20;
         x = (WIDTH - falling.getRotationBoxWidth())/2;
         
@@ -444,10 +463,6 @@ public class TetrisMatrix {
             // Game over!
             notifyListeners("GAMEOVER");
         }
-        
-        gravity.resetGravity();
-        
-        holdSwappable = true;
     }
     
     /**
@@ -502,15 +517,29 @@ public class TetrisMatrix {
             }
         }
         
-        // add garbage
-        addGarbageLines(gd.getNextGarbage());
-        
         // after locking, reset
         if(linesCleared == 0) {
+            // add garbage
+            addGarbage();
             newPiece();
         } else {
             falling = null;
             clearAnimation = 510;
+        }
+    }
+    
+    /**
+     * Adds garbage needed for this drop
+     */
+    private void addGarbage() {
+        int temp = 0;
+        while(true) {
+            int temptemp = gd.peekNextGarbage();
+            if(temptemp == 0) return;
+            temp += temptemp;
+            if(temp > 5) return;
+            addGarbageLines(gd.getNextGarbage());
+            System.out.println("Oof! " + temptemp + " lines of garbage");
         }
     }
     
@@ -645,6 +674,10 @@ public class TetrisMatrix {
        for(int i = lines; i < HEIGHT; i++) {
            pushUpLine(i, lines);
        }
+       
+        for(int i = 0; i < lines; i++) {
+            emptyLine(HEIGHT - i - 1);
+        }
        
        int hole = (int) (Math.random() * WIDTH);
        for(int i = 0; i < lines; i++) {
@@ -796,33 +829,41 @@ public class TetrisMatrix {
         
         @Override
         public void run() {
-            /*if(cnt > 1) {
-                System.out.println(cnt + "/60 G");
-            }*/
-            System.out.println("R_G");
-            if(paused) {
-                if(falling.overlaps(miniMatrix(0, -1)) && enabled) {
-                    enabled = false;
+            try {
+                /*if(cnt > 1) {
+                    System.out.println(cnt + "/60 G");
+                }*/
+                if(falling != null) {
+                    if (paused) {
+                        if(falling == null) return;
+                        if (falling.overlaps(miniMatrix(0, -1)) && enabled) {
+                            enabled = false;
+                        }
+                        if(falling == null) return;
+                        if (!falling.overlaps(miniMatrix(0, -1)) && !enabled) {
+                            enabled = true;
+                        }
+                        return;
+                    }
+                    if (!enabled) {
+                        i = 0;
+                    } else if (i == 99) {
+                        y++;
+                        lastAction = GRAVITY;
+                    }
+                    if (falling.overlaps(miniMatrix(0, -1)) && enabled) {
+                        enabled = false;
+                    }
+                    if (!falling.overlaps(miniMatrix(0, -1)) && !enabled) {
+                        enabled = true;
+                    }
+                    i++;
+                    i %= 100;
                 }
-                if(!falling.overlaps(miniMatrix(0, -1)) && !enabled) {
-                    enabled = true;
-                }
-                return;
+            } catch (Exception e) {
+                // Just in case stuff happens
+                e.printStackTrace();
             }
-            if(!enabled) {
-                i = 0;
-            } else if(i == 99) {
-                y++;
-                lastAction = GRAVITY;
-            }
-            if(falling.overlaps(miniMatrix(0, -1)) && enabled) {
-                enabled = false;
-            }
-            if(!falling.overlaps(miniMatrix(0, -1)) && !enabled) {
-                enabled = true;
-            }
-            i++;
-            i %= 100;
         }
         
         /**
@@ -893,16 +934,21 @@ public class TetrisMatrix {
 
         @Override
         public void run() {
-            System.out.println("R_LD");
-            if(falling.overlaps(miniMatrix(0, -1)) && floating) {
-                floating = false;
-                touches++;
-                Executors.newScheduledThreadPool(1).schedule(
-                        new LockDelayChecker(touches, pieceNo), 
-                        500, TimeUnit.MILLISECONDS);
-            }
-            if(!falling.overlaps(miniMatrix(0, -1)) && !floating) {
-                floating = true;
+            try {
+                if(falling != null) {
+                    if (falling.overlaps(miniMatrix(0, -1)) && floating) {
+                        floating = false;
+                        touches++;
+                        Executors.newScheduledThreadPool(1).schedule(
+                                new LockDelayChecker(touches, pieceNo),
+                                500, TimeUnit.MILLISECONDS);
+                    }
+                    if (!falling.overlaps(miniMatrix(0, -1)) && !floating) {
+                        floating = true;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         
