@@ -1,8 +1,11 @@
 package simpletetris;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Scanner;
+import static simpletetris.TetrisMatrix.*;
 
 /**
  * A class that handles dealing garbage to the Matrix<br>
@@ -16,10 +19,16 @@ public class GarbageDealer {
     private Deque<Integer> garbageQueue;
     
     /**
+     * The number of lines pending in the queue
+     */
+    private int linesToRecieve;
+    
+    /**
      * Creates a new GarbageDealer
      */
     public GarbageDealer() {
         garbageQueue = new LinkedList<>();
+        linesToRecieve = 0;
     }
     
     /**
@@ -28,7 +37,11 @@ public class GarbageDealer {
      */
     public void addGarbage(String lines) {
         Scanner adder = new Scanner(lines);
-        while(adder.hasNextInt()) garbageQueue.add(adder.nextInt());
+        while(adder.hasNextInt()) {
+            int next = adder.nextInt();
+            garbageQueue.add(next);
+            linesToRecieve += next;
+        }
     }
     
     /**
@@ -45,7 +58,7 @@ public class GarbageDealer {
         Scanner adder = new Scanner(counterLines);
         while(adder.hasNextInt()) {
             int counter = -adder.nextInt();
-            System.out.println(counter);
+            linesToRecieve += counter;
             while(counter < 0 && !garbageQueue.isEmpty()) {
                 counter += garbageQueue.removeFirst();
             }
@@ -69,7 +82,9 @@ public class GarbageDealer {
      */
     public int getNextGarbage() {
         Integer next = garbageQueue.pollFirst();
-        return (next == null)?0:next;
+        int output = (next == null)?0:next;
+        linesToRecieve -= output;
+        return output;
     }
     
     /**
@@ -80,5 +95,36 @@ public class GarbageDealer {
     public int peekNextGarbage() {
         Integer next = garbageQueue.peekFirst();
         return (next == null)?0:next;
+    }
+    
+    /**
+     * Returns whether there is garbage queued up
+     * @return whether there is garbage queued up
+     */
+    public boolean hasGarbage() {
+        return !garbageQueue.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return garbageQueue.toString();
+    }
+    
+    /**
+     * Determines how a bar should be filled
+     * @return how a bar should be filled
+     */
+    public int[] getBarFill() {
+        int[] output = new int[20];
+        for(int i = 0; i < output.length; i++) {
+            output[i] = linesToRecieve/20;
+        }
+        
+        int leftovers = linesToRecieve%20;
+        for(int i = output.length-1; i >= leftovers; i--) {
+            output[i]++;
+        }
+        
+        return output;
     }
 }

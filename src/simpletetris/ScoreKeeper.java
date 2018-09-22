@@ -1,8 +1,11 @@
 package simpletetris;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import static simpletetris.TetrisMatrix.*;
 
 /**
  * Keeps track of the score<br>
@@ -73,9 +76,10 @@ public class ScoreKeeper {
      * @param clearType what type of line clear (e.g. standard, t-spin, 
      * t-spin mini)
      * @param perfectClear whether the move resulted in a perfect clear
+     * @param hasGarbage whether there is garbage queued up
      */
     public void newLinesCleared(int linesCleared, int clearType, 
-            boolean perfectClear) {
+            boolean perfectClear, boolean hasGarbage) {
         if(linesCleared == 0) {
             combo = 0;
             
@@ -100,25 +104,21 @@ public class ScoreKeeper {
                     case 1:
                         // single
                         // 0 extra
-                        System.out.println("lmao1");
                         bb = false;
                         break;
                     case 2:
                         // double
                         newLinesToSend = 1;
-                        System.out.println("lmao2");
                         bb = false;
                         break;
                     case 3:
                         // triple
                         newLinesToSend = 2;
-                        System.out.println("lmao3");
                         bb = false;
                         break;
                     case 4:
                         // tetris
                         newLinesToSend = 4;
-                        System.out.println("lmao4");
                         bb = true;
                         break;
                 }
@@ -128,29 +128,24 @@ public class ScoreKeeper {
                     case 1:
                         // T-spin single
                         newLinesToSend = 2;
-                        System.out.println("lmaoT1");
                         break;
                     case 2:
                         // T-spin double
                         newLinesToSend = 4;
-                        System.out.println("lmaoT2");
                         break;
                     case 3:
                         // T-spin triple
-                        newLinesToSend = 6;
                         System.out.println("lmaoT3");
                         break;
                     default:
                         throw new IllegalArgumentException(
                                 "You cleared 4 lines with a t-piece?");
                 }
-                System.out.println("lmaoT");
                 bb = true;
                 break;
             case T_SPIN_MINI:
                 // T-spin mini
                 newLinesToSend = 1;
-                System.out.println("lmaot");
                 bb = true;
                 break;
         }
@@ -161,13 +156,19 @@ public class ScoreKeeper {
         if(perfectClear) newLinesToSend += 10;
         if(b2b && bb) newLinesToSend++;
         
-        if(linesCleared == 4) System.out.println("BB: " + bb);
-        System.out.println("B2B: " + b2b);
-        
         b2b = bb;
         linesToSend += newLinesToSend;
         
         if(newLinesToSend != 0) linesToSendCommand += newLinesToSend + " ";
+        
+        if(hasGarbage) {
+            String command = linesToSendCommand.trim();
+            if(command.length() > 0)
+                notifyListeners(linesToSendCommand.trim());
+            linesSent += linesToSend;
+            linesToSend = 0;
+            linesToSendCommand = "";
+        }
     }
     
     /**
@@ -222,5 +223,23 @@ public class ScoreKeeper {
         for(ActionListener listener : listeners) {
             listener.actionPerformed(event);
         }
+    }
+    
+    /**
+     * Determines how a bar should be filled
+     * @return how a bar should be filled
+     */
+    public int[] getBarFill() {
+        int[] output = new int[20];
+        for(int i = 0; i < output.length; i++) {
+            output[i] = linesToSend/20;
+        }
+        
+        int leftovers = linesToSend%20;
+        for(int i = output.length-1; i >= leftovers; i--) {
+            output[i]++;
+        }
+        
+        return output;
     }
 }
