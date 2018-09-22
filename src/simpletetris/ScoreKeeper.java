@@ -63,7 +63,7 @@ public class ScoreKeeper {
         linesToSend = 0;
         linesToSendCommand = "";
         
-        combo = -1;
+        combo = 0;
         b2b = false;
     }
     
@@ -77,8 +77,7 @@ public class ScoreKeeper {
     public void newLinesCleared(int linesCleared, int clearType, 
             boolean perfectClear) {
         if(linesCleared == 0) {
-            b2b = false;
-            combo = -1;
+            combo = 0;
             
             String command = linesToSendCommand.trim();
             if(command.length() > 0)
@@ -160,9 +159,10 @@ public class ScoreKeeper {
         combo++;
         newLinesToSend += comboBonus();
         if(perfectClear) newLinesToSend += 10;
-        if(b2b) newLinesToSend++;
+        if(b2b && bb) newLinesToSend++;
         
-        System.out.println("B2B: " + bb);
+        if(linesCleared == 4) System.out.println("BB: " + bb);
+        System.out.println("B2B: " + b2b);
         
         b2b = bb;
         linesToSend += newLinesToSend;

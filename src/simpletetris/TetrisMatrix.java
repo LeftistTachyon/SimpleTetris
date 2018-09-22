@@ -160,7 +160,7 @@ public class TetrisMatrix {
             if(garbageToSend != null) 
                 System.out.println("SEND" + garbageToSend);
         });
-        gd.addGarbage("4 2 3");
+        // gd.addGarbage("4 2 3");
         
         rowsCleared = null;
         
