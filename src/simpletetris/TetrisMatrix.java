@@ -326,7 +326,7 @@ public class TetrisMatrix {
                         g2D.setColor(green);
                         break;
                     case 2:
-                        g2D.setColor(new Color(128, 128, 0));
+                        g2D.setColor(new Color(13, 152, 186));
                         break;
                     case 3:
                         g2D.setColor(blue);
