@@ -1,11 +1,15 @@
 package simpletetris;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import static simpletetris.TetrisMatrix.*;
 
 /**
- * Keeps track of the score
+ * Keeps track of the score<br>
+ * Handles outgoing garbage
  * @author Jed Wang
  */
 public class ScoreKeeper {
@@ -60,9 +64,9 @@ public class ScoreKeeper {
     public ScoreKeeper() {
         linesSent = 0;
         linesToSend = 0;
-        linesToSendCommand = "SEND";
+        linesToSendCommand = "";
         
-        combo = -1;
+        combo = 0;
         b2b = false;
     }
     
@@ -72,17 +76,19 @@ public class ScoreKeeper {
      * @param clearType what type of line clear (e.g. standard, t-spin, 
      * t-spin mini)
      * @param perfectClear whether the move resulted in a perfect clear
+     * @param hasGarbage whether there is garbage queued up
      */
     public void newLinesCleared(int linesCleared, int clearType, 
-            boolean perfectClear) {
+            boolean perfectClear, boolean hasGarbage) {
         if(linesCleared == 0) {
-            b2b = false;
-            combo = -1;
+            combo = 0;
             
-            notifyListeners(linesToSendCommand.trim());
+            String command = linesToSendCommand.trim();
+            if(command.length() > 0)
+                notifyListeners(linesToSendCommand.trim());
             linesSent += linesToSend;
             linesToSend = 0;
-            linesToSendCommand = "SEND";
+            linesToSendCommand = "";
             
             return;
         }
@@ -91,6 +97,7 @@ public class ScoreKeeper {
             throw new IllegalArgumentException("You cleared more than "
                     + "4 lines at once or less than 0 lines.");
         boolean bb = false;
+        int newLinesToSend = 0;
         switch(clearType) {
             case NORMAL:
                 switch(linesCleared) {
@@ -101,17 +108,17 @@ public class ScoreKeeper {
                         break;
                     case 2:
                         // double
-                        linesToSend += 1;
+                        newLinesToSend = 1;
                         bb = false;
                         break;
                     case 3:
                         // triple
-                        linesToSend += 2;
+                        newLinesToSend = 2;
                         bb = false;
                         break;
                     case 4:
                         // tetris
-                        linesToSend += 4;
+                        newLinesToSend = 4;
                         bb = true;
                         break;
                 }
@@ -120,15 +127,15 @@ public class ScoreKeeper {
                 switch(linesCleared) {
                     case 1:
                         // T-spin single
-                        linesToSend += 2;
+                        newLinesToSend = 2;
                         break;
                     case 2:
                         // T-spin double
-                        linesToSend += 4;
+                        newLinesToSend = 4;
                         break;
                     case 3:
                         // T-spin triple
-                        linesToSend += 6;
+                        newLinesToSend = 6;
                         break;
                     default:
                         throw new IllegalArgumentException(
@@ -138,18 +145,30 @@ public class ScoreKeeper {
                 break;
             case T_SPIN_MINI:
                 // T-spin mini
-                linesToSend += 1;
+                newLinesToSend = 1;
                 bb = true;
                 break;
         }
         
-        combo++;
-        linesToSend += comboBonus();
-        if(perfectClear) linesToSend += 10;
-        if(b2b) linesToSend++;
-        b2b = bb;
         
-        linesToSendCommand += linesToSend + " ";
+        combo++;
+        newLinesToSend += comboBonus();
+        if(perfectClear) newLinesToSend += 10;
+        if(b2b && bb) newLinesToSend++;
+        
+        b2b = bb;
+        linesToSend += newLinesToSend;
+        
+        if(newLinesToSend != 0) linesToSendCommand += newLinesToSend + " ";
+        
+        if(hasGarbage) {
+            String command = linesToSendCommand.trim();
+            if(command.length() > 0)
+                notifyListeners(linesToSendCommand.trim());
+            linesSent += linesToSend;
+            linesToSend = 0;
+            linesToSendCommand = "";
+        }
     }
     
     /**
@@ -204,5 +223,25 @@ public class ScoreKeeper {
         for(ActionListener listener : listeners) {
             listener.actionPerformed(event);
         }
+    }
+    
+    /**
+     * Determines how a bar should be filled
+     * @return how a bar should be filled
+     */
+    public int[] getBarFill() {
+        if(linesToSend == 0) return null;
+        
+        int[] output = new int[20];
+        for(int i = 0; i < output.length; i++) {
+            output[i] = linesToSend/20;
+        }
+        
+        int leftovers = linesToSend%20;
+        for(int i = output.length-1; i >= output.length - leftovers; i--) {
+            output[i]++;
+        }
+        
+        return output;
     }
 }

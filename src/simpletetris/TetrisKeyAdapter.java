@@ -195,7 +195,7 @@ public class TetrisKeyAdapter extends KeyAdapter {
                 }
                 matrix.executeAction(toExecute);
                 try {
-                    Thread.sleep(50);
+                    Thread.sleep(35);
                 } catch (InterruptedException ex) {
                     System.err.println("DAS thread interrupted.");
                 }
