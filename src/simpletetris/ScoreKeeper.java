@@ -135,7 +135,7 @@ public class ScoreKeeper {
                         break;
                     case 3:
                         // T-spin triple
-                        System.out.println("lmaoT3");
+                        newLinesToSend = 6;
                         break;
                     default:
                         throw new IllegalArgumentException(
@@ -230,13 +230,15 @@ public class ScoreKeeper {
      * @return how a bar should be filled
      */
     public int[] getBarFill() {
+        if(linesToSend == 0) return null;
+        
         int[] output = new int[20];
         for(int i = 0; i < output.length; i++) {
             output[i] = linesToSend/20;
         }
         
         int leftovers = linesToSend%20;
-        for(int i = output.length-1; i >= leftovers; i--) {
+        for(int i = output.length-1; i >= output.length - leftovers; i--) {
             output[i]++;
         }
         

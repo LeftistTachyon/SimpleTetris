@@ -20,8 +20,6 @@ import simpletetris.TetrisKeyAdapter.GameAction;
 import static simpletetris.TetrisKeyAdapter.GameAction.*;
 import static simpletetris.Mino.*;
 import static java.awt.Color.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A class that represents the Tetris matrix
@@ -109,6 +107,11 @@ public class TetrisMatrix {
     private double clearAnimation;
     
     /**
+     * Whether this TetrisMatrix is on the left
+     */
+    private final boolean onLeft;
+    
+    /**
      * The width of the matrix
      */
     public static final int WIDTH = 10;
@@ -168,6 +171,11 @@ public class TetrisMatrix {
      */
     private static final BufferedImage BAR_OUTLINE;
     
+    /**
+     * The icon for garbage
+     */
+    private static final BufferedImage GARBAGE_ICON;
+    
     static {
         BufferedImage temp = null;
         try {
@@ -200,12 +208,30 @@ public class TetrisMatrix {
             System.err.println("Bar background image file not found");
         }
         BAR_OUTLINE = temp;
+        
+        temp = null;
+        try {
+            temp = ImageIO.read(new File("images/garbage.png"));
+        } catch (IOException ex) {
+            System.err.println("Garbage icon image file not found");
+        }
+        GARBAGE_ICON = temp;
     }
     
     /**
-     * Creates a new TetrisMatrix.
+     * Creates a new, default TetrisMatrix.
      */
     public TetrisMatrix() {
+        this(true);
+    }
+
+    /**
+     * Creates a new TetrisMatrix.
+     * @param onLeft whether this TetrisMatrix is on the left side of the pair
+     */
+    public TetrisMatrix(boolean onLeft) {
+        this.onLeft = onLeft;
+        
         sk = new ScoreKeeper();
         gd = new GarbageDealer();
         sk.addListener((ActionEvent e) -> {
@@ -213,7 +239,7 @@ public class TetrisMatrix {
             if(garbageToSend != null) 
                 System.out.println("SEND" + garbageToSend);
         });
-        gd.addGarbage("5 1 5");
+        // gd.addGarbage("2 2 2 2 2 2 2");
         
         rowsCleared = null;
         
@@ -257,11 +283,76 @@ public class TetrisMatrix {
                         - INNER_BAR_HEIGHT/2);
         g2D.setColor(DARK_GRAY);
         g2D.fillRect(0, 0, INNER_BAR_WIDTH, INNER_BAR_HEIGHT);
+        
         // sk.drawBar(g2D);
+        // gd.drawBar(g2D);
+        int[] temp = gd.getBarFill();
+        if(temp != null) {
+            for(int i = 0, y = 0; i < temp.length; i++, y += BAR_STEP_HEIGHT) {
+                switch(temp[i]) {
+                    case 0:
+                        continue;
+                    case 1:
+                        g2D.setColor(yellow);
+                        break;
+                    case 2:
+                        g2D.setColor(orange);
+                        break;
+                    case 3:
+                        g2D.setColor(new Color(255, 150, 0));
+                        break;
+                    case 4:
+                        g2D.setColor(new Color(255, 100, 0));
+                        break;
+                    case 5:
+                        g2D.setColor(red);
+                        break;
+                    case 6:
+                    default:
+                        g2D.setColor(new Color(128, 0, 0));
+                        break;
+                }
+                g2D.fillRect(0, y, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
+            }
+        }
+        
+        temp = sk.getBarFill();
+        if(temp != null) {
+            for(int i = 0, y = 0; i < temp.length; i++, y += BAR_STEP_HEIGHT) {
+                switch(temp[i]) {
+                    case 0:
+                        continue;
+                    case 1:
+                        g2D.setColor(green);
+                        break;
+                    case 2:
+                        g2D.setColor(new Color(128, 128, 0));
+                        break;
+                    case 3:
+                        g2D.setColor(blue);
+                        break;
+                    case 4:
+                        g2D.setColor(new Color(73, 12, 206));
+                        break;
+                    case 5:
+                        g2D.setColor(new Color(146, 23, 156));
+                        break;
+                    case 6:
+                    default:
+                        g2D.setColor(new Color(73, 12, 78));
+                        break;
+                }
+                g2D.fillRect(0, y, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
+            }
+        }
+        
+        //g2D.setColor(BLACK);
         
         g2D.translate(-(BAR_WIDTH - INNER_BAR_WIDTH)/2, 
                 -(BAR_HEIGHT - INNER_BAR_HEIGHT)/2);
         g2D.drawImage(BAR_OUTLINE, null, 0, 0);
+        
+        g2D.drawImage(GARBAGE_ICON, BAR_WIDTH/2 - 20, -45, 39, 39, null);
         
         g2D.translate(-90 + BAR_WIDTH, 
                 -MINO_WIDTH * VISIBLE_HEIGHT + BAR_HEIGHT + 5);
@@ -371,17 +462,6 @@ public class TetrisMatrix {
         g2D.setClip(null);
         
         g2D.drawString("" + sk.getLinesSent(), -450, 200);
-        
-        g2D.translate(20 + (BAR_WIDTH - INNER_BAR_WIDTH)/2, 
-                MINO_WIDTH * VISIBLE_HEIGHT - 5 - BAR_HEIGHT/2 
-                        - INNER_BAR_HEIGHT/2);
-        g2D.setColor(DARK_GRAY);
-        g2D.fillRect(0, 0, INNER_BAR_WIDTH, INNER_BAR_HEIGHT);
-        // gd.drawBar(g2D);
-        
-        g2D.translate(-(BAR_WIDTH - INNER_BAR_WIDTH)/2, 
-                -(BAR_HEIGHT - INNER_BAR_HEIGHT)/2);
-        g2D.drawImage(BAR_OUTLINE, null, 0, 0);
     }
     
     /**
@@ -633,13 +713,16 @@ public class TetrisMatrix {
      */
     private void addGarbage() {
         int temp = 0;
+        boolean first = true;
         while(true) {
             int temptemp = gd.peekNextGarbage();
             if(temptemp == 0) return;
             temp += temptemp;
-            if(temp > 5) return;
+            if(!first && temp > 5) return;
             addGarbageLines(gd.getNextGarbage());
             System.out.println("Oof! " + temptemp + " lines of garbage");
+            
+            first = false;
         }
     }
     
@@ -771,6 +854,8 @@ public class TetrisMatrix {
      * @param lines how many garbage lines to add
      */
     public void addGarbageLines(int lines) {
+        if(lines > HEIGHT) lines = HEIGHT;
+        
        for(int i = lines; i < HEIGHT; i++) {
            pushUpLine(i, lines);
        }
