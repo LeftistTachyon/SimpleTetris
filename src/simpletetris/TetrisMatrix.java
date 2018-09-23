@@ -789,9 +789,6 @@ public class TetrisMatrix {
         }
         
         // check for t-spins
-        if(falling instanceof TetT && lastAction != null) 
-            System.out.println("3-corner: " + threeCorner() + 
-                    "\tLast action: " + lastAction.name());
         if(falling instanceof TetT && (lastAction == ROTATE_LEFT || 
                 lastAction == ROTATE_RIGHT) && threeCorner()) {
             System.out.println("T-spin " + linesCleared);
