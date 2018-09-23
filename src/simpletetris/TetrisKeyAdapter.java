@@ -209,7 +209,44 @@ public class TetrisKeyAdapter extends KeyAdapter {
      * All possible game actions
      */
     public static enum GameAction {
-        MOVE_LEFT, MOVE_RIGHT, HARD_DROP, SOFT_DROP, 
-                ROTATE_RIGHT, ROTATE_LEFT, HOLD, GRAVITY;
+        /**
+         * Moves the active tetromino leftwards
+         */
+        MOVE_LEFT, 
+
+        /**
+         * Moves the active tetromino rightwards
+         */
+        MOVE_RIGHT, 
+
+        /**
+         * Hard drops the active tetromino
+         */
+        HARD_DROP, 
+
+        /**
+         * Drops the active tetromino down by 1
+         */
+        SOFT_DROP, 
+
+        /**
+         * Rotates the active tetromino clockwise
+         */
+        ROTATE_RIGHT,
+
+        /**
+         * Rotates the active tetromino counterclockwise
+         */
+        ROTATE_LEFT,
+
+        /**
+         * Switches the held tetromino with the currently active one
+         */
+        HOLD,
+
+        /**
+         * Refers to when the active tetromino falls down due to gravity
+         */
+        GRAVITY;
     }
 }

@@ -268,94 +268,125 @@ public class TetrisMatrix {
         g2D.translate(15, 0);
         g2D.setColor(BLACK);
         g2D.setFont(new Font("Consolas", 0, 36));
-        g2D.drawString("HOLD", 15, 45);
-        
-        g2D.drawImage(PIECE_BACKGROUND, null, 0, 50);
-        if(hold != null) {
-            BufferedImage miniImage = hold.getMiniImage();
-            g2D.drawImage(miniImage, 5, 55, 100, 60, null);
-        }
-        
-        g2D.drawRect(0, 50, 110, 70);
-        
-        g2D.translate(90 - BAR_WIDTH/2 - INNER_BAR_WIDTH/2, 
-                MINO_WIDTH * VISIBLE_HEIGHT - 5 - BAR_HEIGHT/2 
-                        - INNER_BAR_HEIGHT/2);
-        g2D.setColor(DARK_GRAY);
-        g2D.fillRect(0, 0, INNER_BAR_WIDTH, INNER_BAR_HEIGHT);
-        
-        // sk.drawBar(g2D);
-        // gd.drawBar(g2D);
-        int[] temp = gd.getBarFill();
-        if(temp != null) {
-            for(int i = 0, y = 0; i < temp.length; i++, y += BAR_STEP_HEIGHT) {
-                switch(temp[i]) {
-                    case 0:
-                        continue;
-                    case 1:
-                        g2D.setColor(yellow);
-                        break;
-                    case 2:
-                        g2D.setColor(orange);
-                        break;
-                    case 3:
-                        g2D.setColor(new Color(255, 150, 0));
-                        break;
-                    case 4:
-                        g2D.setColor(new Color(255, 100, 0));
-                        break;
-                    case 5:
-                        g2D.setColor(red);
-                        break;
-                    case 6:
-                    default:
-                        g2D.setColor(new Color(128, 0, 0));
-                        break;
-                }
-                g2D.fillRect(0, y, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
+        if(onLeft) {
+            g2D.drawString("" + sk.getLinesSent(), 0, 200);
+            
+            g2D.drawString("HOLD", 15, 45);
+            
+            g2D.drawImage(PIECE_BACKGROUND, null, 0, 50);
+            if (hold != null) {
+                BufferedImage miniImage = hold.getMiniImage();
+                g2D.drawImage(miniImage, 5, 55, 100, 60, null);
             }
-        }
-        
-        temp = sk.getBarFill();
-        if(temp != null) {
-            for(int i = 0, y = 0; i < temp.length; i++, y += BAR_STEP_HEIGHT) {
-                switch(temp[i]) {
-                    case 0:
-                        continue;
-                    case 1:
-                        g2D.setColor(green);
-                        break;
-                    case 2:
-                        g2D.setColor(new Color(13, 152, 186));
-                        break;
-                    case 3:
-                        g2D.setColor(blue);
-                        break;
-                    case 4:
-                        g2D.setColor(new Color(73, 12, 206));
-                        break;
-                    case 5:
-                        g2D.setColor(new Color(146, 23, 156));
-                        break;
-                    case 6:
-                    default:
-                        g2D.setColor(new Color(73, 12, 78));
-                        break;
+            
+            g2D.drawRect(0, 50, 110, 70);
+            
+            g2D.translate(90 - BAR_WIDTH / 2 - INNER_BAR_WIDTH / 2,
+                    MINO_WIDTH * VISIBLE_HEIGHT - 5 - BAR_HEIGHT / 2
+                    - INNER_BAR_HEIGHT / 2);
+            g2D.setColor(DARK_GRAY);
+            g2D.fillRect(0, 0, INNER_BAR_WIDTH, INNER_BAR_HEIGHT);
+
+            // sk.drawBar(g2D);
+            // gd.drawBar(g2D);
+            int[] temp = gd.getBarFill();
+            if (temp != null) {
+                for (int i = 0, y = 0; i < temp.length; i++, y += BAR_STEP_HEIGHT) {
+                    switch (temp[i]) {
+                        case 0:
+                            continue;
+                        case 1:
+                            g2D.setColor(yellow);
+                            break;
+                        case 2:
+                            g2D.setColor(orange);
+                            break;
+                        case 3:
+                            g2D.setColor(new Color(255, 150, 0));
+                            break;
+                        case 4:
+                            g2D.setColor(new Color(255, 100, 0));
+                            break;
+                        case 5:
+                            g2D.setColor(red);
+                            break;
+                        case 6:
+                        default:
+                            g2D.setColor(new Color(128, 0, 0));
+                            break;
+                    }
+                    g2D.fillRect(0, y, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
                 }
-                g2D.fillRect(0, y, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
             }
+            
+            temp = sk.getBarFill();
+            if (temp != null) {
+                for (int i = 0, y = 0; i < temp.length; i++, y += BAR_STEP_HEIGHT) {
+                    switch (temp[i]) {
+                        case 0:
+                            continue;
+                        case 1:
+                            g2D.setColor(green);
+                            break;
+                        case 2:
+                            g2D.setColor(new Color(13, 152, 186));
+                            break;
+                        case 3:
+                            g2D.setColor(blue);
+                            break;
+                        case 4:
+                            g2D.setColor(new Color(73, 12, 206));
+                            break;
+                        case 5:
+                            g2D.setColor(new Color(146, 23, 156));
+                            break;
+                        case 6:
+                        default:
+                            g2D.setColor(new Color(73, 12, 78));
+                            break;
+                    }
+                    g2D.fillRect(0, y, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
+                }
+            }
+
+            //g2D.setColor(BLACK);
+            g2D.translate(-(BAR_WIDTH - INNER_BAR_WIDTH) / 2,
+                    -(BAR_HEIGHT - INNER_BAR_HEIGHT) / 2);
+            g2D.drawImage(BAR_OUTLINE, null, 0, 0);
+            
+            g2D.drawImage(GARBAGE_ICON, BAR_WIDTH / 2 - 20, -45, 39, 39, null);
+            
+            g2D.translate(-90 + BAR_WIDTH,
+                    -MINO_WIDTH * VISIBLE_HEIGHT + BAR_HEIGHT + 5);
+        } else {
+            g2D.drawString("NEXT", 15, 45);
+            
+            g2D.drawImage(PIECE_BACKGROUND, null, 0, 50);
+            
+            if (bag.next(0) != null) {
+                BufferedImage miniImage = bag.next(0).getMiniImage();
+                g2D.drawImage(miniImage, 5, 55, 100, 60, null);
+            }
+            
+            g2D.setColor(BLACK);
+            g2D.drawRect(0, 50, 110, 70);
+            
+            for (int i = 1; i < 3; i++) {
+                g2D.setClip(-3, 67 + 85 * i, 95, 63);
+                g2D.drawImage(PIECE_BACKGROUND, null, 0, 70 + 85 * i);
+                
+                if (bag.next(i) != null) {
+                    BufferedImage miniImage = bag.next(i).getMiniImage();
+                    g2D.drawImage(miniImage, 5, 75 + 85 * i, 80, 48, null);
+                }
+                g2D.drawRect(0, 70 + 85 * i, 90, 58);
+            }
+            
+            g2D.setClip(null);
+            
+            /*g2D.translate(-90 + BAR_WIDTH,
+                    -MINO_WIDTH * VISIBLE_HEIGHT + BAR_HEIGHT + 5);*/
         }
-        
-        //g2D.setColor(BLACK);
-        
-        g2D.translate(-(BAR_WIDTH - INNER_BAR_WIDTH)/2, 
-                -(BAR_HEIGHT - INNER_BAR_HEIGHT)/2);
-        g2D.drawImage(BAR_OUTLINE, null, 0, 0);
-        
-        g2D.drawImage(GARBAGE_ICON, BAR_WIDTH/2 - 20, -45, 39, 39, null);
-        
-        g2D.translate(-90 + BAR_WIDTH, 
-                -MINO_WIDTH * VISIBLE_HEIGHT + BAR_HEIGHT + 5);
         
         g2D.translate(110, 0);
         g2D.setClip(0, 0, MINO_WIDTH*WIDTH, 
@@ -432,36 +463,124 @@ public class TetrisMatrix {
         
         g2D.setClip(null);
         g2D.setColor(BLACK);
-        g2D.drawRect(0, (int) (MINO_WIDTH*(HEIGHT - VISIBLE_HEIGHT)), 
-                WIDTH*MINO_WIDTH, (int) (VISIBLE_HEIGHT*MINO_WIDTH));
+        g2D.drawRect(0, (int) (MINO_WIDTH * (HEIGHT - VISIBLE_HEIGHT)),
+                    WIDTH * MINO_WIDTH, (int) (VISIBLE_HEIGHT * MINO_WIDTH));
         
-        g2D.translate(MINO_WIDTH*WIDTH, MINO_WIDTH*(HEIGHT - VISIBLE_HEIGHT));
-        g2D.drawString("NEXT", 15, 45);
-        
-        g2D.drawImage(PIECE_BACKGROUND, null, 0, 50);
-        
-        if(bag.next(0) != null) {
-            BufferedImage miniImage = bag.next(0).getMiniImage();
-            g2D.drawImage(miniImage, 5, 55, 100, 60, null);
-        }
-        
-        g2D.setColor(BLACK);
-        g2D.drawRect(0, 50, 110, 70);
-        
-        for(int i = 1; i < 3; i++) {
-            g2D.setClip(17, 67 + 85*i, 95, 63);
-            g2D.drawImage(PIECE_BACKGROUND, null, 20, 70 + 85*i);
+        if(onLeft) {
+            g2D.translate(MINO_WIDTH * WIDTH, MINO_WIDTH * (HEIGHT - VISIBLE_HEIGHT));
+            g2D.drawString("NEXT", 15, 45);
             
-            if(bag.next(i) != null) {
-                BufferedImage miniImage = bag.next(i).getMiniImage();
-                g2D.drawImage(miniImage, 25, 75 + 85*i, 80, 48, null);
+            g2D.drawImage(PIECE_BACKGROUND, null, 0, 50);
+            
+            if (bag.next(0) != null) {
+                BufferedImage miniImage = bag.next(0).getMiniImage();
+                g2D.drawImage(miniImage, 5, 55, 100, 60, null);
             }
-            g2D.drawRect(20, 70 + 85*i, 90, 58);
+            
+            g2D.setColor(BLACK);
+            g2D.drawRect(0, 50, 110, 70);
+            
+            for (int i = 1; i < 3; i++) {
+                g2D.setClip(17, 67 + 85 * i, 95, 63);
+                g2D.drawImage(PIECE_BACKGROUND, null, 20, 70 + 85 * i);
+                
+                if (bag.next(i) != null) {
+                    BufferedImage miniImage = bag.next(i).getMiniImage();
+                    g2D.drawImage(miniImage, 25, 75 + 85 * i, 80, 48, null);
+                }
+                g2D.drawRect(20, 70 + 85 * i, 90, 58);
+            }
+            
+            g2D.setClip(null);
+        } else {
+            g2D.translate(MINO_WIDTH * WIDTH, MINO_WIDTH * (HEIGHT - VISIBLE_HEIGHT));
+            g2D.drawString("" + sk.getLinesSent(), 10, 200);
+            
+            g2D.drawString("HOLD", 15, 45);
+            
+            g2D.drawImage(PIECE_BACKGROUND, null, 0, 50);
+            if (hold != null) {
+                BufferedImage miniImage = hold.getMiniImage();
+                g2D.drawImage(miniImage, 5, 55, 100, 60, null);
+            }
+            
+            g2D.drawRect(0, 50, 110, 70);
+            
+            g2D.translate(15 + BAR_WIDTH / 2 + INNER_BAR_WIDTH / 2,
+                    MINO_WIDTH * VISIBLE_HEIGHT - 5 - BAR_HEIGHT / 2
+                    - INNER_BAR_HEIGHT / 2);
+            g2D.setColor(DARK_GRAY);
+            g2D.fillRect(0, 0, INNER_BAR_WIDTH, INNER_BAR_HEIGHT);
+
+            // sk.drawBar(g2D);
+            // gd.drawBar(g2D);
+            int[] temp = gd.getBarFill();
+            if (temp != null) {
+                for (int i = 0, y = 0; i < temp.length; i++, y += BAR_STEP_HEIGHT) {
+                    switch (temp[i]) {
+                        case 0:
+                            continue;
+                        case 1:
+                            g2D.setColor(yellow);
+                            break;
+                        case 2:
+                            g2D.setColor(orange);
+                            break;
+                        case 3:
+                            g2D.setColor(new Color(255, 150, 0));
+                            break;
+                        case 4:
+                            g2D.setColor(new Color(255, 100, 0));
+                            break;
+                        case 5:
+                            g2D.setColor(red);
+                            break;
+                        case 6:
+                        default:
+                            g2D.setColor(new Color(128, 0, 0));
+                            break;
+                    }
+                    g2D.fillRect(0, y, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
+                }
+            }
+            
+            temp = sk.getBarFill();
+            if (temp != null) {
+                for (int i = 0, y = 0; i < temp.length; i++, y += BAR_STEP_HEIGHT) {
+                    switch (temp[i]) {
+                        case 0:
+                            continue;
+                        case 1:
+                            g2D.setColor(green);
+                            break;
+                        case 2:
+                            g2D.setColor(new Color(13, 152, 186));
+                            break;
+                        case 3:
+                            g2D.setColor(blue);
+                            break;
+                        case 4:
+                            g2D.setColor(new Color(73, 12, 206));
+                            break;
+                        case 5:
+                            g2D.setColor(new Color(146, 23, 156));
+                            break;
+                        case 6:
+                        default:
+                            g2D.setColor(new Color(73, 12, 78));
+                            break;
+                    }
+                    g2D.fillRect(0, y, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
+                }
+            }
+
+            //g2D.setColor(BLACK);
+            g2D.translate(-(BAR_WIDTH - INNER_BAR_WIDTH) / 2,
+                    -(BAR_HEIGHT - INNER_BAR_HEIGHT) / 2);
+            g2D.drawImage(BAR_OUTLINE, null, 0, 0);
+            
+            g2D.drawImage(GARBAGE_ICON, BAR_WIDTH / 2 - 20, -45, 39, 39, null);
         }
-        
-        g2D.setClip(null);
-        
-        g2D.drawString("" + sk.getLinesSent(), -450, 200);
     }
     
     /**
