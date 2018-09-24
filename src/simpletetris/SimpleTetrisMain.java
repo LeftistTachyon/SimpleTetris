@@ -11,5 +11,6 @@ public class SimpleTetrisMain {
      */
     public static void main(String[] args) {
         new TetrisFrame();
+        AudioPlayer.playInGameBackground();
     }
 }
