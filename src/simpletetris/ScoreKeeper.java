@@ -105,21 +105,25 @@ public class ScoreKeeper {
                         // single
                         // 0 extra
                         bb = false;
+                        AudioPlayer.playComboSFX(combo);
                         break;
                     case 2:
                         // double
                         newLinesToSend = 1;
                         bb = false;
+                        AudioPlayer.playComboSFX(combo);
                         break;
                     case 3:
                         // triple
                         newLinesToSend = 2;
                         bb = false;
+                        AudioPlayer.playComboSFX(combo);
                         break;
                     case 4:
                         // tetris
                         newLinesToSend = 4;
                         bb = true;
+                        AudioPlayer.playTSpinSFX(2);
                         break;
                 }
                 break;
@@ -142,15 +146,15 @@ public class ScoreKeeper {
                                 "You cleared 4 lines with a t-piece?");
                 }
                 bb = true;
+                AudioPlayer.playTSpinSFX(linesCleared);
                 break;
             case T_SPIN_MINI:
                 // T-spin mini
                 newLinesToSend = 1;
                 bb = true;
+                AudioPlayer.playTSpinSFX(linesCleared);
                 break;
         }
-        
-        
         combo++;
         newLinesToSend += comboBonus();
         if(perfectClear) newLinesToSend += 10;

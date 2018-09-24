@@ -829,17 +829,19 @@ public class TetrisMatrix {
      */
     private void addGarbage() {
         int temp = 0;
-        boolean first = true;
+        boolean first = true, addedGarbage = false;
         while(true) {
             int temptemp = gd.peekNextGarbage();
-            if(temptemp == 0) return;
+            if(temptemp == 0) break;
             temp += temptemp;
-            if(!first && temp > 5) return;
+            if(!first && temp > 5) break;
             addGarbageLines(gd.getNextGarbage());
+            addedGarbage = true;
             System.out.println("Oof! " + temptemp + " lines of garbage");
             
             first = false;
         }
+        if(addedGarbage) AudioPlayer.playGarbageSFX();
     }
     
     /**

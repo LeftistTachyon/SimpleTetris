@@ -36,9 +36,32 @@ public class AudioPlayer {
     private static final Media OVERWORLD;
     
     /**
+     * A SFX that plays when garbage is recieved.<br>
+     * Taken from Super Mario World.
+     */
+    private static final Media GARBAGE_ADDED;
+    
+    /**
+     * SFX's that play that denote a combo.<br>
+     * Taken from Super Mario World.
+     */
+    private static final Media[] COMBO;
+    
+    /**
+     * SFX's that play that denote a t-spin.<br>
+     * Taken from Super Mario World.
+     */
+    private static final Media[] T_SPIN;
+    
+    /**
      * The MediaPlayer which controls playing background music.
      */
     private static MediaPlayer backgroundPlayer;
+    
+    /**
+     * The MediaPlayer which controls playing SFX.
+     */
+    private static MediaPlayer sfxPlayer;
     
     /**
      * Stores whether JavaFX has been initialized.
@@ -54,6 +77,22 @@ public class AudioPlayer {
         
         OVERWORLD = new Media(
                 new File("music/overworld.m4a").toURI().toString());
+        
+        
+        GARBAGE_ADDED = new Media(
+                new File("sfx/addgarbage.m4a").toURI().toString());
+        
+        COMBO = new Media[8];
+        for(int i = 0; i < COMBO.length; i++) {
+            COMBO[i] = new Media(
+                    new File("sfx/combo" + (i+1) + ".m4a").toURI().toString());
+        }
+        
+        T_SPIN = new Media[4];
+        for(int i = 0; i < T_SPIN.length; i++) {
+            T_SPIN[i] = new Media(
+                    new File("sfx/tspin" + i + ".m4a").toURI().toString());
+        }
     }
     
     /**
@@ -65,8 +104,7 @@ public class AudioPlayer {
      * Plays a random background music allocated for in-game.
      */
     public static void playInGameBackground() {
-        if(!initialized)  
-            initialize();
+        if(!initialized) initialize();
         
         if(backgroundPlayer != null) 
             backgroundPlayer.stop();
@@ -84,6 +122,38 @@ public class AudioPlayer {
                 break;
         }
         backgroundPlayer.play();
+    }
+    
+    /**
+     * Plays the garbage added SFX.
+     */
+    public static void playGarbageSFX() {
+        if(!initialized) initialize();
+        
+        sfxPlayer = new MediaPlayer(GARBAGE_ADDED);
+        sfxPlayer.play();
+    }
+    
+    /**
+     * Plays the combo SFX.
+     * @param combo which combo sound to play
+     */
+    public static void playComboSFX(int combo) {
+        if(!initialized) initialize();
+        
+        sfxPlayer = new MediaPlayer(COMBO[Math.min(combo, COMBO.length - 1)]);
+        sfxPlayer.play();
+    }
+    
+    /**
+     * Plays the t-spin SFX.
+     * @param lines how many lines cleared with the t-spin
+     */
+    public static void playTSpinSFX(int lines) {
+        if(!initialized) initialize();
+        
+        sfxPlayer = new MediaPlayer(T_SPIN[Math.min(lines, T_SPIN.length - 1)]);
+        sfxPlayer.play();
     }
     
     /**
