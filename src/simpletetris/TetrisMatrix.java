@@ -728,7 +728,7 @@ public class TetrisMatrix {
         y = 20;
         x = (WIDTH - falling.getRotationBoxWidth())/2;
         
-        for(int i = 0; i < 2 /* The leeway is by 2 */; i++) {
+        for(int i = 0; i < 3 /* The leeway is by 3 */; i++) {
             if(falling.overlaps(miniMatrix(0, -2)))
                 y--;
         }
