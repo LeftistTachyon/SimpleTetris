@@ -3,13 +3,25 @@ package simpletetris;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Scanner;
 
 /**
- * Keeps track of the score<br>
- * Handles outgoing garbage
+ * A class that deals with incoming and outgoing garbage
  * @author Jed Wang
  */
-public class ScoreKeeper {
+public class GarbageHandler {
+    /**
+     * The queue for garbage
+     */
+    private Deque<Integer> garbageQueue;
+    
+    /**
+     * The number of lines pending in the queue
+     */
+    private int linesToRecieve;
+    
     /**
      * The lines sent
      */
@@ -54,11 +66,14 @@ public class ScoreKeeper {
      * A t-spin mini
      */
     public static final int T_SPIN_MINI = 2;
-
+    
     /**
-     * Creates a brand new ScoreKeeper.
+     * Creates a new GarbageHandler.
      */
-    public ScoreKeeper() {
+    public GarbageHandler() {
+        garbageQueue = new LinkedList<>();
+        linesToRecieve = 0;
+        
         linesSent = 0;
         linesToSend = 0;
         linesToSendCommand = "";
@@ -68,21 +83,141 @@ public class ScoreKeeper {
     }
     
     /**
+     * Adds garbage to the queue
+     * @param lines a String representation of the lines sent
+     */
+    public void addGarbage(String lines) {
+        Scanner adder = new Scanner(lines);
+        while(adder.hasNextInt()) {
+            int next = adder.nextInt();
+            garbageQueue.add(next);
+            linesToRecieve += next;
+        }
+    }
+    
+    /**
+     * Counters the incoming garbage with this garbage
+     * @param counterLines a String representation of the lines to send
+     * @return a String representation of the lines to send to the opponent<br>
+     * Returns null if no garbage is sent to the opponent
+     */
+    private String counterGarbage(String counterLines) {
+        if(garbageQueue.isEmpty()) {
+            return counterLines;
+        }
+        
+        Scanner adder = new Scanner(counterLines);
+        while(adder.hasNextInt()) {
+            int counter = -adder.nextInt();
+            linesToRecieve += counter;
+            while(counter < 0 && !garbageQueue.isEmpty()) {
+                counter += garbageQueue.removeFirst();
+            }
+            if(counter > 0) garbageQueue.addFirst(counter);
+        }
+        
+        if(adder.hasNextInt()) {
+            String output = "";
+            while(adder.hasNextInt()) {
+                output += adder.nextInt() + " ";
+            }
+            System.out.println(output.length());
+            return output.trim();
+        } else return null;
+    }
+    
+    /**
+     * Returns the next chunk of garbage to add to the bottom and removes it
+     * @return the next chunk of garbage to add to the bottom<br>
+     * Returns 0 if the queue is empty
+     */
+    public int getNextGarbage() {
+        Integer next = garbageQueue.pollFirst();
+        int output = (next == null)?0:next;
+        linesToRecieve -= output;
+        return output;
+    }
+    
+    /**
+     * Returns the next chunk of garbage to add to the bottom
+     * @return the next chunk of garbage to add to the bottom<br>
+     * Returns 0 if the queue is empty
+     */
+    public int peekNextGarbage() {
+        Integer next = garbageQueue.peekFirst();
+        return (next == null)?0:next;
+    }
+    
+    /**
+     * Returns whether there is garbage queued up
+     * @return whether there is garbage queued up
+     */
+    public boolean hasGarbage() {
+        return !garbageQueue.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return garbageQueue.toString();
+    }
+    
+    /**
+     * Determines how the outgoing garbage bar should be filled
+     * @return how the outgoing garbage bar should be filled
+     */
+    public int[] getOutBarFill() {
+        if(linesToSend == 0) return null;
+        
+        int[] output = new int[20];
+        for(int i = 0; i < output.length; i++) {
+            output[i] = linesToSend/20;
+        }
+        
+        int leftovers = linesToSend%20;
+        for(int i = output.length-1; i >= output.length - leftovers; i--) {
+            output[i]++;
+        }
+        
+        return output;
+    }
+    
+    /**
+     * Determines how the incoming garbage bar should be filled
+     * @return how the incoming garbage bar should be filled
+     */
+    public int[] getInBarFill() {
+        if(linesToRecieve == 0) return null;
+        
+        int[] output = new int[20];
+        for(int i = 0; i < output.length; i++) {
+            output[i] = linesToRecieve/20;
+        }
+
+        int leftovers = linesToRecieve%20;
+        for(int i = output.length-1; i >= output.length - leftovers; i--) {
+            output[i]++;
+        }
+
+        return output;
+    }
+    
+    /**
      * Notifies this ScoreKeeper that new Lines have been cleared.
      * @param linesCleared how many new lines have been cleared
      * @param clearType what type of line clear (e.g. standard, t-spin, 
      * t-spin mini)
      * @param perfectClear whether the move resulted in a perfect clear
-     * @param hasGarbage whether there is garbage queued up
      */
     public void newLinesCleared(int linesCleared, int clearType, 
-            boolean perfectClear, boolean hasGarbage) {
+            boolean perfectClear) {
         if(linesCleared == 0) {
             combo = 0;
             
             String command = linesToSendCommand.trim();
-            if(command.length() > 0)
-                notifyListeners(linesToSendCommand.trim());
+            if(command.length() > 0) {
+                notifyListeners(counterGarbage(command));
+            }
+                
             linesSent += linesToSend;
             linesToSend = 0;
             linesToSendCommand = "";
@@ -162,10 +297,10 @@ public class ScoreKeeper {
         
         if(newLinesToSend != 0) linesToSendCommand += newLinesToSend + " ";
         
-        if(hasGarbage) {
+        if(!garbageQueue.isEmpty()) {
             String command = linesToSendCommand.trim();
             if(command.length() > 0)
-                notifyListeners(linesToSendCommand.trim());
+                notifyListeners(counterGarbage(command));
             linesSent += linesToSend;
             linesToSend = 0;
             linesToSendCommand = "";
@@ -224,25 +359,5 @@ public class ScoreKeeper {
         for(ActionListener listener : listeners) {
             listener.actionPerformed(event);
         }
-    }
-    
-    /**
-     * Determines how a bar should be filled
-     * @return how a bar should be filled
-     */
-    public int[] getBarFill() {
-        if(linesToSend == 0) return null;
-        
-        int[] output = new int[20];
-        for(int i = 0; i < output.length; i++) {
-            output[i] = linesToSend/20;
-        }
-        
-        int leftovers = linesToSend%20;
-        for(int i = output.length-1; i >= output.length - leftovers; i--) {
-            output[i]++;
-        }
-        
-        return output;
     }
 }

@@ -20,6 +20,8 @@ import simpletetris.TetrisKeyAdapter.GameAction;
 import static simpletetris.TetrisKeyAdapter.GameAction.*;
 import static simpletetris.Mino.*;
 import static java.awt.Color.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A class that represents the Tetris matrix
@@ -64,12 +66,17 @@ public class TetrisMatrix {
     /**
      * The ScoreKeeper for this TetrisMatrix.
      */
-    private final ScoreKeeper sk;
+    //private final ScoreKeeper sk;
     
     /**
      * The GarbageDealer for this TetrisMatrix.
      */
-    private final GarbageDealer gd;
+    //private final GarbageDealer gd;
+    
+    /**
+     * The GarbageHandler for this TetrisMatrix.
+     */
+    private final GarbageHandler gh;
     
     /**
      * Determines whether the piece was just kicked
@@ -152,6 +159,16 @@ public class TetrisMatrix {
     public static final int BAR_STEP_HEIGHT = INNER_BAR_HEIGHT / 20;
     
     /**
+     * The gap between the inner bar and the outer bar for the width
+     */
+    public static final int BAR_WIDTH_GAP = (BAR_WIDTH - INNER_BAR_WIDTH) / 2;
+    
+    /**
+     * The gap between the inner bar and the outer bar for the height
+     */
+    public static final int BAR_HEIGHT_GAP = (BAR_HEIGHT - INNER_BAR_HEIGHT) / 2;
+    
+    /**
      * A block of the background
      */
     private static final BufferedImage BACKGROUND_BLOCK;
@@ -172,9 +189,14 @@ public class TetrisMatrix {
     private static final BufferedImage BAR_OUTLINE;
     
     /**
-     * The icon for garbage
+     * The icon for incoming garbage
      */
-    private static final BufferedImage GARBAGE_ICON;
+    private static final BufferedImage IN_GARBAGE_ICON;
+    
+    /**
+     * The icon for outgoing garbage
+     */
+    private static final BufferedImage OUT_GARBAGE_ICON;
     
     static {
         BufferedImage temp = null;
@@ -211,11 +233,19 @@ public class TetrisMatrix {
         
         temp = null;
         try {
-            temp = ImageIO.read(new File("images/garbage.png"));
+            temp = ImageIO.read(new File("images/inGarbage.png"));
         } catch (IOException ex) {
-            System.err.println("Garbage icon image file not found");
+            System.err.println("Incoming garbage icon image file not found");
         }
-        GARBAGE_ICON = temp;
+        IN_GARBAGE_ICON = temp;
+        
+        temp = null;
+        try {
+            temp = ImageIO.read(new File("images/outGarbage.png"));
+        } catch (IOException ex) {
+            System.err.println("Outgoing garbage image file not found");
+        }
+        OUT_GARBAGE_ICON = temp;
     }
     
     /**
@@ -232,13 +262,14 @@ public class TetrisMatrix {
     public TetrisMatrix(boolean onLeft) {
         this.onLeft = onLeft;
         
-        sk = new ScoreKeeper();
+        /*sk = new ScoreKeeper();
         gd = new GarbageDealer();
         sk.addListener((ActionEvent e) -> {
             String garbageToSend = gd.counterGarbage(e.getActionCommand());
             if(garbageToSend != null) 
                 System.out.println("SEND" + garbageToSend);
-        });
+        });*/
+        gh = new GarbageHandler();
         // gd.addGarbage("2 2 2 2 2 2 2");
         
         rowsCleared = null;
@@ -269,7 +300,7 @@ public class TetrisMatrix {
         g2D.setColor(BLACK);
         g2D.setFont(new Font("Consolas", 0, 36));
         if(onLeft) {
-            g2D.drawString("" + sk.getLinesSent(), 0, 200);
+            g2D.drawString("" + gh.getLinesSent(), 0, 200);
             
             g2D.drawString("HOLD", 15, 45);
             
@@ -281,45 +312,12 @@ public class TetrisMatrix {
             
             g2D.drawRect(0, 50, 110, 70);
             
-            g2D.translate(90 - BAR_WIDTH / 2 - INNER_BAR_WIDTH / 2,
-                    MINO_WIDTH * VISIBLE_HEIGHT - 5 - BAR_HEIGHT / 2
-                    - INNER_BAR_HEIGHT / 2);
+            g2D.translate(90 - BAR_WIDTH - BAR_WIDTH_GAP,
+                    MINO_WIDTH * VISIBLE_HEIGHT - 5 - BAR_HEIGHT + BAR_HEIGHT_GAP);
             g2D.setColor(DARK_GRAY);
             g2D.fillRect(0, 0, INNER_BAR_WIDTH, INNER_BAR_HEIGHT);
-
-            // sk.drawBar(g2D);
-            // gd.drawBar(g2D);
-            int[] temp = gd.getBarFill();
-            if (temp != null) {
-                for (int i = 0, y = 0; i < temp.length; i++, y += BAR_STEP_HEIGHT) {
-                    switch (temp[i]) {
-                        case 0:
-                            continue;
-                        case 1:
-                            g2D.setColor(yellow);
-                            break;
-                        case 2:
-                            g2D.setColor(orange);
-                            break;
-                        case 3:
-                            g2D.setColor(new Color(255, 150, 0));
-                            break;
-                        case 4:
-                            g2D.setColor(new Color(255, 100, 0));
-                            break;
-                        case 5:
-                            g2D.setColor(red);
-                            break;
-                        case 6:
-                        default:
-                            g2D.setColor(new Color(128, 0, 0));
-                            break;
-                    }
-                    g2D.fillRect(0, y, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
-                }
-            }
             
-            temp = sk.getBarFill();
+            int[] temp = gh.getOutBarFill();
             if (temp != null) {
                 for (int i = 0, y = 0; i < temp.length; i++, y += BAR_STEP_HEIGHT) {
                     switch (temp[i]) {
@@ -350,13 +348,51 @@ public class TetrisMatrix {
             }
 
             //g2D.setColor(BLACK);
-            g2D.translate(-(BAR_WIDTH - INNER_BAR_WIDTH) / 2,
-                    -(BAR_HEIGHT - INNER_BAR_HEIGHT) / 2);
+            g2D.translate(-BAR_WIDTH_GAP, -BAR_HEIGHT_GAP);
             g2D.drawImage(BAR_OUTLINE, null, 0, 0);
             
-            g2D.drawImage(GARBAGE_ICON, BAR_WIDTH / 2 - 20, -45, 39, 39, null);
+            g2D.drawImage(OUT_GARBAGE_ICON, BAR_WIDTH / 2 - 26, -58, null);
             
-            g2D.translate(-90 + BAR_WIDTH,
+            g2D.translate(-BAR_WIDTH*4 + BAR_WIDTH_GAP + 26, BAR_HEIGHT_GAP);
+            
+            g2D.setColor(DARK_GRAY);
+            g2D.fillRect(0, 0, INNER_BAR_WIDTH, INNER_BAR_HEIGHT);
+            temp = gh.getInBarFill();
+            if (temp != null) {
+                for (int i = 0, y = 0; i < temp.length; i++, y += BAR_STEP_HEIGHT) {
+                    switch (temp[i]) {
+                        case 0:
+                            continue;
+                        case 1:
+                            g2D.setColor(yellow);
+                            break;
+                        case 2:
+                            g2D.setColor(orange);
+                            break;
+                        case 3:
+                            g2D.setColor(new Color(255, 150, 0));
+                            break;
+                        case 4:
+                            g2D.setColor(new Color(255, 100, 0));
+                            break;
+                        case 5:
+                            g2D.setColor(red);
+                            break;
+                        case 6:
+                        default:
+                            g2D.setColor(new Color(128, 0, 0));
+                            break;
+                    }
+                    g2D.fillRect(0, y, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
+                }
+            }
+            
+            g2D.translate(-BAR_WIDTH_GAP, -BAR_HEIGHT_GAP);
+            g2D.drawImage(BAR_OUTLINE, null, 0, 0);
+            
+            g2D.drawImage(IN_GARBAGE_ICON, BAR_WIDTH / 2 - 26, -58, null);
+            
+            g2D.translate(-90 + 4*BAR_WIDTH,
                     -MINO_WIDTH * VISIBLE_HEIGHT + BAR_HEIGHT + 5);
         } else {
             g2D.drawString("NEXT", 15, 45);
@@ -494,7 +530,7 @@ public class TetrisMatrix {
             g2D.setClip(null);
         } else {
             g2D.translate(MINO_WIDTH * WIDTH, MINO_WIDTH * (HEIGHT - VISIBLE_HEIGHT));
-            g2D.drawString("" + sk.getLinesSent(), 10, 200);
+            g2D.drawString("" + gh.getLinesSent(), 10, 200);
             
             g2D.drawString("HOLD", 15, 45);
             
@@ -506,15 +542,14 @@ public class TetrisMatrix {
             
             g2D.drawRect(0, 50, 110, 70);
             
-            g2D.translate(15 + BAR_WIDTH / 2 + INNER_BAR_WIDTH / 2,
-                    MINO_WIDTH * VISIBLE_HEIGHT - 5 - BAR_HEIGHT / 2
-                    - INNER_BAR_HEIGHT / 2);
+            g2D.translate(15 + BAR_WIDTH - BAR_WIDTH_GAP,
+                    MINO_WIDTH * VISIBLE_HEIGHT - 5 - BAR_HEIGHT_GAP);
             g2D.setColor(DARK_GRAY);
             g2D.fillRect(0, 0, INNER_BAR_WIDTH, INNER_BAR_HEIGHT);
 
             // sk.drawBar(g2D);
             // gd.drawBar(g2D);
-            int[] temp = gd.getBarFill();
+            /*int[] temp = gd.getBarFill();
             if (temp != null) {
                 for (int i = 0, y = 0; i < temp.length; i++, y += BAR_STEP_HEIGHT) {
                     switch (temp[i]) {
@@ -572,14 +607,13 @@ public class TetrisMatrix {
                     }
                     g2D.fillRect(0, y, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
                 }
-            }
+            }*/
 
             //g2D.setColor(BLACK);
-            g2D.translate(-(BAR_WIDTH - INNER_BAR_WIDTH) / 2,
-                    -(BAR_HEIGHT - INNER_BAR_HEIGHT) / 2);
+            g2D.translate(-BAR_WIDTH_GAP, -BAR_HEIGHT_GAP);
             g2D.drawImage(BAR_OUTLINE, null, 0, 0);
             
-            g2D.drawImage(GARBAGE_ICON, BAR_WIDTH / 2 - 20, -45, 39, 39, null);
+            g2D.drawImage(IN_GARBAGE_ICON, BAR_WIDTH / 2 - 20, -45, null);
         }
     }
     
@@ -793,15 +827,15 @@ public class TetrisMatrix {
                 lastAction == ROTATE_RIGHT) && threeCorner()) {
             System.out.println("T-spin " + linesCleared);
             if(!immobile && kicked && linesCleared < 2) {
-                sk.newLinesCleared(linesCleared, ScoreKeeper.T_SPIN_MINI, 
-                        allClear(), gd.hasGarbage());
+                gh.newLinesCleared(linesCleared, GarbageHandler.T_SPIN_MINI, 
+                        allClear());
             } else {
-                sk.newLinesCleared(linesCleared, ScoreKeeper.T_SPIN, 
-                        allClear(), gd.hasGarbage());
+                gh.newLinesCleared(linesCleared, GarbageHandler.T_SPIN, 
+                        allClear());
             }
         } else {
-            sk.newLinesCleared(linesCleared, ScoreKeeper.NORMAL, 
-                    allClear(), gd.hasGarbage());
+            gh.newLinesCleared(linesCleared, GarbageHandler.NORMAL, 
+                    allClear());
         }
         
         // empty lines
@@ -831,11 +865,11 @@ public class TetrisMatrix {
         int temp = 0;
         boolean first = true, addedGarbage = false;
         while(true) {
-            int temptemp = gd.peekNextGarbage();
+            int temptemp = gh.peekNextGarbage();
             if(temptemp == 0) break;
             temp += temptemp;
             if(!first && temp > 5) break;
-            addGarbageLines(gd.getNextGarbage());
+            addGarbageLines(gh.getNextGarbage());
             addedGarbage = true;
             System.out.println("Oof! " + temptemp + " lines of garbage");
             
