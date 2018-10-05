@@ -291,7 +291,6 @@ public class TetrisMatrix {
      * @param g2D the Graphics2D to draw with
      */
     public void draw(Graphics2D g2D) {
-        double start = System.currentTimeMillis();
         g2D.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, 
                 BasicStroke.JOIN_MITER));
         
@@ -614,9 +613,6 @@ public class TetrisMatrix {
             
             g2D.drawImage(IN_GARBAGE_ICON, BAR_WIDTH / 2 - 20, -45, null);
         }
-        
-        double total = System.currentTimeMillis() - start;
-        System.out.printf("%.4f s", total/1000);
     }
     
     /**
