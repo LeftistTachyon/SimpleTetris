@@ -20,8 +20,6 @@ import simpletetris.TetrisKeyAdapter.GameAction;
 import static simpletetris.TetrisKeyAdapter.GameAction.*;
 import static simpletetris.Mino.*;
 import static java.awt.Color.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A class that represents the Tetris matrix
@@ -293,6 +291,7 @@ public class TetrisMatrix {
      * @param g2D the Graphics2D to draw with
      */
     public void draw(Graphics2D g2D) {
+        double start = System.currentTimeMillis();
         g2D.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, 
                 BasicStroke.JOIN_MITER));
         
@@ -615,6 +614,9 @@ public class TetrisMatrix {
             
             g2D.drawImage(IN_GARBAGE_ICON, BAR_WIDTH / 2 - 20, -45, null);
         }
+        
+        double total = System.currentTimeMillis() - start;
+        System.out.printf("%.4f s", total/1000);
     }
     
     /**
@@ -679,9 +681,7 @@ public class TetrisMatrix {
                 x += kickL.x;
                 y -= kickL.y;
                 kicked = kickL.x != 0 || kickL.y != 0;
-                if(kicked || (falling instanceof TetT && immobile())) {
-                    lockDelay.addTouch();
-                }
+                lockDelay.addTouch();
                 lastAction = ga;
                 break;
             case ROTATE_RIGHT:
@@ -692,9 +692,7 @@ public class TetrisMatrix {
                 x += kickR.x;
                 y -= kickR.y;
                 kicked = kickR.x != 0 || kickR.y != 0;
-                if(kicked || (falling instanceof TetT && immobile())) {
-                    lockDelay.addTouch();
-                }
+                lockDelay.addTouch();
                 lastAction = ga;
                 break;
             case MOVE_LEFT:
@@ -826,7 +824,7 @@ public class TetrisMatrix {
         if(falling instanceof TetT && (lastAction == ROTATE_LEFT || 
                 lastAction == ROTATE_RIGHT) && threeCorner()) {
             System.out.println("T-spin " + linesCleared);
-            if(!immobile && kicked && linesCleared < 2) {
+            if((!immobile || kicked) && linesCleared < 2) {
                 gh.newLinesCleared(linesCleared, GarbageHandler.T_SPIN_MINI, 
                         allClear());
             } else {
