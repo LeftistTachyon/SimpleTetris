@@ -2,8 +2,6 @@ package simpletetris;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -54,6 +52,18 @@ public class AudioPlayer {
     private static final Media[] T_SPIN;
     
     /**
+     * SFX that plays when the player executes an all-clear.<br>
+     * Taken from Super Mario World.
+     */
+    private static final Media ALL_CLEAR;
+    
+    /**
+     * SFX that plays when the player loses.<br>
+     * Taken from Super Mario World.
+     */
+    private static final Media LOSE;
+    
+    /**
      * The MediaPlayer which controls playing background music.
      */
     private static MediaPlayer backgroundPlayer;
@@ -93,6 +103,11 @@ public class AudioPlayer {
             T_SPIN[i] = new Media(
                     new File("sfx/tspin" + i + ".m4a").toURI().toString());
         }
+        
+        ALL_CLEAR = new Media(
+                new File("sfx/allClear.m4a").toURI().toString());
+        
+        LOSE = new Media(new File("sfx/lose.m4a").toURI().toString());
     }
     
     /**
@@ -121,6 +136,7 @@ public class AudioPlayer {
                 backgroundPlayer = new MediaPlayer(OVERWORLD);
                 break;
         }
+        backgroundPlayer.setVolume(0.75);
         backgroundPlayer.play();
     }
     
@@ -153,6 +169,26 @@ public class AudioPlayer {
         if(!initialized) initialize();
         
         sfxPlayer = new MediaPlayer(T_SPIN[Math.min(lines, T_SPIN.length - 1)]);
+        sfxPlayer.play();
+    }
+    
+    /**
+     * Plays the all clear SFX.
+     */
+    public static void playAllClearSFX() {
+        if(!initialized) initialize();
+        
+        sfxPlayer = new MediaPlayer(ALL_CLEAR);
+        sfxPlayer.play();
+    }
+    
+    /**
+     * Plays the lose SFX.
+     */
+    public static void playLoseSFX() {
+        if(!initialized) initialize();
+        
+        sfxPlayer = new MediaPlayer(LOSE);
         sfxPlayer.play();
     }
     

@@ -20,6 +20,7 @@ import simpletetris.TetrisKeyAdapter.GameAction;
 import static simpletetris.TetrisKeyAdapter.GameAction.*;
 import static simpletetris.Mino.*;
 import static java.awt.Color.*;
+import java.awt.RenderingHints;
 
 /**
  * A class that represents the Tetris matrix
@@ -273,7 +274,8 @@ public class TetrisMatrix {
         rowsCleared = null;
         
         gravity = new Gravity();
-        lockDelay = new LockDelay();
+        if(onLeft) lockDelay = new LockDelay();
+        else lockDelay = null;
         
         kicked = false;
         hold = null;
@@ -281,9 +283,14 @@ public class TetrisMatrix {
         bag = new TetrisBag();
         newPiece();
         
-        ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
-        service.scheduleAtFixedRate(gravity, 0, 10, TimeUnit.MILLISECONDS);
-        service.scheduleAtFixedRate(lockDelay, 0, 10, TimeUnit.MILLISECONDS);
+        if(onLeft) {
+            ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
+            service.scheduleAtFixedRate(gravity, 0, 10, TimeUnit.MILLISECONDS);
+            service.scheduleAtFixedRate(lockDelay, 0, 10, TimeUnit.MILLISECONDS);
+        } else {
+            ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
+            service.scheduleAtFixedRate(gravity, 0, 10, TimeUnit.MILLISECONDS);
+        }
     }
     
     /**
@@ -291,15 +298,21 @@ public class TetrisMatrix {
      * @param g2D the Graphics2D to draw with
      */
     public void draw(Graphics2D g2D) {
-        double start = System.currentTimeMillis();
         g2D.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, 
                 BasicStroke.JOIN_MITER));
+        g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+                RenderingHints.VALUE_ANTIALIAS_ON);
         
         g2D.translate(15, 0);
         g2D.setColor(BLACK);
         g2D.setFont(new Font("Consolas", 0, 36));
         if(onLeft) {
-            g2D.drawString("" + gh.getLinesSent(), 0, 200);
+            g2D.drawImage(PIECE_BACKGROUND, null, 0, 157);
+            g2D.setFont(new Font("Consolas", 0, 17));
+            g2D.drawString("Lines Sent:", 5, 182);
+            g2D.setFont(new Font("Consolas", 0, 36));
+            g2D.drawString("" + gh.getLinesSent(), 5, 218);
+            g2D.drawRect(0, 157, 110, 70);
             
             g2D.drawString("HOLD", 15, 45);
             
@@ -318,7 +331,7 @@ public class TetrisMatrix {
             
             int[] temp = gh.getOutBarFill();
             if (temp != null) {
-                for (int i = 0, y = 0; i < temp.length; i++, y += BAR_STEP_HEIGHT) {
+                for (int i = 0, yy = 0; i < temp.length; i++, yy += BAR_STEP_HEIGHT) {
                     switch (temp[i]) {
                         case 0:
                             continue;
@@ -342,7 +355,7 @@ public class TetrisMatrix {
                             g2D.setColor(new Color(73, 12, 78));
                             break;
                     }
-                    g2D.fillRect(0, y, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
+                    g2D.fillRect(0, yy, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
                 }
             }
 
@@ -358,7 +371,7 @@ public class TetrisMatrix {
             g2D.fillRect(0, 0, INNER_BAR_WIDTH, INNER_BAR_HEIGHT);
             temp = gh.getInBarFill();
             if (temp != null) {
-                for (int i = 0, y = 0; i < temp.length; i++, y += BAR_STEP_HEIGHT) {
+                for (int i = 0, yy = 0; i < temp.length; i++, yy += BAR_STEP_HEIGHT) {
                     switch (temp[i]) {
                         case 0:
                             continue;
@@ -382,7 +395,7 @@ public class TetrisMatrix {
                             g2D.setColor(new Color(128, 0, 0));
                             break;
                     }
-                    g2D.fillRect(0, y, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
+                    g2D.fillRect(0, yy, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
                 }
             }
             
@@ -529,7 +542,13 @@ public class TetrisMatrix {
             g2D.setClip(null);
         } else {
             g2D.translate(MINO_WIDTH * WIDTH, MINO_WIDTH * (HEIGHT - VISIBLE_HEIGHT));
-            g2D.drawString("" + gh.getLinesSent(), 10, 200);
+            
+            g2D.drawImage(PIECE_BACKGROUND, null, 0, 157);
+            g2D.setFont(new Font("Consolas", 0, 17));
+            g2D.drawString("Lines Sent:", 5, 182);
+            g2D.setFont(new Font("Consolas", 0, 36));
+            g2D.drawString("" + gh.getLinesSent(), 5, 218);
+            g2D.drawRect(0, 157, 110, 70);
             
             g2D.drawString("HOLD", 15, 45);
             
@@ -542,45 +561,13 @@ public class TetrisMatrix {
             g2D.drawRect(0, 50, 110, 70);
             
             g2D.translate(15 + BAR_WIDTH - BAR_WIDTH_GAP,
-                    MINO_WIDTH * VISIBLE_HEIGHT - 5 - BAR_HEIGHT_GAP);
+                    MINO_WIDTH * VISIBLE_HEIGHT - 5 - BAR_HEIGHT + BAR_HEIGHT_GAP);
             g2D.setColor(DARK_GRAY);
             g2D.fillRect(0, 0, INNER_BAR_WIDTH, INNER_BAR_HEIGHT);
-
-            // sk.drawBar(g2D);
-            // gd.drawBar(g2D);
-            /*int[] temp = gd.getBarFill();
-            if (temp != null) {
-                for (int i = 0, y = 0; i < temp.length; i++, y += BAR_STEP_HEIGHT) {
-                    switch (temp[i]) {
-                        case 0:
-                            continue;
-                        case 1:
-                            g2D.setColor(yellow);
-                            break;
-                        case 2:
-                            g2D.setColor(orange);
-                            break;
-                        case 3:
-                            g2D.setColor(new Color(255, 150, 0));
-                            break;
-                        case 4:
-                            g2D.setColor(new Color(255, 100, 0));
-                            break;
-                        case 5:
-                            g2D.setColor(red);
-                            break;
-                        case 6:
-                        default:
-                            g2D.setColor(new Color(128, 0, 0));
-                            break;
-                    }
-                    g2D.fillRect(0, y, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
-                }
-            }
             
-            temp = sk.getBarFill();
+            int[] temp = gh.getOutBarFill();
             if (temp != null) {
-                for (int i = 0, y = 0; i < temp.length; i++, y += BAR_STEP_HEIGHT) {
+                for (int i = 0, yy = 0; i < temp.length; i++, yy += BAR_STEP_HEIGHT) {
                     switch (temp[i]) {
                         case 0:
                             continue;
@@ -604,19 +591,55 @@ public class TetrisMatrix {
                             g2D.setColor(new Color(73, 12, 78));
                             break;
                     }
-                    g2D.fillRect(0, y, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
+                    g2D.fillRect(0, yy, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
                 }
-            }*/
-
-            //g2D.setColor(BLACK);
+            }
+            
             g2D.translate(-BAR_WIDTH_GAP, -BAR_HEIGHT_GAP);
             g2D.drawImage(BAR_OUTLINE, null, 0, 0);
             
-            g2D.drawImage(IN_GARBAGE_ICON, BAR_WIDTH / 2 - 20, -45, null);
+            g2D.drawImage(OUT_GARBAGE_ICON, BAR_WIDTH / 2 - 26, -58, null);
+            
+            g2D.translate(BAR_WIDTH*4 - BAR_WIDTH_GAP - 13, BAR_HEIGHT_GAP);
+            
+            g2D.setColor(DARK_GRAY);
+            g2D.fillRect(0, 0, INNER_BAR_WIDTH, INNER_BAR_HEIGHT);
+            
+            temp = gh.getInBarFill();
+            if (temp != null) {
+                for (int i = 0, yy = 0; i < temp.length; i++, yy += BAR_STEP_HEIGHT) {
+                    switch (temp[i]) {
+                        case 0:
+                            continue;
+                        case 1:
+                            g2D.setColor(yellow);
+                            break;
+                        case 2:
+                            g2D.setColor(orange);
+                            break;
+                        case 3:
+                            g2D.setColor(new Color(255, 150, 0));
+                            break;
+                        case 4:
+                            g2D.setColor(new Color(255, 100, 0));
+                            break;
+                        case 5:
+                            g2D.setColor(red);
+                            break;
+                        case 6:
+                        default:
+                            g2D.setColor(new Color(128, 0, 0));
+                            break;
+                    }
+                    g2D.fillRect(0, yy, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
+                }
+            }
+            
+            g2D.translate(-BAR_WIDTH_GAP, -BAR_HEIGHT_GAP);
+            g2D.drawImage(BAR_OUTLINE, null, 0, 0);
+            
+            g2D.drawImage(IN_GARBAGE_ICON, BAR_WIDTH / 2 - 26, -58, null);
         }
-        
-        double total = System.currentTimeMillis() - start;
-        System.out.printf("%.4f s", total/1000);
     }
     
     /**
@@ -681,7 +704,7 @@ public class TetrisMatrix {
                 x += kickL.x;
                 y -= kickL.y;
                 kicked = kickL.x != 0 || kickL.y != 0;
-                lockDelay.addTouch();
+                if(lockDelay != null) lockDelay.addTouch();
                 lastAction = ga;
                 break;
             case ROTATE_RIGHT:
@@ -692,7 +715,7 @@ public class TetrisMatrix {
                 x += kickR.x;
                 y -= kickR.y;
                 kicked = kickR.x != 0 || kickR.y != 0;
-                lockDelay.addTouch();
+                if(lockDelay != null) lockDelay.addTouch();
                 lastAction = ga;
                 break;
             case MOVE_LEFT:
@@ -769,6 +792,7 @@ public class TetrisMatrix {
             falling = null;
             
             // Game over!
+            AudioPlayer.playLoseSFX();
             notifyListeners("GAMEOVER");
         }
         if(falling.overlaps(miniMatrix(0, -1))) {
@@ -786,6 +810,7 @@ public class TetrisMatrix {
             falling = null;
             
             // Game over!
+            AudioPlayer.playLoseSFX();
             notifyListeners("GAMEOVER");
         }
     }
@@ -798,7 +823,7 @@ public class TetrisMatrix {
         gravity.disable();
         
         // reset lock piece checker
-        lockDelay.reset();
+        if(lockDelay != null) lockDelay.reset();
         
         // determine immobility
         boolean immobile = immobile();

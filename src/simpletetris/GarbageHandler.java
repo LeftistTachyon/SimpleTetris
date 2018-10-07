@@ -237,25 +237,25 @@ public class GarbageHandler {
                         // single
                         // 0 extra
                         bb = false;
-                        AudioPlayer.playComboSFX(combo);
+                        if(!perfectClear) AudioPlayer.playComboSFX(combo);
                         break;
                     case 2:
                         // double
                         newLinesToSend = 1;
                         bb = false;
-                        AudioPlayer.playComboSFX(combo);
+                        if(!perfectClear) AudioPlayer.playComboSFX(combo);
                         break;
                     case 3:
                         // triple
                         newLinesToSend = 2;
                         bb = false;
-                        AudioPlayer.playComboSFX(combo);
+                        if(!perfectClear) AudioPlayer.playComboSFX(combo);
                         break;
                     case 4:
                         // tetris
                         newLinesToSend = 4;
                         bb = true;
-                        AudioPlayer.playTSpinSFX(2);
+                        if(!perfectClear) AudioPlayer.playTSpinSFX(2);
                         break;
                 }
                 break;
@@ -278,18 +278,21 @@ public class GarbageHandler {
                                 "You cleared 4 lines with a t-piece?");
                 }
                 bb = true;
-                AudioPlayer.playTSpinSFX(linesCleared);
+                if(!perfectClear) AudioPlayer.playTSpinSFX(linesCleared);
                 break;
             case T_SPIN_MINI:
                 // T-spin mini
                 newLinesToSend = 1;
                 bb = true;
-                AudioPlayer.playTSpinSFX(linesCleared);
+                if(!perfectClear) AudioPlayer.playTSpinSFX(linesCleared);
                 break;
         }
         combo++;
         newLinesToSend += comboBonus();
-        if(perfectClear) newLinesToSend += 10;
+        if(perfectClear) {
+            newLinesToSend += 10;
+            AudioPlayer.playAllClearSFX();
+        }
         if(b2b && bb) newLinesToSend++;
         
         b2b = bb;
@@ -331,6 +334,15 @@ public class GarbageHandler {
      */
     public int getLinesSent() {
         return linesSent;
+    }
+
+    /**
+     * Returns the combo number.<br>
+     * i.e. if the player performs a 2-combo, 2 will be returned.
+     * @return combo number
+     */
+    public int getCombo() {
+        return combo;
     }
     
     /**
