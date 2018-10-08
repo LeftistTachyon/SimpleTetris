@@ -372,4 +372,19 @@ public class GarbageHandler {
             listener.actionPerformed(event);
         }
     }
+    
+    /**
+     * Resets everything.
+     */
+    public void reset() {
+        garbageQueue = new LinkedList<>();
+        linesToRecieve = 0;
+        
+        linesSent = 0;
+        linesToSend = 0;
+        linesToSendCommand = "";
+        
+        combo = 0;
+        b2b = false;
+    }
 }

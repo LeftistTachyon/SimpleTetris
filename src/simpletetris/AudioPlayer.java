@@ -58,10 +58,34 @@ public class AudioPlayer {
     private static final Media ALL_CLEAR;
     
     /**
-     * SFX that plays when the player loses.<br>
+     * SFX that plays when the player loses a game.<br>
      * Taken from Super Mario World.
      */
-    private static final Media LOSE;
+    private static final Media LOSE_GAME;
+    
+    /**
+     * SFX that plays when the player loses a matchup.<br>
+     * Taken from Super Mario World.
+     */
+    private static final Media LOSE_MATCH;
+    
+    /**
+     * SFX that plays when the player wins a game.<br>
+     * Taken from Super Mario World.
+     */
+    private static final Media WIN_GAME;
+    
+    /**
+     * SFX that plays when the player wins a matchup.<br>
+     * Taken from Super Mario World.
+     */
+    private static final Media WIN_MATCH;
+    
+    /**
+     * SFX that plays when the player moves the falling tetromino.<br>
+     * Taken from Super Mario World.
+     */
+    private static final Media MOVE;
     
     /**
      * The MediaPlayer which controls playing background music.
@@ -107,7 +131,15 @@ public class AudioPlayer {
         ALL_CLEAR = new Media(
                 new File("sfx/allClear.m4a").toURI().toString());
         
-        LOSE = new Media(new File("sfx/lose.m4a").toURI().toString());
+        LOSE_GAME = new Media(new File("sfx/lose.m4a").toURI().toString());
+        
+        LOSE_MATCH = new Media(new File("sfx/loseM.wav").toURI().toString());
+        
+        WIN_GAME = new Media(new File("sfx/win.wav").toURI().toString());
+        
+        WIN_MATCH = new Media(new File("sfx/winM.wav").toURI().toString());
+        
+        MOVE = new Media(new File("sfx/move.wav").toURI().toString());
     }
     
     /**
@@ -183,12 +215,54 @@ public class AudioPlayer {
     }
     
     /**
-     * Plays the lose SFX.
+     * Plays the lose game SFX.
      */
-    public static void playLoseSFX() {
+    public static void playLoseGameSFX() {
         if(!initialized) initialize();
         
-        sfxPlayer = new MediaPlayer(LOSE);
+        sfxPlayer = new MediaPlayer(LOSE_GAME);
+        sfxPlayer.play();
+    }
+    
+    /**
+     * Plays the lose match SFX.
+     */
+    public static void playLoseMatchSFX() {
+        if(!initialized) initialize();
+        
+        sfxPlayer = new MediaPlayer(LOSE_MATCH);
+        sfxPlayer.play();
+    }
+    
+    /**
+     * Plays the win game SFX.
+     */
+    public static void playWinGameSFX() {
+        if(!initialized) initialize();
+        
+        sfxPlayer = new MediaPlayer(WIN_GAME);
+        sfxPlayer.play();
+    }
+    
+    /**
+     * Plays the win match SFX.
+     */
+    public static void playWinMatchSFX() {
+        if(!initialized) initialize();
+        
+        sfxPlayer = new MediaPlayer(WIN_MATCH);
+        sfxPlayer.play();
+    }
+    
+    /**
+     * Plays the move SFX.
+     * @param volume the volume of this SFX
+     */
+    public static void playMoveSFX(double volume) {
+        if(!initialized) initialize();
+        
+        sfxPlayer = new MediaPlayer(MOVE);
+        sfxPlayer.setVolume(volume);
         sfxPlayer.play();
     }
     

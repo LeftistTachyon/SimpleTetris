@@ -118,6 +118,11 @@ public class TetrisMatrix {
     private final boolean onLeft;
     
     /**
+     * The service that maintains gravity and locking.
+     */
+    private ScheduledExecutorService service;
+    
+    /**
      * The width of the matrix
      */
     public static final int WIDTH = 10;
@@ -261,36 +266,62 @@ public class TetrisMatrix {
     public TetrisMatrix(boolean onLeft) {
         this.onLeft = onLeft;
         
-        /*sk = new ScoreKeeper();
-        gd = new GarbageDealer();
-        sk.addListener((ActionEvent e) -> {
-            String garbageToSend = gd.counterGarbage(e.getActionCommand());
-            if(garbageToSend != null) 
-                System.out.println("SEND" + garbageToSend);
-        });*/
         gh = new GarbageHandler();
+        gh.addListener((ActionEvent e) -> {
+            if(e.getActionCommand() != null) {
+                notifyListeners("SEND" + e.getActionCommand());
+            }
+        });
         // gd.addGarbage("2 2 2 2 2 2 2");
         
         rowsCleared = null;
         
         gravity = new Gravity();
-        if(onLeft) lockDelay = new LockDelay();
-        else lockDelay = null;
+        /*if(onLeft) */lockDelay = new LockDelay();
+        //else lockDelay = null;
         
         kicked = false;
         hold = null;
         matrix = new Color[WIDTH][HEIGHT];
-        bag = new TetrisBag();
+        bag = new TetrisBag(!onLeft);
+        if(!onLeft) bag.addBag("IIIIIII");
+        
+        falling = null;
+    }
+    
+    /**
+     * Resets everything so everything is anew.
+     */
+    public void reset() {
+        if(service != null) service.shutdown();
+        service = null;
+        falling = null;
+        
+        gh.reset();
+        
+        rowsCleared = null;
+        
+        kicked = false;
+        hold = null;
+        matrix = new Color[WIDTH][HEIGHT];
+        bag = new TetrisBag(!onLeft);
+        if(!onLeft) bag.addBag("IIIIIII");
+    }
+    
+    /**
+     * Starts play on this matrix.
+     */
+    public void start() {
         newPiece();
         
-        if(onLeft) {
-            ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
+        //if(onLeft) {
+            service = Executors.newScheduledThreadPool(2);
             service.scheduleAtFixedRate(gravity, 0, 10, TimeUnit.MILLISECONDS);
             service.scheduleAtFixedRate(lockDelay, 0, 10, TimeUnit.MILLISECONDS);
-        } else {
-            ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
+        /*} else {
+            service = Executors.newScheduledThreadPool(1);
             service.scheduleAtFixedRate(gravity, 0, 10, TimeUnit.MILLISECONDS);
-        }
+        }*/
     }
     
     /**
@@ -432,6 +463,16 @@ public class TetrisMatrix {
             
             g2D.setClip(null);
             
+            if(gh.getCombo() > 1)  {
+                g2D.translate(0, 500);
+                g2D.setFont(new Font("Consolas", 0, 20));
+                g2D.drawImage(PIECE_BACKGROUND, null, 0, 0);
+                g2D.drawString(gh.getCombo() + " Combo", 5, 25);
+                g2D.drawRect(0, 0, 110, 70);
+                g2D.translate(0, -500);
+                g2D.setFont(new Font("Consolas", 0, 36));
+            }
+            
             /*g2D.translate(-90 + BAR_WIDTH,
                     -MINO_WIDTH * VISIBLE_HEIGHT + BAR_HEIGHT + 5);*/
         }
@@ -540,6 +581,15 @@ public class TetrisMatrix {
             }
             
             g2D.setClip(null);
+            
+            if(gh.getCombo() > 1)  {
+                g2D.setFont(new Font("Consolas", 0, 20));
+                g2D.translate(0, 500);
+                g2D.drawImage(PIECE_BACKGROUND, null, 0, 0);
+                g2D.drawString(gh.getCombo() + " Combo", 5, 25);
+                g2D.drawRect(0, 0, 110, 70);
+                g2D.translate(0, -500);
+            }
         } else {
             g2D.translate(MINO_WIDTH * WIDTH, MINO_WIDTH * (HEIGHT - VISIBLE_HEIGHT));
             
@@ -639,7 +689,12 @@ public class TetrisMatrix {
             g2D.drawImage(BAR_OUTLINE, null, 0, 0);
             
             g2D.drawImage(IN_GARBAGE_ICON, BAR_WIDTH / 2 - 26, -58, null);
+            
+            g2D.translate(-90 + 4*BAR_WIDTH,
+                    -MINO_WIDTH * VISIBLE_HEIGHT + BAR_HEIGHT + 5);
         }
+        
+        g2D.translate(110, 0);
     }
     
     /**
@@ -690,6 +745,14 @@ public class TetrisMatrix {
     }
     
     /**
+     * Adds garbage to the queue for this matrix
+     * @param garbage the garbage
+     */
+    public void addToGarbage(String garbage) {
+        gh.addGarbage(garbage);
+    }
+    
+    /**
      * Executes the given action.
      * @param ga the action to execute.
      */
@@ -704,6 +767,8 @@ public class TetrisMatrix {
                 x += kickL.x;
                 y -= kickL.y;
                 kicked = kickL.x != 0 || kickL.y != 0;
+                if(kicked) AudioPlayer.playMoveSFX(1.0);
+                else AudioPlayer.playMoveSFX(0.1);
                 if(lockDelay != null) lockDelay.addTouch();
                 lastAction = ga;
                 break;
@@ -715,6 +780,8 @@ public class TetrisMatrix {
                 x += kickR.x;
                 y -= kickR.y;
                 kicked = kickR.x != 0 || kickR.y != 0;
+                if(kicked) AudioPlayer.playMoveSFX(1.0);
+                else AudioPlayer.playMoveSFX(0.1);
                 if(lockDelay != null) lockDelay.addTouch();
                 lastAction = ga;
                 break;
@@ -723,22 +790,26 @@ public class TetrisMatrix {
                     x--;
                     lastAction = ga;
                 }
+                AudioPlayer.playMoveSFX(0.1);
                 break;
             case MOVE_RIGHT:
                 if(!falling.overlaps(miniMatrix(1, 0))) {
                     x++;
                     lastAction = ga;
                 }
+                AudioPlayer.playMoveSFX(0.1);
                 break;
             case SOFT_DROP:
                 if(!falling.overlaps(miniMatrix(0, -1))) {
                     y++;
                     lastAction = ga;
                 }
+                AudioPlayer.playMoveSFX(0.1);
                 break;
             case HARD_DROP:
                 y = getGhostY();
                 lockPiece();
+                AudioPlayer.playMoveSFX(1.0);
                 break;
             case HOLD:
                 if(holdSwappable) {
@@ -792,7 +863,8 @@ public class TetrisMatrix {
             falling = null;
             
             // Game over!
-            AudioPlayer.playLoseSFX();
+            if(onLeft) AudioPlayer.playLoseGameSFX();
+            else AudioPlayer.playWinGameSFX();
             notifyListeners("GAMEOVER");
         }
         if(falling.overlaps(miniMatrix(0, -1))) {
@@ -810,7 +882,8 @@ public class TetrisMatrix {
             falling = null;
             
             // Game over!
-            AudioPlayer.playLoseSFX();
+            if(onLeft) AudioPlayer.playLoseGameSFX();
+            else AudioPlayer.playWinGameSFX();
             notifyListeners("GAMEOVER");
         }
     }
@@ -1133,6 +1206,7 @@ public class TetrisMatrix {
      * @param message the message to send
      */
     private void notifyListeners(String message) {
+        System.out.println(message);
         if(listeners == null) return;
         ActionEvent ae = new ActionEvent(this, 0, message);
         for(ActionListener listener : listeners) {
