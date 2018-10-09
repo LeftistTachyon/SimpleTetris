@@ -38,11 +38,13 @@ public class TetrisFrame extends JFrame {
             if(message.startsWith("MATCHOVER")) {
                 if(Boolean.parseBoolean(message.substring(9))) {
                     // I won!
+                    AudioPlayer.playWinMatchSFX();
                     JOptionPane.showMessageDialog(_this, "You Won!",
                             "Game Over", JOptionPane.INFORMATION_MESSAGE);
                     System.exit(0);
                 } else {
                     // I lost....
+                    AudioPlayer.playLoseMatchSFX();
                     JOptionPane.showMessageDialog(_this, "You lost.",
                             "Game Over", JOptionPane.INFORMATION_MESSAGE);
                     System.exit(0);

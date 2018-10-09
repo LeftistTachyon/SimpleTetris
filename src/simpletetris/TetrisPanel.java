@@ -83,6 +83,7 @@ public class TetrisPanel extends JPanel implements Runnable {
                     notifyListeners("MATCHOVERfalse");
                 }
                 System.out.println("You lose. :(");
+                AudioPlayer.playLoseGameSFX();
                 reset();
                 startGame();
             } else if(command.startsWith("SEND")) {
@@ -98,6 +99,7 @@ public class TetrisPanel extends JPanel implements Runnable {
                     notifyListeners("MATCHOVERtrue");
                 }
                 System.out.println("You win! :)");
+                AudioPlayer.playWinGameSFX();
                 reset();
                 startGame();
             } else if(command.startsWith("SEND")) {
