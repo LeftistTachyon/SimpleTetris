@@ -12,11 +12,25 @@ public class TetrisBag {
      * The queue of Tetrominos
      */
     private LinkedList<Tetromino> queue;
+    
+    /**
+     * Whether the regeneration of bags is suspended
+     */
+    private boolean suspended;
 
     /**
      * Creates a new TetrisBag.
      */
     public TetrisBag() {
+        this(false);
+    }
+
+    /**
+     * Creates a new TetrisBag.
+     * @param suspended whether the regeneration of bags is suspended
+     */
+    public TetrisBag(boolean suspended) {
+        this.suspended = suspended;
         queue = new LinkedList<>();
         regenerateBag();
     }
@@ -25,6 +39,7 @@ public class TetrisBag {
      * Adds 7 new tetrominos to the queue.
      */
     public void regenerateBag() {
+        if(suspended) return;
         ArrayList<Tetromino> r = new ArrayList<>();
         r.add(new TetI());
         r.add(new TetJ());
@@ -41,12 +56,50 @@ public class TetrisBag {
     }
     
     /**
+     * Adds a pre-specified bag to the mix.
+     * @param bag the bag to add
+     */
+    public void addBag(String bag) {
+        if(bag.length() != 7) throw new IllegalArgumentException(
+                "Invalid bag: length");
+        char[] cc = bag.toCharArray();
+        for(char c : cc) {
+            switch(c) {
+                case 'I':
+                    queue.add(new TetI());
+                    break;
+                case 'J':
+                    queue.add(new TetJ());
+                    break;
+                case 'L':
+                    queue.add(new TetL());
+                    break;
+                case 'O':
+                    queue.add(new TetO());
+                    break;
+                case 'S':
+                    queue.add(new TetS());
+                    break;
+                case 'T':
+                    queue.add(new TetT());
+                    break;
+                case 'Z':
+                    queue.add(new TetZ());
+                    break;
+                default:
+                    throw new IllegalArgumentException(
+                            "Invalid bag: " + c);
+            }
+        }
+    }
+    
+    /**
      * Returns the next tetromino in the queue.
      * Also refreshes the queue
      * @return the next tetromino
      */
     public Tetromino remove() {
-        Tetromino output = queue.remove();
+        Tetromino output = queue.poll();
         if(queue.size() < 7)
             regenerateBag();
         return output;
@@ -58,6 +111,6 @@ public class TetrisBag {
      * @return what Tetromino is at that position
      */
     public Tetromino next(int which) {
-        return queue.get(which);
+        return (queue.size() > which)?queue.get(which):null;
     }
 }

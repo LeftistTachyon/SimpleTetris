@@ -2,7 +2,6 @@ package simpletetris;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -14,7 +13,7 @@ public class TetrisFrame extends JFrame {
     /**
      * The Panel for this application
      */
-    private TetrisPanel panel;
+    public final TetrisPanel panel;
 
     /**
      * Creates a new TetrisFrame.
@@ -24,30 +23,30 @@ public class TetrisFrame extends JFrame {
         panel = new TetrisPanel();
         
         super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        super.setSize(new Dimension(TetrisMatrix.WIDTH*Mino.MINO_WIDTH + 265, 
+        super.setSize(new Dimension(2*TetrisMatrix.WIDTH*Mino.MINO_WIDTH + 530, 
                 (int) ((TetrisMatrix.VISIBLE_HEIGHT+1)*Mino.MINO_WIDTH)+15));
         super.setResizable(true);
         super.getContentPane().add(panel);
         
-        TetrisKeyAdapter tka = new TetrisKeyAdapter(panel.matrix);
+        TetrisKeyAdapter tka = new TetrisKeyAdapter(panel.playerMatrix);
         super.addKeyListener(tka);
         
         TetrisFrame _this = this;
         
-        panel.matrix.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String message = e.getActionCommand();
-                // one-string commands
-                switch(message) {
-                    case "GAMEOVER":
-                        JOptionPane.showMessageDialog(_this, "Game Over!", 
-                                "Game Over", JOptionPane.INFORMATION_MESSAGE);
-                        System.exit(0);
-                        break;
+        panel.addListener((ActionEvent e) -> {
+            String message = e.getActionCommand();
+            if(message.startsWith("MATCHOVER")) {
+                if(Boolean.parseBoolean(message.substring(9))) {
+                    // I won!
+                    JOptionPane.showMessageDialog(_this, "You Won!",
+                            "Game Over", JOptionPane.INFORMATION_MESSAGE);
+                    System.exit(0);
+                } else {
+                    // I lost....
+                    JOptionPane.showMessageDialog(_this, "You lost.",
+                            "Game Over", JOptionPane.INFORMATION_MESSAGE);
+                    System.exit(0);
                 }
-                
-                // info commands
             }
         });
         

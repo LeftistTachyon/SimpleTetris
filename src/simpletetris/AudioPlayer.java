@@ -2,8 +2,6 @@ package simpletetris;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -54,6 +52,42 @@ public class AudioPlayer {
     private static final Media[] T_SPIN;
     
     /**
+     * SFX that plays when the player executes an all-clear.<br>
+     * Taken from Super Mario World.
+     */
+    private static final Media ALL_CLEAR;
+    
+    /**
+     * SFX that plays when the player loses a game.<br>
+     * Taken from Super Mario World.
+     */
+    private static final Media LOSE_GAME;
+    
+    /**
+     * SFX that plays when the player loses a matchup.<br>
+     * Taken from Super Mario World.
+     */
+    private static final Media LOSE_MATCH;
+    
+    /**
+     * SFX that plays when the player wins a game.<br>
+     * Taken from Super Mario World.
+     */
+    private static final Media WIN_GAME;
+    
+    /**
+     * SFX that plays when the player wins a matchup.<br>
+     * Taken from Super Mario World.
+     */
+    private static final Media WIN_MATCH;
+    
+    /**
+     * SFX that plays when the player moves the falling tetromino.<br>
+     * Taken from Super Mario World.
+     */
+    private static final Media MOVE;
+    
+    /**
      * The MediaPlayer which controls playing background music.
      */
     private static MediaPlayer backgroundPlayer;
@@ -93,6 +127,19 @@ public class AudioPlayer {
             T_SPIN[i] = new Media(
                     new File("sfx/tspin" + i + ".m4a").toURI().toString());
         }
+        
+        ALL_CLEAR = new Media(
+                new File("sfx/allClear.m4a").toURI().toString());
+        
+        LOSE_GAME = new Media(new File("sfx/lose.m4a").toURI().toString());
+        
+        LOSE_MATCH = new Media(new File("sfx/loseM.wav").toURI().toString());
+        
+        WIN_GAME = new Media(new File("sfx/win.wav").toURI().toString());
+        
+        WIN_MATCH = new Media(new File("sfx/winM.wav").toURI().toString());
+        
+        MOVE = new Media(new File("sfx/move.wav").toURI().toString());
     }
     
     /**
@@ -121,6 +168,7 @@ public class AudioPlayer {
                 backgroundPlayer = new MediaPlayer(OVERWORLD);
                 break;
         }
+        backgroundPlayer.setVolume(0.75);
         backgroundPlayer.play();
     }
     
@@ -153,6 +201,68 @@ public class AudioPlayer {
         if(!initialized) initialize();
         
         sfxPlayer = new MediaPlayer(T_SPIN[Math.min(lines, T_SPIN.length - 1)]);
+        sfxPlayer.play();
+    }
+    
+    /**
+     * Plays the all clear SFX.
+     */
+    public static void playAllClearSFX() {
+        if(!initialized) initialize();
+        
+        sfxPlayer = new MediaPlayer(ALL_CLEAR);
+        sfxPlayer.play();
+    }
+    
+    /**
+     * Plays the lose game SFX.
+     */
+    public static void playLoseGameSFX() {
+        if(!initialized) initialize();
+        
+        sfxPlayer = new MediaPlayer(LOSE_GAME);
+        sfxPlayer.play();
+    }
+    
+    /**
+     * Plays the lose match SFX.
+     */
+    public static void playLoseMatchSFX() {
+        if(!initialized) initialize();
+        
+        sfxPlayer = new MediaPlayer(LOSE_MATCH);
+        sfxPlayer.play();
+    }
+    
+    /**
+     * Plays the win game SFX.
+     */
+    public static void playWinGameSFX() {
+        if(!initialized) initialize();
+        
+        sfxPlayer = new MediaPlayer(WIN_GAME);
+        sfxPlayer.play();
+    }
+    
+    /**
+     * Plays the win match SFX.
+     */
+    public static void playWinMatchSFX() {
+        if(!initialized) initialize();
+        
+        sfxPlayer = new MediaPlayer(WIN_MATCH);
+        sfxPlayer.play();
+    }
+    
+    /**
+     * Plays the move SFX.
+     * @param volume the volume of this SFX
+     */
+    public static void playMoveSFX(double volume) {
+        if(!initialized) initialize();
+        
+        sfxPlayer = new MediaPlayer(MOVE);
+        sfxPlayer.setVolume(volume);
         sfxPlayer.play();
     }
     
