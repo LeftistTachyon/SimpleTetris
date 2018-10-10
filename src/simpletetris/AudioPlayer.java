@@ -133,11 +133,11 @@ public class AudioPlayer {
         
         LOSE_GAME = new Media(new File("sfx/lose.m4a").toURI().toString());
         
-        LOSE_MATCH = new Media(new File("sfx/loseM.wav").toURI().toString());
+        LOSE_MATCH = new Media(new File("sfx/loseM.m4a").toURI().toString());
         
-        WIN_GAME = new Media(new File("sfx/win.wav").toURI().toString());
+        WIN_GAME = new Media(new File("sfx/win.m4a").toURI().toString());
         
-        WIN_MATCH = new Media(new File("sfx/winM.wav").toURI().toString());
+        WIN_MATCH = new Media(new File("sfx/winM.m4a").toURI().toString());
         
         MOVE = new Media(new File("sfx/move.wav").toURI().toString());
     }
@@ -170,6 +170,14 @@ public class AudioPlayer {
         }
         backgroundPlayer.setVolume(0.75);
         backgroundPlayer.play();
+    }
+    
+    /**
+     * Stops the background music.
+     */
+    public static void stopBackgroundMusic() {
+        if(backgroundPlayer != null) 
+            backgroundPlayer.stop();
     }
     
     /**

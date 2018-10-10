@@ -80,9 +80,12 @@ public class TetrisPanel extends JPanel implements Runnable {
             if(command.equals("GAMEOVER")) {
                 opponentScore++;
                 if(opponentScore == 2) {
+                    playerMatrix.clearFalling();
+                    opponentMatrix.clearFalling();
                     notifyListeners("MATCHOVERfalse");
                 }
                 System.out.println("You lose. :(");
+                AudioPlayer.stopBackgroundMusic();
                 AudioPlayer.playLoseGameSFX();
                 reset();
                 startGame();
@@ -96,9 +99,12 @@ public class TetrisPanel extends JPanel implements Runnable {
             if(command.equals("GAMEOVER")) {
                 playerScore++;
                 if(playerScore == 2) {
+                    playerMatrix.clearFalling();
+                    opponentMatrix.clearFalling();
                     notifyListeners("MATCHOVERtrue");
                 }
                 System.out.println("You win! :)");
+                AudioPlayer.stopBackgroundMusic();
                 AudioPlayer.playWinGameSFX();
                 reset();
                 startGame();

@@ -123,6 +123,11 @@ public class TetrisMatrix {
     private ScheduledExecutorService service;
     
     /**
+     * Text that denotes a t-spin or tetris
+     */
+    private String specialText = null;
+    
+    /**
      * The width of the matrix
      */
     public static final int WIDTH = 10;
@@ -324,6 +329,8 @@ public class TetrisMatrix {
      * Starts play on this matrix.
      */
     public void start() {
+        AudioPlayer.playInGameBackground();
+        
         newPiece();
         
         //if(onLeft) {
@@ -475,11 +482,17 @@ public class TetrisMatrix {
             
             g2D.setClip(null);
             
-            if(gh.getCombo() > 1)  {
+            boolean a = gh.getCombo() > 1, b = specialText != null;
+            if(a || b) {
                 g2D.translate(0, 500);
                 g2D.setFont(new Font("Consolas", 0, 20));
                 g2D.drawImage(PIECE_BACKGROUND, null, 0, 0);
-                g2D.drawString(gh.getCombo() + " Combo", 5, 25);
+                if(a) {
+                    g2D.drawString(gh.getCombo() + " Combo", 5, 25);
+                }
+                if(b) {
+                    g2D.drawString(specialText, 5, 50);
+                }
                 g2D.drawRect(0, 0, 110, 70);
                 g2D.translate(0, -500);
                 g2D.setFont(new Font("Consolas", 0, 36));
@@ -594,13 +607,20 @@ public class TetrisMatrix {
             
             g2D.setClip(null);
             
-            if(gh.getCombo() > 1)  {
-                g2D.setFont(new Font("Consolas", 0, 20));
+            boolean a = gh.getCombo() > 1, b = specialText != null;
+            if(a || b) {
                 g2D.translate(0, 500);
+                g2D.setFont(new Font("Consolas", 0, 20));
                 g2D.drawImage(PIECE_BACKGROUND, null, 0, 0);
-                g2D.drawString(gh.getCombo() + " Combo", 5, 25);
+                if(a) {
+                    g2D.drawString(gh.getCombo() + " Combo", 5, 25);
+                }
+                if(b) {
+                    g2D.drawString(specialText, 5, 50);
+                }
                 g2D.drawRect(0, 0, 110, 70);
                 g2D.translate(0, -500);
+                g2D.setFont(new Font("Consolas", 0, 36));
             }
         } else {
             g2D.translate(MINO_WIDTH * WIDTH, MINO_WIDTH * (HEIGHT - VISIBLE_HEIGHT));
@@ -875,8 +895,6 @@ public class TetrisMatrix {
             falling = null;
             
             // Game over!
-            if(onLeft) AudioPlayer.playLoseGameSFX();
-            else AudioPlayer.playWinGameSFX();
             notifyListeners("GAMEOVER");
         }
         if(falling.overlaps(miniMatrix(0, -1))) {
@@ -894,8 +912,6 @@ public class TetrisMatrix {
             falling = null;
             
             // Game over!
-            if(onLeft) AudioPlayer.playLoseGameSFX();
-            else AudioPlayer.playWinGameSFX();
             notifyListeners("GAMEOVER");
         }
     }
@@ -967,21 +983,27 @@ public class TetrisMatrix {
     }
     
     /**
+     * Clears / Resets the falling tetromino to {@code null}.
+     */
+    public void clearFalling() {
+        falling = null;
+    }
+    
+    /**
      * Adds garbage needed for this drop
      */
     private void addGarbage() {
         int temp = 0;
-        boolean first = true, addedGarbage = false;
+        boolean addedGarbage = false;
         while(true) {
             int temptemp = gh.peekNextGarbage();
             if(temptemp == 0) break;
             temp += temptemp;
-            if(!first && temp > 5) break;
             addGarbageLines(gh.getNextGarbage());
             addedGarbage = true;
             System.out.println("Oof! " + temptemp + " lines of garbage");
             
-            first = false;
+            if(temp > 5) break;
         }
         if(addedGarbage) AudioPlayer.playGarbageSFX();
     }
