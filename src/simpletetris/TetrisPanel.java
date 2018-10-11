@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
@@ -47,6 +49,11 @@ public class TetrisPanel extends JPanel implements Runnable {
      */
     private static final BufferedImage WIN_TRACKER;
     
+    /**
+     * The image for the background of everything.
+     */
+    private static final BufferedImage BACKBACKGROUND;
+    
     static {
         BufferedImage temp = null;
         try {
@@ -55,6 +62,14 @@ public class TetrisPanel extends JPanel implements Runnable {
             System.err.println("Win tracker image file not found");
         }
         WIN_TRACKER = temp;
+        
+        temp = null;
+        try {
+            temp = ImageIO.read(new File("images/backbackground.jpg"));
+        } catch (IOException ex) {
+            System.err.println("Back background image file not found");
+        }
+        BACKBACKGROUND = temp;
     }
     
     /**
@@ -136,7 +151,7 @@ public class TetrisPanel extends JPanel implements Runnable {
     @Override
     public void paint(Graphics g) {
         Graphics2D g2D = (Graphics2D) g;
-        drawBackground(g2D, Color.WHITE);
+        drawBackground(g2D, BACKBACKGROUND);
         
         g2D.translate(20, 20);
         
