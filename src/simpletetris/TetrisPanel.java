@@ -101,6 +101,13 @@ public class TetrisPanel extends JPanel implements Runnable {
                 AudioPlayer.stopBackgroundMusic();
                 AudioPlayer.playLoseGameSFX();
                 reset();
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException ex) {
+                    // ex.printStackTrace();
+                    System.err.println("Sleep thread interrupted: "
+                            + "TetrisPanel:105");
+                }
                 startGame();
             } else if(command.startsWith("SEND")) {
                 opponentMatrix.addToGarbage(command.substring(4));
@@ -120,6 +127,13 @@ public class TetrisPanel extends JPanel implements Runnable {
                 AudioPlayer.stopBackgroundMusic();
                 AudioPlayer.playWinGameSFX();
                 reset();
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException ex) {
+                    // ex.printStackTrace();
+                    System.err.println("Sleep thread interrupted: "
+                            + "TetrisPanel:131");
+                }
                 startGame();
             } else if(command.startsWith("SEND")) {
                 playerMatrix.addToGarbage(command.substring(4));

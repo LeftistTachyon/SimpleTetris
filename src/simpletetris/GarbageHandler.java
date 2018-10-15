@@ -300,7 +300,7 @@ public class GarbageHandler {
         
         if(newLinesToSend != 0) linesToSendCommand += newLinesToSend + " ";
         
-        if(!garbageQueue.isEmpty()) {
+        if(!garbageQueue.isEmpty() || perfectClear) {
             String command = linesToSendCommand.trim();
             if(command.length() > 0)
                 notifyListeners(counterGarbage(command));
