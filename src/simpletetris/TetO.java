@@ -87,4 +87,9 @@ public class TetO extends Tetromino {
     public BufferedImage getMiniImage() {
         return MINI;
     }
+
+    @Override
+    public String getShape() {
+        return "O";
+    }
 }

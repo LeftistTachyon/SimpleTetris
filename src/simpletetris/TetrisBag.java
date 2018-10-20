@@ -1,5 +1,7 @@
 package simpletetris;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -49,10 +51,16 @@ public class TetrisBag {
         r.add(new TetT());
         r.add(new TetZ());
         
+        String bag = "";
+        
         while(!r.isEmpty()) {
             int i = (int) (Math.random() * r.size());
-            queue.add(r.remove(i));
+            Tetromino t = r.remove(i);
+            queue.add(t);
+            bag += t.getShape();
         }
+        
+        notifyListener("NB" + bag);
     }
     
     /**
@@ -112,5 +120,34 @@ public class TetrisBag {
      */
     public Tetromino next(int which) {
         return (queue.size() > which)?queue.get(which):null;
+    }
+    
+    /**
+     * The listener which islistening in
+     */
+    private ActionListener listener = null;
+    
+    /**
+     * Sets the current ActionListener
+     * @param al the ActionListener to set to
+     */
+    public void setActionListener(ActionListener al) {
+        listener = al;
+    }
+    
+    /**
+     * Removes the listener which is listening to this TetrisBag.
+     */
+    public void removeActionListener() {
+        listener = null;
+    }
+    
+    /**
+     * Notifies the listener that an event occured.
+     * @param message the message to send
+     */
+    private void notifyListener(String message) {
+        if(listener != null)
+            listener.actionPerformed(new ActionEvent(this, 0, message));
     }
 }

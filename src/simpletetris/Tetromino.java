@@ -359,4 +359,33 @@ public abstract class Tetromino {
      * @return an image preview of this piece
      */
     public abstract BufferedImage getMiniImage();
+    
+    /**
+     * Returns a String representation of the shape of this tetromino.
+     * @return the String representation of this tetromino's shape.
+     */
+    public abstract String getShape();
+
+    @Override
+    public String toString() {
+        String rotationString;
+        switch(rotation) {
+            case DOWN:
+                rotationString = "DOWN";
+                break;
+            case UP:
+                rotationString = "UP";
+                break;
+            case LEFT:
+                rotationString = "LEFT";
+                break;
+            case RIGHT:
+                rotationString = "RIGHT";
+                break;
+            default:
+                rotationString = "NA";
+                break;
+        }
+        return "[Tet" + getShape() + ", rotation: " + rotationString + "]";
+    }
 }

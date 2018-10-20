@@ -233,4 +233,9 @@ public class TetI extends Tetromino {
     public BufferedImage getMiniImage() {
         return MINI;
     }
+
+    @Override
+    public String getShape() {
+        return "I";
+    }
 }

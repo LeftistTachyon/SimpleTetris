@@ -282,13 +282,16 @@ public class TetrisMatrix {
         rowsCleared = null;
         
         gravity = new Gravity();
-        /*if(onLeft) */lockDelay = new LockDelay();
-        //else lockDelay = null;
+        if(onLeft) lockDelay = new LockDelay();
+        else lockDelay = null;
         
         kicked = false;
         hold = null;
         matrix = new Color[WIDTH][HEIGHT];
         bag = new TetrisBag(!onLeft);
+        bag.setActionListener((ActionEvent e) -> {
+            notifyListeners(e.getActionCommand());
+        });
         if(!onLeft) {
             bag.addBag("OOOOOOO");
             bag.addBag("OOOOOOO");
@@ -333,14 +336,14 @@ public class TetrisMatrix {
         
         newPiece();
         
-        //if(onLeft) {
+        if(onLeft) {
             service = Executors.newScheduledThreadPool(2);
             service.scheduleAtFixedRate(gravity, 0, 10, TimeUnit.MILLISECONDS);
             service.scheduleAtFixedRate(lockDelay, 0, 10, TimeUnit.MILLISECONDS);
-        /*} else {
+        } else {
             service = Executors.newScheduledThreadPool(1);
             service.scheduleAtFixedRate(gravity, 0, 10, TimeUnit.MILLISECONDS);
-        }*/
+        }
     }
     
     /**
@@ -859,6 +862,8 @@ public class TetrisMatrix {
                 }
             }
         }
+        
+        notifyListeners("LOCK" + x + " " + y);
         
         int linesCleared = 0;
         for(int i = 0; i < HEIGHT; i++) {
@@ -1391,5 +1396,24 @@ public class TetrisMatrix {
                 }
             }
         }
+    }
+    
+    /**
+     * Locks the currently falling piece to the given coordinates
+     * @param x the x-coordinate to lock to
+     * @param y the y-coordinate to lock to
+     */
+    public void lockFalling(int x, int y) {
+        this.x = x;
+        this.y = y;
+        lockPiece();
+    }
+    
+    /**
+     * Adds a bag of tetrominos
+     * @param bag the bag of tetrominos to add
+     */
+    public void addBag(String bag) {
+        this.bag.addBag(bag);
     }
 }
