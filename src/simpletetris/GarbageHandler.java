@@ -28,16 +28,6 @@ public class GarbageHandler {
     private int linesSent;
     
     /**
-     * The number of lines to send
-     */
-    private int linesToSend;
-    
-    /**
-     * The command to send lines
-     */
-    private String linesToSendCommand;
-    
-    /**
      * Keeps track of combos
      */
     private int combo;
@@ -75,8 +65,6 @@ public class GarbageHandler {
         linesToRecieve = 0;
         
         linesSent = 0;
-        linesToSend = 0;
-        linesToSendCommand = "";
         
         combo = 0;
         b2b = false;
@@ -162,26 +150,6 @@ public class GarbageHandler {
     }
     
     /**
-     * Determines how the outgoing garbage bar should be filled
-     * @return how the outgoing garbage bar should be filled
-     */
-    public int[] getOutBarFill() {
-        if(linesToSend == 0) return null;
-        
-        int[] output = new int[20];
-        for(int i = 0; i < output.length; i++) {
-            output[i] = linesToSend/20;
-        }
-        
-        int leftovers = linesToSend%20;
-        for(int i = output.length-1; i >= output.length - leftovers; i--) {
-            output[i]++;
-        }
-        
-        return output;
-    }
-    
-    /**
      * Determines how the incoming garbage bar should be filled
      * @return how the incoming garbage bar should be filled
      */
@@ -212,15 +180,6 @@ public class GarbageHandler {
             boolean perfectClear) {
         if(linesCleared == 0) {
             combo = 0;
-            
-            String command = linesToSendCommand.trim();
-            if(command.length() > 0) {
-                notifyListeners(counterGarbage(command));
-            }
-                
-            linesSent += linesToSend;
-            linesToSend = 0;
-            linesToSendCommand = "";
             
             return;
         }
@@ -296,17 +255,12 @@ public class GarbageHandler {
         if(b2b && bb) newLinesToSend++;
         
         b2b = bb;
-        linesToSend += newLinesToSend;
         
-        if(newLinesToSend != 0) linesToSendCommand += newLinesToSend + " ";
-        
-        if(!garbageQueue.isEmpty() || perfectClear) {
-            String command = linesToSendCommand.trim();
+        if(newLinesToSend != 0) {
+            String command = newLinesToSend + "";
             if(command.length() > 0)
                 notifyListeners(counterGarbage(command));
-            linesSent += linesToSend;
-            linesToSend = 0;
-            linesToSendCommand = "";
+            linesSent += newLinesToSend;
         }
     }
     
@@ -381,8 +335,6 @@ public class GarbageHandler {
         linesToRecieve = 0;
         
         linesSent = 0;
-        linesToSend = 0;
-        linesToSendCommand = "";
         
         combo = 0;
         b2b = false;
