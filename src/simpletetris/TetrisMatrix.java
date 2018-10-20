@@ -379,47 +379,7 @@ public class TetrisMatrix {
             g2D.setColor(DARK_GRAY);
             g2D.fillRect(0, 0, INNER_BAR_WIDTH, INNER_BAR_HEIGHT);
             
-            int[] temp = gh.getOutBarFill();
-            if (temp != null) {
-                for (int i = 0, yy = 0; i < temp.length; i++, yy += BAR_STEP_HEIGHT) {
-                    switch (temp[i]) {
-                        case 0:
-                            continue;
-                        case 1:
-                            g2D.setColor(green);
-                            break;
-                        case 2:
-                            g2D.setColor(new Color(13, 152, 186));
-                            break;
-                        case 3:
-                            g2D.setColor(blue);
-                            break;
-                        case 4:
-                            g2D.setColor(new Color(73, 12, 206));
-                            break;
-                        case 5:
-                            g2D.setColor(new Color(146, 23, 156));
-                            break;
-                        case 6:
-                        default:
-                            g2D.setColor(new Color(73, 12, 78));
-                            break;
-                    }
-                    g2D.fillRect(0, yy, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
-                }
-            }
-
-            //g2D.setColor(BLACK);
-            g2D.translate(-BAR_WIDTH_GAP, -BAR_HEIGHT_GAP);
-            g2D.drawImage(BAR_OUTLINE, null, 0, 0);
-            
-            g2D.drawImage(OUT_GARBAGE_ICON, BAR_WIDTH / 2 - 26, -58, null);
-            
-            g2D.translate(-BAR_WIDTH*4 + BAR_WIDTH_GAP + 26, BAR_HEIGHT_GAP);
-            
-            g2D.setColor(DARK_GRAY);
-            g2D.fillRect(0, 0, INNER_BAR_WIDTH, INNER_BAR_HEIGHT);
-            temp = gh.getInBarFill();
+            int[] temp = gh.getInBarFill();
             if (temp != null) {
                 for (int i = 0, yy = 0; i < temp.length; i++, yy += BAR_STEP_HEIGHT) {
                     switch (temp[i]) {
@@ -448,13 +408,14 @@ public class TetrisMatrix {
                     g2D.fillRect(0, yy, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
                 }
             }
-            
+
+            //g2D.setColor(BLACK);
             g2D.translate(-BAR_WIDTH_GAP, -BAR_HEIGHT_GAP);
             g2D.drawImage(BAR_OUTLINE, null, 0, 0);
             
             g2D.drawImage(IN_GARBAGE_ICON, BAR_WIDTH / 2 - 26, -58, null);
             
-            g2D.translate(-90 + 4*BAR_WIDTH,
+            g2D.translate(-90 + BAR_WIDTH,
                     -MINO_WIDTH * VISIBLE_HEIGHT + BAR_HEIGHT + 5);
         } else {
             g2D.drawString("NEXT", 15, 45);
@@ -647,47 +608,7 @@ public class TetrisMatrix {
             g2D.setColor(DARK_GRAY);
             g2D.fillRect(0, 0, INNER_BAR_WIDTH, INNER_BAR_HEIGHT);
             
-            int[] temp = gh.getOutBarFill();
-            if (temp != null) {
-                for (int i = 0, yy = 0; i < temp.length; i++, yy += BAR_STEP_HEIGHT) {
-                    switch (temp[i]) {
-                        case 0:
-                            continue;
-                        case 1:
-                            g2D.setColor(green);
-                            break;
-                        case 2:
-                            g2D.setColor(new Color(13, 152, 186));
-                            break;
-                        case 3:
-                            g2D.setColor(blue);
-                            break;
-                        case 4:
-                            g2D.setColor(new Color(73, 12, 206));
-                            break;
-                        case 5:
-                            g2D.setColor(new Color(146, 23, 156));
-                            break;
-                        case 6:
-                        default:
-                            g2D.setColor(new Color(73, 12, 78));
-                            break;
-                    }
-                    g2D.fillRect(0, yy, INNER_BAR_WIDTH, BAR_STEP_HEIGHT);
-                }
-            }
-            
-            g2D.translate(-BAR_WIDTH_GAP, -BAR_HEIGHT_GAP);
-            g2D.drawImage(BAR_OUTLINE, null, 0, 0);
-            
-            g2D.drawImage(OUT_GARBAGE_ICON, BAR_WIDTH / 2 - 26, -58, null);
-            
-            g2D.translate(BAR_WIDTH*4 - BAR_WIDTH_GAP - 13, BAR_HEIGHT_GAP);
-            
-            g2D.setColor(DARK_GRAY);
-            g2D.fillRect(0, 0, INNER_BAR_WIDTH, INNER_BAR_HEIGHT);
-            
-            temp = gh.getInBarFill();
+            int[] temp = gh.getInBarFill();
             if (temp != null) {
                 for (int i = 0, yy = 0; i < temp.length; i++, yy += BAR_STEP_HEIGHT) {
                     switch (temp[i]) {
@@ -722,7 +643,7 @@ public class TetrisMatrix {
             
             g2D.drawImage(IN_GARBAGE_ICON, BAR_WIDTH / 2 - 26, -58, null);
             
-            g2D.translate(-90 + 4*BAR_WIDTH,
+            g2D.translate(BAR_WIDTH*7 - BAR_WIDTH_GAP - 103, 
                     -MINO_WIDTH * VISIBLE_HEIGHT + BAR_HEIGHT + 5);
         }
         
@@ -1148,6 +1069,7 @@ public class TetrisMatrix {
        
        int hole = (int) (Math.random() * WIDTH);
        for(int i = 0; i < lines; i++) {
+           if(Math.random() < 0.25) hole = (int) (Math.random() * WIDTH);
            setGarbageLine(HEIGHT - i - 1, hole);
        }
     }
