@@ -21,7 +21,6 @@ import static simpletetris.TetrisKeyAdapter.GameAction.*;
 import static simpletetris.Mino.*;
 import static java.awt.Color.*;
 import java.awt.RenderingHints;
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
 /**
@@ -770,7 +769,7 @@ public class TetrisMatrix {
                 break;
             case HARD_DROP:
                 y = getGhostY();
-                lockPiece();
+                if(onLeft) lockPiece();
                 AudioPlayer.playMoveSFX(1.0);
                 break;
             case HOLD:

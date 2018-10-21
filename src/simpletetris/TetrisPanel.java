@@ -5,10 +5,14 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
@@ -38,6 +42,11 @@ public class TetrisPanel extends JPanel implements Runnable {
     private int opponentScore;
     
     /**
+     * The image to draw in the center
+     */
+    private BufferedImage centerImage;
+    
+    /**
      * Best of {@code FIRST_TO*2-1}. In this case, best of 3.
      */
     public static final int FIRST_TO = 2;
@@ -51,6 +60,16 @@ public class TetrisPanel extends JPanel implements Runnable {
      * The image for the background of everything.
      */
     private static final BufferedImage BACKBACKGROUND;
+    
+    /**
+     * The image for the READY text
+     */
+    private static final BufferedImage READY;
+    
+    /**
+     * The image for the GO text
+     */
+    private static final BufferedImage GO;
     
     static {
         BufferedImage temp = null;
@@ -68,6 +87,22 @@ public class TetrisPanel extends JPanel implements Runnable {
             System.err.println("Back background image file not found");
         }
         BACKBACKGROUND = temp;
+        
+        temp = null;
+        try {
+            temp = ImageIO.read(new File("images/ready.png"));
+        } catch (IOException ex) {
+            System.err.println("Ready image file not found");
+        }
+        READY = temp;
+        
+        temp = null;
+        try {
+            temp = ImageIO.read(new File("images/go.png"));
+        } catch (IOException ex) {
+            System.err.println("Go image file not found");
+        }
+        GO = temp;
     }
     
     /**
@@ -84,7 +119,7 @@ public class TetrisPanel extends JPanel implements Runnable {
         playerMatrix = new TetrisMatrix(true);
         opponentMatrix = new TetrisMatrix(false);
         
-        startGame();
+        centerImage = null;
         
         playerMatrix.addActionListener((ActionEvent e) -> {
             String command = e.getActionCommand();
@@ -137,6 +172,8 @@ public class TetrisPanel extends JPanel implements Runnable {
                 playerMatrix.addToGarbage(command.substring(4));
             }
         });
+        
+        startGame();
     }
     
     /**
@@ -151,8 +188,19 @@ public class TetrisPanel extends JPanel implements Runnable {
      * Starts a game.
      */
     private void startGame() {
-        playerMatrix.start();
-        opponentMatrix.start();
+        new Thread(() -> {
+            try {
+                centerImage = READY;
+                Thread.sleep(1000);
+                centerImage = GO;
+                Thread.sleep(500);
+                centerImage = null;
+                playerMatrix.start();
+                opponentMatrix.start();
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }).start();
     }
     
     @Override
@@ -185,6 +233,18 @@ public class TetrisPanel extends JPanel implements Runnable {
         g2D.translate(-7.5, 0);
         
         opponentMatrix.draw(g2D);
+        
+        if(centerImage != null) {
+            try {
+                g2D.transform(g2D.getTransform().createInverse());
+            } catch (NoninvertibleTransformException ex) {
+                System.err.println("This transform can't be inverted.");
+            }
+            g2D.drawString("SDLJDSLFKJDSLJ", 0, 0);
+            int iX = (getWidth() - centerImage.getWidth()) / 2, 
+                    iY = (getHeight() - centerImage.getHeight()) / 2;
+            g2D.drawImage(centerImage, null, iX, iY);
+        }
     }
     
     /**

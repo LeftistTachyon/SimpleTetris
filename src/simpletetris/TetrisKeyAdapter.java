@@ -58,9 +58,9 @@ public class TetrisKeyAdapter extends KeyAdapter {
                 if(pressed.get(HARD_DROP))
                     break;
                 pressed.put(HARD_DROP, true);
+                notifyListener("MHD");
                 matrix.executeAction(HARD_DROP);
                 // notifyListener("M" + HARD_DROP.shorthand);
-                notifyListener("MHD");
                 break;
             case VK_DOWN:
             case VK_NUMPAD2:
