@@ -5,14 +5,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
@@ -40,6 +37,11 @@ public class TetrisPanel extends JPanel implements Runnable {
      * The score of the opponent.
      */
     private int opponentScore;
+    
+    /**
+     * The TetrisKeyAdapter that is listening in to this Panel.
+     */
+    protected TetrisKeyAdapter tka;
     
     /**
      * The image to draw in the center
@@ -180,6 +182,7 @@ public class TetrisPanel extends JPanel implements Runnable {
      * Resets both matrixes.
      */
     private void reset() {
+        tka.setListening(false);
         playerMatrix.reset();
         opponentMatrix.reset();
     }
@@ -190,6 +193,7 @@ public class TetrisPanel extends JPanel implements Runnable {
     private void startGame() {
         new Thread(() -> {
             try {
+                AudioPlayer.playInGameBackground();
                 centerImage = READY;
                 Thread.sleep(1000);
                 centerImage = GO;
@@ -197,6 +201,7 @@ public class TetrisPanel extends JPanel implements Runnable {
                 centerImage = null;
                 playerMatrix.start();
                 opponentMatrix.start();
+                tka.setListening(true);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
@@ -240,7 +245,6 @@ public class TetrisPanel extends JPanel implements Runnable {
             } catch (NoninvertibleTransformException ex) {
                 System.err.println("This transform can't be inverted.");
             }
-            g2D.drawString("SDLJDSLFKJDSLJ", 0, 0);
             int iX = (getWidth() - centerImage.getWidth()) / 2, 
                     iY = (getHeight() - centerImage.getHeight()) / 2;
             g2D.drawImage(centerImage, null, iX, iY);

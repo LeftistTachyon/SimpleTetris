@@ -58,8 +58,7 @@ public class TetrisKeyAdapter extends KeyAdapter {
                 if(pressed.get(HARD_DROP))
                     break;
                 pressed.put(HARD_DROP, true);
-                notifyListener("MHD");
-                matrix.executeAction(HARD_DROP);
+                executeAction(HARD_DROP);
                 // notifyListener("M" + HARD_DROP.shorthand);
                 break;
             case VK_DOWN:
@@ -76,10 +75,8 @@ public class TetrisKeyAdapter extends KeyAdapter {
             case VK_NUMPAD9:
                 if(pressed.get(ROTATE_RIGHT))
                     break;
-                pressed.put(ROTATE_RIGHT, true);
-                matrix.executeAction(ROTATE_RIGHT);
+                executeAction(ROTATE_RIGHT);
                 // notifyListener("M" + ROTATE_RIGHT.shorthand);
-                notifyListener("MRR");
                 break;
             case VK_CONTROL:
             case VK_Z:
@@ -88,9 +85,8 @@ public class TetrisKeyAdapter extends KeyAdapter {
                 if(pressed.get(ROTATE_LEFT))
                     break;
                 pressed.put(ROTATE_LEFT, true);
-                matrix.executeAction(ROTATE_LEFT);
+                executeAction(ROTATE_LEFT);
                 // notifyListener("M" + ROTATE_LEFT.shorthand);
-                notifyListener("MRL");
                 break;
             case VK_SHIFT:
             case VK_C:
@@ -98,9 +94,8 @@ public class TetrisKeyAdapter extends KeyAdapter {
                 if(pressed.get(HOLD))
                     break;
                 pressed.put(HOLD, true);
-                matrix.executeAction(HOLD);
+                executeAction(HOLD);
                 // notifyListener("M" + HOLD.shorthand);
-                notifyListener("MH");
                 break;
             /*case VK_ESCAPE:
             case VK_F1:
@@ -191,8 +186,7 @@ public class TetrisKeyAdapter extends KeyAdapter {
         @Override
         public void run() {
             cnt++;
-            matrix.executeAction(toExecute);
-            notifyListener("M" + toExecute.shorthand);
+            executeAction(toExecute);
             try {
                 Thread.sleep(300);
             } catch (InterruptedException ex) {
@@ -205,8 +199,7 @@ public class TetrisKeyAdapter extends KeyAdapter {
                     cnt--;
                     return;
                 }
-                matrix.executeAction(toExecute);
-                notifyListener("M" + toExecute.shorthand);
+                executeAction(toExecute);
                 try {
                     Thread.sleep(35);
                 } catch (InterruptedException ex) {
@@ -215,6 +208,40 @@ public class TetrisKeyAdapter extends KeyAdapter {
             }
             matrix.resumeGravity();
             cnt--;
+        }
+    }
+    
+    /**
+     * Whether this TKA is listening to the keyboard or not
+     */
+    private boolean listening = false;
+
+    /**
+     * Returns whether this TKA is listening to the keyboard or not
+     * @return whether this TKA is listening to the keyboard or not
+     */
+    public boolean isListening() {
+        return listening;
+    }
+
+    /**
+     * Sets whether this TKA is listening to the keyboard or not
+     * @param listening whether you want this TKA is listening 
+     * to the keyboard or not
+     */
+    public void setListening(boolean listening) {
+        this.listening = listening;
+    }
+    
+    /**
+     * Executes an action and notifies the listener that the action 
+     * has been executed.
+     * @param ga the action to execute
+     */
+    private void executeAction(GameAction ga) {
+        if(listening) {
+            notifyListener("M" + ga.shorthand);
+            matrix.executeAction(ga);
         }
     }
     

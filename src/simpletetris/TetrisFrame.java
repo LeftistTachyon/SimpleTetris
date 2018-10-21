@@ -15,6 +15,16 @@ public class TetrisFrame extends JFrame {
      * The Panel for this application
      */
     public final TetrisPanel panel;
+    
+    /**
+     * This player's matrix
+     */
+    public final TetrisMatrix player;
+    
+    /**
+     * The opponent's matrix
+     */
+    public final TetrisMatrix opponent;
 
     /**
      * Creates a new TetrisFrame.
@@ -22,6 +32,8 @@ public class TetrisFrame extends JFrame {
     public TetrisFrame() {
         super("Simple Tetris");
         panel = new TetrisPanel();
+        player = panel.playerMatrix;
+        opponent = panel.opponentMatrix;
         
         super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         super.setSize(new Dimension(2*TetrisMatrix.WIDTH*Mino.MINO_WIDTH + 570, 
@@ -34,6 +46,8 @@ public class TetrisFrame extends JFrame {
             notifyListener(e.getActionCommand());
         });
         super.addKeyListener(tka);
+        
+        panel.tka = tka;
         
         TetrisFrame _this = this;
         
@@ -80,7 +94,7 @@ public class TetrisFrame extends JFrame {
      */
     public void removeActionListener() {
         listener = null;
-        }
+    }
     
     /**
      * Notifies the listener that an event occured.

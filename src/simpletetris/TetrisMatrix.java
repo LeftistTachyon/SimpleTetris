@@ -203,6 +203,11 @@ public class TetrisMatrix {
      */
     private static final BufferedImage IN_GARBAGE_ICON;
     
+    /**
+     * The text/image that appears when an all-clear is executed.
+     */
+    private static final BufferedImage ALL_CLEAR;
+    
     static {
         BufferedImage temp = null;
         try {
@@ -243,7 +248,20 @@ public class TetrisMatrix {
             System.err.println("Incoming garbage icon image file not found");
         }
         IN_GARBAGE_ICON = temp;
+        
+        temp = null;
+        try {
+            temp = ImageIO.read(new File("images/allClear.png"));
+        } catch (IOException ex) {
+            System.err.println("All clear text image file not found");
+        }
+        ALL_CLEAR = temp;
     }
+    
+    /**
+     * Whether the all-clear text should be shown
+     */
+    private boolean showAllClear = false;
     
     /**
      * Creates a new, default TetrisMatrix.
@@ -323,8 +341,6 @@ public class TetrisMatrix {
      * Starts play on this matrix.
      */
     public void start() {
-        AudioPlayer.playInGameBackground();
-        
         newPiece();
         
         if(onLeft) {
@@ -482,6 +498,12 @@ public class TetrisMatrix {
                             matrix[i][j], g2D);
                 }
             }
+        }
+        
+        if(showAllClear) {
+            int acX = (MINO_WIDTH*WIDTH - ALL_CLEAR.getWidth())/2, 
+                    acY = 23*MINO_WIDTH;
+            g2D.drawImage(ALL_CLEAR, null, acX, acY);
         }
         
         if(falling != null) {
@@ -728,8 +750,7 @@ public class TetrisMatrix {
                 x += kickL.x;
                 y -= kickL.y;
                 kicked = kickL.x != 0 || kickL.y != 0;
-                if(kicked) AudioPlayer.playMoveSFX(1.0);
-                else AudioPlayer.playMoveSFX(0.1);
+                AudioPlayer.playMoveSFX(1.0);
                 if(lockDelay != null) lockDelay.addTouch();
                 lastAction = ga;
                 break;
@@ -741,8 +762,7 @@ public class TetrisMatrix {
                 x += kickR.x;
                 y -= kickR.y;
                 kicked = kickR.x != 0 || kickR.y != 0;
-                if(kicked) AudioPlayer.playMoveSFX(1.0);
-                else AudioPlayer.playMoveSFX(0.1);
+                AudioPlayer.playMoveSFX(1.0);
                 if(lockDelay != null) lockDelay.addTouch();
                 lastAction = ga;
                 break;
@@ -879,13 +899,13 @@ public class TetrisMatrix {
         
         // check for t-spins
         String special = null; 
-        boolean b2b = gh.isB2B();
+        boolean b2b = gh.isB2B(), allClear = allClear();
         if(falling instanceof TetT && (lastAction == ROTATE_LEFT || 
                 lastAction == ROTATE_RIGHT) && threeCorner()) {
             System.out.println("T-spin " + linesCleared);
             if((!immobile || kicked) && linesCleared < 2) {
                 gh.newLinesCleared(linesCleared, GarbageHandler.T_SPIN_MINI, 
-                        allClear());
+                        allClear);
                 switch(linesCleared) {
                     case 1:
                         special = "T-spin|mini single";
@@ -896,7 +916,7 @@ public class TetrisMatrix {
                 }
             } else {
                 gh.newLinesCleared(linesCleared, GarbageHandler.T_SPIN, 
-                        allClear());
+                        allClear);
                 switch(linesCleared) {
                     case 0:
                         special = "T-spin";
@@ -914,9 +934,17 @@ public class TetrisMatrix {
             }
         } else {
             gh.newLinesCleared(linesCleared, GarbageHandler.NORMAL, 
-                    allClear());
+                    allClear);
             if(linesCleared == 4) special = "Tetris";
         }
+        
+        if(allClear) {
+            showAllClear = true;
+            Executors.newSingleThreadScheduledExecutor().schedule(() -> {
+                showAllClear = false;
+            }, 2000, TimeUnit.MILLISECONDS);
+        }
+        
         if(special != null) {
             if(b2b) special = "B2B " + special;
             specialText = special;
