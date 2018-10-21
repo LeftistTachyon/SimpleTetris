@@ -319,6 +319,9 @@ public class TetrisMatrix {
         hold = null;
         matrix = new Color[WIDTH][HEIGHT];
         bag = new TetrisBag(!onLeft);
+        bag.setActionListener((ActionEvent e) -> {
+            notifyListeners(e.getActionCommand());
+        });
         if(!onLeft) {
             bag.addBag("OOOOOOO");
             bag.addBag("OOOOOOO");

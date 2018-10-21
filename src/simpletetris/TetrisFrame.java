@@ -2,6 +2,7 @@ package simpletetris;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -29,6 +30,9 @@ public class TetrisFrame extends JFrame {
         super.getContentPane().add(panel);
         
         TetrisKeyAdapter tka = new TetrisKeyAdapter(panel.playerMatrix);
+        tka.setActionListener((ActionEvent e) -> {
+            notifyListener(e.getActionCommand());
+        });
         super.addKeyListener(tka);
         
         TetrisFrame _this = this;
@@ -51,10 +55,39 @@ public class TetrisFrame extends JFrame {
                             "Game Over", JOptionPane.INFORMATION_MESSAGE);
                     System.exit(0);
                 }
-            }
+            } else notifyListener(message);
         });
         
         super.setVisible(true);
         new Thread(panel).start();
+    }
+    
+    /**
+     * The listener which islistening in
+     */
+    private ActionListener listener = null;
+    
+    /**
+     * Sets the current ActionListener
+     * @param al the ActionListener to set to
+     */
+    public void setActionListener(ActionListener al) {
+        listener = al;
+    }
+    
+    /**
+     * Removes the listener which is listening to this TetrisBag.
+     */
+    public void removeActionListener() {
+        listener = null;
+        }
+    
+    /**
+     * Notifies the listener that an event occured.
+     * @param message the message to send
+     */
+    private void notifyListener(String message) {
+        if(listener != null)
+            listener.actionPerformed(new ActionEvent(this, 0, message));
     }
 }

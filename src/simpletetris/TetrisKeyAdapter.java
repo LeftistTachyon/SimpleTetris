@@ -1,9 +1,12 @@
 package simpletetris;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.*;
 import java.util.HashMap;
+import static simpletetris.TetrisKeyAdapter.GameAction.*;
 
 /**
  * A MouseAdapter which listens in to key presses.
@@ -28,7 +31,7 @@ public class TetrisKeyAdapter extends KeyAdapter {
         this.matrix = matrix;
         
         pressed = new HashMap<>();
-        for(GameAction value : GameAction.values()) {
+        for(GameAction value : values()) {
             pressed.put(value, false);
         }
     }
@@ -38,66 +41,71 @@ public class TetrisKeyAdapter extends KeyAdapter {
         switch(e.getKeyCode()) {
             case VK_LEFT:
             case VK_NUMPAD4:
-                if(pressed.get(GameAction.MOVE_LEFT))
+                if(pressed.get(MOVE_LEFT))
                     break;
-                pressed.put(GameAction.MOVE_LEFT, true);
-                DASaction(GameAction.MOVE_LEFT);
+                pressed.put(MOVE_LEFT, true);
+                DASaction(MOVE_LEFT);
                 break;
             case VK_RIGHT:
             case VK_NUMPAD6:
-                if(pressed.get(GameAction.MOVE_RIGHT))
+                if(pressed.get(MOVE_RIGHT))
                     break;
-                pressed.put(GameAction.MOVE_RIGHT, true);
-                DASaction(GameAction.MOVE_RIGHT);
+                pressed.put(MOVE_RIGHT, true);
+                DASaction(MOVE_RIGHT);
                 break;
             case VK_SPACE:
             case VK_NUMPAD8:
-                if(pressed.get(GameAction.HARD_DROP))
+                if(pressed.get(HARD_DROP))
                     break;
-                pressed.put(GameAction.HARD_DROP, true);
-                matrix.executeAction(GameAction.HARD_DROP);
+                pressed.put(HARD_DROP, true);
+                matrix.executeAction(HARD_DROP);
+                notifyListener("M" + HARD_DROP.shorthand);
+                
                 break;
             case VK_DOWN:
             case VK_NUMPAD2:
-                if(pressed.get(GameAction.SOFT_DROP))
+                if(pressed.get(SOFT_DROP))
                     break;
-                pressed.put(GameAction.SOFT_DROP, true);
-                DASaction(GameAction.SOFT_DROP);
+                pressed.put(SOFT_DROP, true);
+                DASaction(SOFT_DROP);
                 break;
             case VK_UP:
             case VK_X:
             case VK_NUMPAD1:
             case VK_NUMPAD5:
             case VK_NUMPAD9:
-                if(pressed.get(GameAction.ROTATE_RIGHT))
+                if(pressed.get(ROTATE_RIGHT))
                     break;
-                pressed.put(GameAction.ROTATE_RIGHT, true);
-                matrix.executeAction(GameAction.ROTATE_RIGHT);
+                pressed.put(ROTATE_RIGHT, true);
+                matrix.executeAction(ROTATE_RIGHT);
+                notifyListener("M" + HARD_DROP.shorthand);
                 break;
             case VK_CONTROL:
             case VK_Z:
             case VK_NUMPAD3:
             case VK_NUMPAD7:
-                if(pressed.get(GameAction.ROTATE_LEFT))
+                if(pressed.get(ROTATE_LEFT))
                     break;
-                pressed.put(GameAction.ROTATE_LEFT, true);
-                matrix.executeAction(GameAction.ROTATE_LEFT);
+                pressed.put(ROTATE_LEFT, true);
+                matrix.executeAction(ROTATE_LEFT);
+                notifyListener("M" + HARD_DROP.shorthand);
                 break;
             case VK_SHIFT:
             case VK_C:
             case VK_NUMPAD0:
-                if(pressed.get(GameAction.HOLD))
+                if(pressed.get(HOLD))
                     break;
-                pressed.put(GameAction.HOLD, true);
-                matrix.executeAction(GameAction.HOLD);
+                pressed.put(HOLD, true);
+                matrix.executeAction(HOLD);
+                notifyListener("M" + HARD_DROP.shorthand);
                 break;
             /*case VK_ESCAPE:
             case VK_F1:
             case VK_P:
-                if(pressed.get(GameAction.PAUSE))
+                if(pressed.get(PAUSE))
                     break;
-                pressed.put(GameAction.PAUSE, true);
-                matrix.executeAction(GameAction.PAUSE);
+                pressed.put(PAUSE, true);
+                matrix.executeAction(PAUSE);
                 break;*/
         }
     }
@@ -107,41 +115,41 @@ public class TetrisKeyAdapter extends KeyAdapter {
         switch(e.getKeyCode()) {
             case VK_LEFT:
             case VK_NUMPAD4:
-                pressed.put(GameAction.MOVE_LEFT, false);
+                pressed.put(MOVE_LEFT, false);
                 break;
             case VK_RIGHT:
             case VK_NUMPAD6:
-                pressed.put(GameAction.MOVE_RIGHT, false);
+                pressed.put(MOVE_RIGHT, false);
                 break;
             case VK_SPACE:
             case VK_NUMPAD8:
-                pressed.put(GameAction.HARD_DROP, false);
+                pressed.put(HARD_DROP, false);
             case VK_DOWN:
             case VK_NUMPAD2:
-                pressed.put(GameAction.SOFT_DROP, false);
+                pressed.put(SOFT_DROP, false);
                 break;
             case VK_UP:
             case VK_X:
             case VK_NUMPAD1:
             case VK_NUMPAD5:
             case VK_NUMPAD9:
-                pressed.put(GameAction.ROTATE_RIGHT, false);
+                pressed.put(ROTATE_RIGHT, false);
                 break;
             case VK_CONTROL:
             case VK_Z:
             case VK_NUMPAD3:
             case VK_NUMPAD7:
-                pressed.put(GameAction.ROTATE_LEFT, false);
+                pressed.put(ROTATE_LEFT, false);
                 break;
             case VK_SHIFT:
             case VK_C:
             case VK_NUMPAD0:
-                pressed.put(GameAction.HOLD, false);
+                pressed.put(HOLD, false);
                 break;
             /*case VK_ESCAPE:
             case VK_F1:
             case VK_P:
-                pressed.put(GameAction.PAUSE, false);
+                pressed.put(PAUSE, false);
                 break;*/
         }
     }
@@ -181,6 +189,7 @@ public class TetrisKeyAdapter extends KeyAdapter {
         public void run() {
             cnt++;
             matrix.executeAction(toExecute);
+            notifyListener("M" + toExecute.shorthand);
             try {
                 Thread.sleep(300);
             } catch (InterruptedException ex) {
@@ -194,6 +203,7 @@ public class TetrisKeyAdapter extends KeyAdapter {
                     return;
                 }
                 matrix.executeAction(toExecute);
+                notifyListener("M" + toExecute.shorthand);
                 try {
                     Thread.sleep(35);
                 } catch (InterruptedException ex) {
@@ -206,47 +216,97 @@ public class TetrisKeyAdapter extends KeyAdapter {
     }
     
     /**
+     * The listener which islistening in
+     */
+    private ActionListener listener = null;
+    
+    /**
+     * Sets the current ActionListener
+     * @param al the ActionListener to set to
+     */
+    public void setActionListener(ActionListener al) {
+        listener = al;
+    }
+    
+    /**
+     * Removes the listener which is listening to this TetrisBag.
+     */
+    public void removeActionListener() {
+        listener = null;
+        }
+    
+    /**
+     * Notifies the listener that an event occured.
+     * @param message the message to send
+     */
+    private void notifyListener(String message) {
+        if(listener != null)
+            listener.actionPerformed(new ActionEvent(this, 0, message));
+    }
+    
+    /**
      * All possible game actions
      */
     public static enum GameAction {
         /**
          * Moves the active tetromino leftwards
          */
-        MOVE_LEFT, 
+        MOVE_LEFT("L"), 
 
         /**
          * Moves the active tetromino rightwards
          */
-        MOVE_RIGHT, 
+        MOVE_RIGHT("R"), 
 
         /**
          * Hard drops the active tetromino
          */
-        HARD_DROP, 
+        HARD_DROP("HD"), 
 
         /**
          * Drops the active tetromino down by 1
          */
-        SOFT_DROP, 
+        SOFT_DROP("SD"), 
 
         /**
          * Rotates the active tetromino clockwise
          */
-        ROTATE_RIGHT,
+        ROTATE_RIGHT("RR"),
 
         /**
          * Rotates the active tetromino counterclockwise
          */
-        ROTATE_LEFT,
+        ROTATE_LEFT("RL"),
 
         /**
          * Switches the held tetromino with the currently active one
          */
-        HOLD,
+        HOLD("H"),
 
         /**
          * Refers to when the active tetromino falls down due to gravity
          */
-        GRAVITY;
+        GRAVITY("G");
+        
+        /**
+         * Shorthand notation for this move
+         */
+        private final String shorthand;
+
+        /**.
+         * Instantiates a GameAction.
+         * @param shorthand the shorthand notation for this action.
+         */
+        private GameAction(String shorthand) {
+            this.shorthand = shorthand;
+        }
+
+        /**
+         * Returns the shorthand notation for this move
+         * @return the shorthand notation for this move
+         */
+        public String getShorthand() {
+            return shorthand;
+        }
     }
 }

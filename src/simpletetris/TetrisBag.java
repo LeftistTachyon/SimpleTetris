@@ -140,7 +140,7 @@ public class TetrisBag {
      */
     public void removeActionListener() {
         listener = null;
-    }
+        }
     
     /**
      * Notifies the listener that an event occured.

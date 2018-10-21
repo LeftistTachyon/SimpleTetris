@@ -9,8 +9,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
@@ -111,7 +109,7 @@ public class TetrisPanel extends JPanel implements Runnable {
                 startGame();
             } else if(command.startsWith("SEND")) {
                 opponentMatrix.addToGarbage(command.substring(4));
-            }
+            } else notifyListeners(command);
         });
         
         opponentMatrix.addActionListener((ActionEvent e) -> {
