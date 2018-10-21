@@ -21,6 +21,7 @@ import static simpletetris.TetrisKeyAdapter.GameAction.*;
 import static simpletetris.Mino.*;
 import static java.awt.Color.*;
 import java.awt.RenderingHints;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 /**
@@ -203,11 +204,6 @@ public class TetrisMatrix {
      */
     private static final BufferedImage IN_GARBAGE_ICON;
     
-    /**
-     * The icon for outgoing garbage
-     */
-    private static final BufferedImage OUT_GARBAGE_ICON;
-    
     static {
         BufferedImage temp = null;
         try {
@@ -248,14 +244,6 @@ public class TetrisMatrix {
             System.err.println("Incoming garbage icon image file not found");
         }
         IN_GARBAGE_ICON = temp;
-        
-        temp = null;
-        try {
-            temp = ImageIO.read(new File("images/outGarbage.png"));
-        } catch (IOException ex) {
-            System.err.println("Outgoing garbage image file not found");
-        }
-        OUT_GARBAGE_ICON = temp;
     }
     
     /**
@@ -460,10 +448,12 @@ public class TetrisMatrix {
                 }
                 if(b) {
                     g2D.setFont(new Font("Consolas", 0, 15));
-                    g2D.drawString(specialText, 5, 50);
+                    String[] data = specialText.split(Pattern.quote("|"));
                     int y_ = 50;
-                    for(String line : specialText.split(Pattern.quote("|")))
-                        g2D.drawString(line, 5, y_ += g2D.getFontMetrics().getHeight());
+                    for(String line : data) {
+                        g2D.drawString(line, 5, y_);
+                        y_ += 15;
+                    }
                 }
                 g2D.drawRect(0, 0, 110, 70);
                 g2D.translate(0, -500);
@@ -589,7 +579,12 @@ public class TetrisMatrix {
                 }
                 if(b) {
                     g2D.setFont(new Font("Consolas", 0, 15));
-                    g2D.drawString(specialText, 5, 50);
+                    String[] data = specialText.split(Pattern.quote("|"));
+                    int y_ = 50;
+                    for(String line : data) {
+                        g2D.drawString(line, 5, y_);
+                        y_ += 15;
+                    }
                 }
                 g2D.drawRect(0, 0, 110, 70);
                 g2D.translate(0, -500);

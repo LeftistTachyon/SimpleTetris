@@ -59,8 +59,8 @@ public class TetrisKeyAdapter extends KeyAdapter {
                     break;
                 pressed.put(HARD_DROP, true);
                 matrix.executeAction(HARD_DROP);
-                notifyListener("M" + HARD_DROP.shorthand);
-                
+                // notifyListener("M" + HARD_DROP.shorthand);
+                notifyListener("MHD");
                 break;
             case VK_DOWN:
             case VK_NUMPAD2:
@@ -78,7 +78,8 @@ public class TetrisKeyAdapter extends KeyAdapter {
                     break;
                 pressed.put(ROTATE_RIGHT, true);
                 matrix.executeAction(ROTATE_RIGHT);
-                notifyListener("M" + HARD_DROP.shorthand);
+                // notifyListener("M" + ROTATE_RIGHT.shorthand);
+                notifyListener("MRR");
                 break;
             case VK_CONTROL:
             case VK_Z:
@@ -88,7 +89,8 @@ public class TetrisKeyAdapter extends KeyAdapter {
                     break;
                 pressed.put(ROTATE_LEFT, true);
                 matrix.executeAction(ROTATE_LEFT);
-                notifyListener("M" + HARD_DROP.shorthand);
+                // notifyListener("M" + ROTATE_LEFT.shorthand);
+                notifyListener("MRL");
                 break;
             case VK_SHIFT:
             case VK_C:
@@ -97,7 +99,8 @@ public class TetrisKeyAdapter extends KeyAdapter {
                     break;
                 pressed.put(HOLD, true);
                 matrix.executeAction(HOLD);
-                notifyListener("M" + HARD_DROP.shorthand);
+                // notifyListener("M" + HOLD.shorthand);
+                notifyListener("MH");
                 break;
             /*case VK_ESCAPE:
             case VK_F1:
@@ -307,6 +310,21 @@ public class TetrisKeyAdapter extends KeyAdapter {
          */
         public String getShorthand() {
             return shorthand;
+        }
+        
+        /**
+         * Determines the GameAction referred to by the String and returns it.
+         * If the given String doesn't match a GameAction, null is returned.
+         * @param sh the String that represents the wanted GameAction
+         * @return the GameAction that is represented by the given String
+         */
+        public static GameAction fromShorthand(String sh) {
+            for(GameAction ga : values()) {
+                if(ga.getShorthand().equals(sh)) {
+                    return ga;
+                }
+            }
+            return null;
         }
     }
 }
