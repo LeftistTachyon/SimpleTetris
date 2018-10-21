@@ -1,5 +1,7 @@
 package simpletetris;
 
+import java.awt.event.ActionEvent;
+
 /**
  * The main class for this application.
  * @author Jed Wang, Grace Liu, Danny Tang
@@ -10,7 +12,10 @@ public class SimpleTetrisMain {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        new TetrisFrame();
+        TetrisFrame tf = new TetrisFrame();
+        tf.setActionListener((ActionEvent e) -> {
+            System.out.println(e.getActionCommand());
+        });
         AudioPlayer.playInGameBackground();
     }
 }

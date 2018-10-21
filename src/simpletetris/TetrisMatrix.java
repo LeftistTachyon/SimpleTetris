@@ -21,6 +21,7 @@ import static simpletetris.TetrisKeyAdapter.GameAction.*;
 import static simpletetris.Mino.*;
 import static java.awt.Color.*;
 import java.awt.RenderingHints;
+import java.util.regex.Pattern;
 
 /**
  * A class that represents the Tetris matrix
@@ -421,7 +422,7 @@ public class TetrisMatrix {
             
             g2D.drawImage(IN_GARBAGE_ICON, BAR_WIDTH / 2 - 26, -58, null);
             
-            g2D.translate(-90 + BAR_WIDTH,
+            g2D.translate(-90 + BAR_WIDTH + BAR_WIDTH_GAP,
                     -MINO_WIDTH * VISIBLE_HEIGHT + BAR_HEIGHT + 5);
         } else {
             g2D.drawString("NEXT", 15, 45);
@@ -452,13 +453,17 @@ public class TetrisMatrix {
             boolean a = gh.getCombo() > 1, b = specialText != null;
             if(a || b) {
                 g2D.translate(0, 500);
-                g2D.setFont(new Font("Consolas", 0, 20));
                 g2D.drawImage(PIECE_BACKGROUND, null, 0, 0);
                 if(a) {
+                    g2D.setFont(new Font("Consolas", 0, 20));
                     g2D.drawString(gh.getCombo() + " Combo", 5, 25);
                 }
                 if(b) {
+                    g2D.setFont(new Font("Consolas", 0, 15));
                     g2D.drawString(specialText, 5, 50);
+                    int y_ = 50;
+                    for(String line : specialText.split(Pattern.quote("|")))
+                        g2D.drawString(line, 5, y_ += g2D.getFontMetrics().getHeight());
                 }
                 g2D.drawRect(0, 0, 110, 70);
                 g2D.translate(0, -500);
@@ -577,12 +582,13 @@ public class TetrisMatrix {
             boolean a = gh.getCombo() > 1, b = specialText != null;
             if(a || b) {
                 g2D.translate(0, 500);
-                g2D.setFont(new Font("Consolas", 0, 20));
                 g2D.drawImage(PIECE_BACKGROUND, null, 0, 0);
                 if(a) {
+                    g2D.setFont(new Font("Consolas", 0, 20));
                     g2D.drawString(gh.getCombo() + " Combo", 5, 25);
                 }
                 if(b) {
+                    g2D.setFont(new Font("Consolas", 0, 15));
                     g2D.drawString(specialText, 5, 50);
                 }
                 g2D.drawRect(0, 0, 110, 70);
@@ -684,6 +690,8 @@ public class TetrisMatrix {
      * (not really) 
      */
     public Color[][] miniMatrix(int offsetX, int offsetY) {
+        if(falling == null) return null;
+        
         Color[][] output = new Color[falling.getRotationBoxWidth()]
                 [falling.getRotationBoxWidth()];
         
@@ -876,19 +884,51 @@ public class TetrisMatrix {
         }
         
         // check for t-spins
+        String special = null; 
+        boolean b2b = gh.isB2B();
         if(falling instanceof TetT && (lastAction == ROTATE_LEFT || 
                 lastAction == ROTATE_RIGHT) && threeCorner()) {
             System.out.println("T-spin " + linesCleared);
             if((!immobile || kicked) && linesCleared < 2) {
                 gh.newLinesCleared(linesCleared, GarbageHandler.T_SPIN_MINI, 
                         allClear());
+                switch(linesCleared) {
+                    case 1:
+                        special = "T-spin|mini single";
+                        break;
+                    case 0:
+                        special = "T-spin|mini";
+                        break;
+                }
             } else {
                 gh.newLinesCleared(linesCleared, GarbageHandler.T_SPIN, 
                         allClear());
+                switch(linesCleared) {
+                    case 0:
+                        special = "T-spin";
+                        break;
+                    case 1:
+                        special = "T-spin|single";
+                        break;
+                    case 2:
+                        special = "T-spin|double";
+                        break;
+                    case 3:
+                        special = "T-spin|triple";
+                        break;
+                }
             }
         } else {
             gh.newLinesCleared(linesCleared, GarbageHandler.NORMAL, 
                     allClear());
+            if(linesCleared == 4) special = "Tetris";
+        }
+        if(special != null) {
+            if(b2b) special = "B2B " + special;
+            specialText = special;
+            Executors.newSingleThreadScheduledExecutor().schedule(() -> {
+                specialText = null;
+            }, 1, TimeUnit.SECONDS);
         }
         
         // empty lines
@@ -1170,7 +1210,6 @@ public class TetrisMatrix {
      * @param message the message to send
      */
     private void notifyListeners(String message) {
-        System.out.println(message);
         if(listeners == null) return;
         ActionEvent ae = new ActionEvent(this, 0, message);
         for(ActionListener listener : listeners) {

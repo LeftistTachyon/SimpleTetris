@@ -339,4 +339,12 @@ public class GarbageHandler {
         combo = 0;
         b2b = false;
     }
+
+    /**
+     * Whether B2B status is active
+     * @return whether B2B status is active
+     */
+    public boolean isB2B() {
+        return b2b;
+    }
 }
