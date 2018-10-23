@@ -10,6 +10,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
@@ -47,6 +51,18 @@ public class TetrisPanel extends JPanel implements Runnable {
      * The image to draw in the center
      */
     private BufferedImage centerImage;
+    
+    /**
+     * The y for the transform.
+     * Used to draw falling boards - stores the y-coordinate.
+     */
+    private int loseTransformY = 0;
+    
+    /**
+     * The velocity for the transform.
+     * Used to draw falling boards - stores the velocity.
+     */
+    private int loseTransformV = 0;
     
     /**
      * Best of {@code FIRST_TO*2-1}. In this case, best of 3.
@@ -127,23 +143,18 @@ public class TetrisPanel extends JPanel implements Runnable {
             String command = e.getActionCommand();
             if(command.equals("GAMEOVER")) {
                 opponentScore++;
+                playerMatrix.clearFalling();
+                opponentMatrix.clearFalling();
                 if(opponentScore == 2) {
-                    playerMatrix.clearFalling();
-                    opponentMatrix.clearFalling();
                     notifyListeners("MATCHOVERfalse");
                 }
                 System.out.println("You lose. :(");
                 AudioPlayer.stopBackgroundMusic();
                 AudioPlayer.playLoseGameSFX();
                 reset();
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException ex) {
-                    // ex.printStackTrace();
-                    System.err.println("Sleep thread interrupted: "
-                            + "TetrisPanel:105");
-                }
-                startGame();
+                loseTransformV = 1;
+                Executors.newSingleThreadScheduledExecutor()
+                        .schedule(this::startGame, 5, TimeUnit.SECONDS);
             } else if(command.startsWith("SEND")) {
                 opponentMatrix.addToGarbage(command.substring(4));
             } else notifyListeners(command);
@@ -153,23 +164,18 @@ public class TetrisPanel extends JPanel implements Runnable {
             String command = e.getActionCommand();
             if(command.equals("GAMEOVER")) {
                 playerScore++;
+                playerMatrix.clearFalling();
+                opponentMatrix.clearFalling();
                 if(playerScore == 2) {
-                    playerMatrix.clearFalling();
-                    opponentMatrix.clearFalling();
                     notifyListeners("MATCHOVERtrue");
                 }
                 System.out.println("You win! :)");
                 AudioPlayer.stopBackgroundMusic();
                 AudioPlayer.playWinGameSFX();
                 reset();
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException ex) {
-                    // ex.printStackTrace();
-                    System.err.println("Sleep thread interrupted: "
-                            + "TetrisPanel:131");
-                }
-                startGame();
+                loseTransformV = -1;
+                Executors.newSingleThreadScheduledExecutor()
+                        .schedule(this::startGame, 5, TimeUnit.SECONDS);
             } else if(command.startsWith("SEND")) {
                 playerMatrix.addToGarbage(command.substring(4));
             }
@@ -193,6 +199,8 @@ public class TetrisPanel extends JPanel implements Runnable {
     private void startGame() {
         new Thread(() -> {
             try {
+                loseTransformV = 0;
+                loseTransformY = 0;
                 AudioPlayer.playInGameBackground();
                 centerImage = READY;
                 Thread.sleep(1000);
@@ -220,7 +228,16 @@ public class TetrisPanel extends JPanel implements Runnable {
         
         g2D.translate(20, 20);
         
-        playerMatrix.draw(g2D);
+        if(loseTransformY > 0) {
+            if(loseTransformY < getHeight()) {
+                g2D.translate(0, loseTransformY);
+                playerMatrix.draw(g2D);
+                g2D.translate(0, -loseTransformY);
+            } else g2D.translate(235 + Mino.MINO_WIDTH*TetrisMatrix.WIDTH - 
+                    TetrisMatrix.BAR_WIDTH_GAP, 0);
+        } else {
+            playerMatrix.draw(g2D);
+        }
         
         g2D.translate(7.5, 0);
         int bottom = (int) (Mino.MINO_WIDTH*TetrisMatrix.VISIBLE_HEIGHT - 50);
@@ -234,10 +251,19 @@ public class TetrisPanel extends JPanel implements Runnable {
             g2D.fillRect(startXR, bottom - 37, 21, 24);
             startXR -= 24;
         }
-        g2D.drawImage(WIN_TRACKER, null, -100, bottom - 50);
+        g2D.setColor(Color.WHITE);
+        g2D.fillRect(-100, bottom - 50, 200, 50);
+        g2D.drawImage(WIN_TRACKER, null, -100, bottom - 50); 
         g2D.translate(-7.5, 0);
         
-        opponentMatrix.draw(g2D);
+        if(loseTransformY > 0) {
+            if(-loseTransformY < getHeight()) {
+                if(loseTransformY < 0) g2D.translate(0, -loseTransformY);
+                opponentMatrix.draw(g2D);
+                if(loseTransformY < 0) g2D.translate(0, loseTransformY);
+            } else g2D.translate(235 + Mino.MINO_WIDTH*TetrisMatrix.WIDTH - 
+                    TetrisMatrix.BAR_WIDTH_GAP, 0);
+        } else opponentMatrix.draw(g2D);
         
         if(centerImage != null) {
             try {
@@ -274,11 +300,27 @@ public class TetrisPanel extends JPanel implements Runnable {
     public void run() {
         while(!stop) {
             repaint();
+            updateVariables();
             try {
                 Thread.sleep(20);
             } catch (InterruptedException ex) {
                 System.err.println("Interrupted.");
             }
+        }
+    }
+    
+    /**
+     * Updates variables by one step.
+     */
+    private void updateVariables() {
+        if(loseTransformV != 0) {
+            if(loseTransformV < 0) {
+                loseTransformV--;
+            } else {
+                loseTransformV++;
+            }
+            loseTransformY += loseTransformV;
+            loseTransformY %= Integer.MAX_VALUE;
         }
     }
     

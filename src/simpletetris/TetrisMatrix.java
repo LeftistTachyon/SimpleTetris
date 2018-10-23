@@ -845,8 +845,7 @@ public class TetrisMatrix {
             
             // Game over!
             notifyListeners("GAMEOVER");
-        }
-        if(falling.overlaps(miniMatrix(0, -1))) {
+        } else if(falling.overlaps(miniMatrix(0, -1))) {
             // ditch the piece first
             Color[][] copy = falling.getDrawBox();
             for(int r= 0; r < copy.length; r++) {
