@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
@@ -242,7 +240,11 @@ public class TetrisPanel extends JPanel implements Runnable {
         }
         
         g2D.translate(7.5, 0);
+        
         int bottom = (int) (Mino.MINO_WIDTH*TetrisMatrix.VISIBLE_HEIGHT - 50);
+        g2D.setColor(Color.WHITE);
+        g2D.fillRect(-100, bottom - 50, 200, 50);
+        
         int startXL = -19 - 24 * FIRST_TO, startXR = -5 + 24 * FIRST_TO;
         g2D.setColor(Color.YELLOW);
         for(int i = 0; i < playerScore; i++) {
@@ -253,8 +255,7 @@ public class TetrisPanel extends JPanel implements Runnable {
             g2D.fillRect(startXR, bottom - 37, 21, 24);
             startXR -= 24;
         }
-        g2D.setColor(Color.WHITE);
-        g2D.fillRect(-100, bottom - 50, 200, 50);
+        
         g2D.drawImage(WIN_TRACKER, null, -100, bottom - 50); 
         g2D.translate(-7.5, 0);
         
