@@ -145,16 +145,17 @@ public class TetrisPanel extends JPanel implements Runnable {
                 opponentScore++;
                 playerMatrix.clearFalling();
                 opponentMatrix.clearFalling();
-                if(opponentScore == 2) {
-                    notifyListeners("MATCHOVERfalse");
-                }
                 System.out.println("You lose. :(");
                 AudioPlayer.stopBackgroundMusic();
                 AudioPlayer.playLoseGameSFX();
                 reset();
                 loseTransformV = 1;
                 Executors.newSingleThreadScheduledExecutor()
-                        .schedule(this::startGame, 5, TimeUnit.SECONDS);
+                        .schedule(() -> {
+                    if(opponentScore == 2) {
+                        notifyListeners("MATCHOVERfalse");
+                    } else startGame();
+                }, 5, TimeUnit.SECONDS);
             } else if(command.startsWith("SEND")) {
                 opponentMatrix.addToGarbage(command.substring(4));
             } else notifyListeners(command);
@@ -166,16 +167,17 @@ public class TetrisPanel extends JPanel implements Runnable {
                 playerScore++;
                 playerMatrix.clearFalling();
                 opponentMatrix.clearFalling();
-                if(playerScore == 2) {
-                    notifyListeners("MATCHOVERtrue");
-                }
                 System.out.println("You win! :)");
                 AudioPlayer.stopBackgroundMusic();
                 AudioPlayer.playWinGameSFX();
                 reset();
                 loseTransformV = -1;
                 Executors.newSingleThreadScheduledExecutor()
-                        .schedule(this::startGame, 5, TimeUnit.SECONDS);
+                        .schedule(() -> {
+                    if(playerScore == 2) {
+                        notifyListeners("MATCHOVERtrue");
+                    } else startGame();
+                }, 5, TimeUnit.SECONDS);
             } else if(command.startsWith("SEND")) {
                 playerMatrix.addToGarbage(command.substring(4));
             }
