@@ -283,7 +283,7 @@ public class TetrisMatrix {
                 notifyListeners("SEND" + e.getActionCommand());
             }
         });
-        // gd.addGarbage("2 2 2 2 2 2 2");
+        gh.addGarbage("2 2 2 2 2 2 2");
         
         rowsCleared = null;
         
