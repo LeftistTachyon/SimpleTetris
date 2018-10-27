@@ -148,7 +148,6 @@ public class TetrisBag {
      * @param message the message to send
      */
     private void notifyListener(String message) {
-        System.out.println(listener == null);
         if(listener != null)
             listener.actionPerformed(new ActionEvent(this, 0, message));
     }

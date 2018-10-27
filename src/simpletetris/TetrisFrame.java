@@ -72,8 +72,6 @@ public class TetrisFrame extends JFrame {
             } else notifyListener(message);
         });
         
-        notifyListener("NB" + panel.playerMatrix.getFirstBag());
-        
         super.setVisible(true);
         new Thread(panel).start();
     }
@@ -102,7 +100,7 @@ public class TetrisFrame extends JFrame {
      * Notifies the listener that an event occured.
      * @param message the message to send
      */
-    private void notifyListener(String message) {
+    void notifyListener(String message) {
         if(listener != null)
             listener.actionPerformed(new ActionEvent(this, 0, message));
     }
