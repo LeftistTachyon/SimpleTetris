@@ -72,6 +72,8 @@ public class TetrisFrame extends JFrame {
             } else notifyListener(message);
         });
         
+        notifyListener("NB" + panel.playerMatrix.getFirstBag());
+        
         super.setVisible(true);
         new Thread(panel).start();
     }

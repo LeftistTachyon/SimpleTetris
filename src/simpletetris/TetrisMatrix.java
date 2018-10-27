@@ -264,6 +264,11 @@ public class TetrisMatrix {
     private boolean showAllClear = false;
     
     /**
+     * The first bag
+     */
+    private String firstBag;
+    
+    /**
      * Creates a new, default TetrisMatrix.
      */
     public TetrisMatrix() {
@@ -283,7 +288,7 @@ public class TetrisMatrix {
                 notifyListeners("SEND" + e.getActionCommand());
             }
         });
-        gh.addGarbage("2 2 2 2 2 2 2");
+        // gh.addGarbage("2 2 2 2 2 2 2");
         
         rowsCleared = null;
         
@@ -298,6 +303,7 @@ public class TetrisMatrix {
         bag.setActionListener((ActionEvent e) -> {
             notifyListeners(e.getActionCommand());
         });
+        firstBag = bag.regenerateBag();
         if(!onLeft) {
             bag.addBag("OOOOOOO");
             bag.addBag("OOOOOOO");
@@ -328,6 +334,7 @@ public class TetrisMatrix {
         bag.setActionListener((ActionEvent e) -> {
             notifyListeners(e.getActionCommand());
         });
+        firstBag = bag.regenerateBag();
         if(!onLeft) {
             bag.addBag("OOOOOOO");
             bag.addBag("OOOOOOO");
@@ -335,6 +342,14 @@ public class TetrisMatrix {
             bag.addBag("OOOOOOO");
             bag.addBag("OOOOOOO");
         }
+    }
+
+    /**
+     * Returns the order of the first bag
+     * @return the order of the first bag
+     */
+    public String getFirstBag() {
+        return firstBag;
     }
     
     /**

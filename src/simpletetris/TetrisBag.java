@@ -34,14 +34,14 @@ public class TetrisBag {
     public TetrisBag(boolean suspended) {
         this.suspended = suspended;
         queue = new LinkedList<>();
-        regenerateBag();
     }
     
     /**
      * Adds 7 new tetrominos to the queue.
+     * @return the order of the bags
      */
-    public void regenerateBag() {
-        if(suspended) return;
+    public String regenerateBag() {
+        if(suspended) return "";
         ArrayList<Tetromino> r = new ArrayList<>();
         r.add(new TetI());
         r.add(new TetJ());
@@ -59,8 +59,9 @@ public class TetrisBag {
             queue.add(t);
             bag += t.getShape();
         }
-        
         notifyListener("NB" + bag);
+        
+        return bag;
     }
     
     /**
@@ -140,13 +141,14 @@ public class TetrisBag {
      */
     public void removeActionListener() {
         listener = null;
-        }
+    }
     
     /**
      * Notifies the listener that an event occured.
      * @param message the message to send
      */
     private void notifyListener(String message) {
+        System.out.println(listener == null);
         if(listener != null)
             listener.actionPerformed(new ActionEvent(this, 0, message));
     }
