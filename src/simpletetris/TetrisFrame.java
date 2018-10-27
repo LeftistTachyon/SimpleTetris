@@ -84,7 +84,7 @@ public class TetrisFrame extends JFrame {
     }
     
     /**
-     * The listener which islistening in
+     * The listener which is listening in
      */
     private ActionListener listener = null;
     
