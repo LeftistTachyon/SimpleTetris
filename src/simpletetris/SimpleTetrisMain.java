@@ -16,5 +16,7 @@ public class SimpleTetrisMain {
         tf.setActionListener((ActionEvent e) -> {
             System.out.println(e.getActionCommand());
         });
+        
+        tf.notifyFirstBag();
     }
 }
