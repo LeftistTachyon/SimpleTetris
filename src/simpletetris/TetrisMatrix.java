@@ -299,18 +299,8 @@ public class TetrisMatrix {
         kicked = false;
         hold = null;
         matrix = new Color[WIDTH][HEIGHT];
+        
         bag = new TetrisBag(!onLeft);
-        bag.setActionListener((ActionEvent e) -> {
-            notifyListeners(e.getActionCommand());
-        });
-        firstBag = bag.regenerateBag();
-        if(!onLeft) {
-            bag.addBag("OOOOOOO");
-            bag.addBag("OOOOOOO");
-            bag.addBag("OOOOOOO");
-            bag.addBag("OOOOOOO");
-            bag.addBag("OOOOOOO");
-        }
         
         falling = null;
     }
@@ -328,20 +318,6 @@ public class TetrisMatrix {
         rowsCleared = null;
         
         kicked = false;
-        hold = null;
-        matrix = new Color[WIDTH][HEIGHT];
-        bag = new TetrisBag(!onLeft);
-        bag.setActionListener((ActionEvent e) -> {
-            notifyListeners(e.getActionCommand());
-        });
-        firstBag = bag.regenerateBag();
-        if(!onLeft) {
-            bag.addBag("OOOOOOO");
-            bag.addBag("OOOOOOO");
-            bag.addBag("OOOOOOO");
-            bag.addBag("OOOOOOO");
-            bag.addBag("OOOOOOO");
-        }
     }
 
     /**
@@ -356,6 +332,21 @@ public class TetrisMatrix {
      * Starts play on this matrix.
      */
     public void start() {
+        hold = null;
+        
+        bag = new TetrisBag(!onLeft);
+        bag.setActionListener((ActionEvent e) -> {
+            notifyListeners(e.getActionCommand());
+        });
+        firstBag = bag.regenerateBag();
+        if(!onLeft) {
+            bag.addBag("OOOOOOO");
+            bag.addBag("OOOOOOO");
+            bag.addBag("OOOOOOO");
+            bag.addBag("OOOOOOO");
+            bag.addBag("OOOOOOO");
+        }
+        
         newPiece();
         
         if(onLeft) {
@@ -366,6 +357,13 @@ public class TetrisMatrix {
             service = Executors.newScheduledThreadPool(1);
             service.scheduleAtFixedRate(gravity, 0, 10, TimeUnit.MILLISECONDS);
         }
+    }
+    
+    /**
+     * Clears the matrix.
+     */
+    public void clearMatrix() {
+        matrix = new Color[WIDTH][HEIGHT];
     }
     
     /**
@@ -803,7 +801,11 @@ public class TetrisMatrix {
                 AudioPlayer.playMoveSFX(0.1);
                 break;
             case HARD_DROP:
-                y = getGhostY();
+                int gY = getGhostY();
+                if(gY != y) {
+                    lastAction = ga;
+                    y = gY;
+                }
                 if(onLeft) lockPiece();
                 AudioPlayer.playMoveSFX(1.0);
                 break;

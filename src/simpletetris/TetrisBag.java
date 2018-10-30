@@ -41,6 +41,7 @@ public class TetrisBag {
      * @return the order of the bags
      */
     public String regenerateBag() {
+        System.err.println("REGENERATE");
         if(suspended) return "";
         ArrayList<Tetromino> r = new ArrayList<>();
         r.add(new TetI());
@@ -69,6 +70,7 @@ public class TetrisBag {
      * @param bag the bag to add
      */
     public void addBag(String bag) {
+        System.err.println("ADDBAG");
         if(bag.length() != 7) throw new IllegalArgumentException(
                 "Invalid bag: length");
         char[] cc = bag.toCharArray();
@@ -124,7 +126,7 @@ public class TetrisBag {
     }
     
     /**
-     * The listener which islistening in
+     * The listener which is listening in
      */
     private ActionListener listener = null;
     
